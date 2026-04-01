@@ -1,9 +1,13 @@
-import { PrismaClient } from '@prisma/client'
+// Ganti baris 1 yang tadinya { PrismaClient }
+import { Prisma } from '@prisma/client'
+import { PrismaClient } from '@prisma/client/extension' // Tergantung instalasi Prisma 7 kamu
 import bcrypt from 'bcryptjs'
 
-const prisma = new PrismaClient()
+// Cara inisialisasi yang lebih aman di Prisma 7
+const prisma = new (require('@prisma/client').PrismaClient)() 
 
 async function main() {
+  async function main() {
   const passwordHash = await bcrypt.hash('password123', 10)
 
   // 1. Create a dummy user
@@ -71,6 +75,8 @@ async function main() {
   })
 
   console.log({ user, website })
+}
+
 }
 
 main()

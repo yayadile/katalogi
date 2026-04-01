@@ -46,7 +46,7 @@ export async function updatePageBlock(
   try {
     const block = await prisma.pageBlock.update({
       where: { id: blockId },
-      data: { content: contentJSON },
+      data: { content: contentJSON as any },
     })
     revalidatePath(`/dashboard/websites/${block.websiteId}/edit`)
 

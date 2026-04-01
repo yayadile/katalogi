@@ -8,9 +8,16 @@ import bcrypt from 'bcryptjs'
 
 // ─── Register ─────────────────────────────────────────────────────────────────
 
-export type AuthFormState =
-  | { errors?: { email?: string[]; password?: string[]; name?: string[] }; message?: string }
-  | undefined
+type AuthFormStateData = {
+  errors?: {
+    email?: string[]
+    password?: string[]
+    name?: string[]
+  }
+  message?: string
+}
+
+export type AuthFormState = AuthFormStateData | null | undefined
 
 export async function register(state: AuthFormState, formData: FormData): Promise<AuthFormState> {
   const parsed = userSchema.safeParse({
@@ -20,7 +27,7 @@ export async function register(state: AuthFormState, formData: FormData): Promis
   })
 
   if (!parsed.success) {
-    return { errors: parsed.error.flatten().fieldErrors as AuthFormState['errors'] }
+    return { errors: parsed.error.flatten().fieldErrors as AuthFormStateData['errors'] }
   }
 
   const { email, password, name } = parsed.data
@@ -48,7 +55,7 @@ export async function login(state: AuthFormState, formData: FormData): Promise<A
   })
 
   if (!parsed.success) {
-    return { errors: parsed.error.flatten().fieldErrors as AuthFormState['errors'] }
+    return { errors: parsed.error.flatten().fieldErrors as AuthFormStateData['errors'] }
   }
 
   const { email, password } = parsed.data
@@ -69,7 +76,7 @@ export async function login(state: AuthFormState, formData: FormData): Promise<A
 
 // ─── Logout ───────────────────────────────────────────────────────────────────
 
-export async function logout(): Promise<ActionResult> {
+export async function logout(_formData: FormData) {
   await deleteSession()
   redirect('/login')
 }

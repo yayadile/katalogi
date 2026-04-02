@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma'
 import type { Metadata } from 'next'
 import type { BlockType } from '@prisma/client'
 
+
 import HeroBlock from '@/components/blocks/HeroBlock'
 import CatalogBlock from '@/components/blocks/CatalogBlock'
 import ContactBlock from '@/components/blocks/ContactBlock'
@@ -10,6 +11,8 @@ import TextBlock from '@/components/blocks/TextBlock'
 
 // ISR: revalidate every 60 seconds
 export const revalidate = 60
+
+export const dynamic = 'force-dynamic';
 
 // ─── Static Params ─────────────────────────────────────────────────────────────
 

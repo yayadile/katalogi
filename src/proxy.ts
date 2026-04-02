@@ -5,7 +5,7 @@ import { decrypt } from '@/lib/session'
 const protectedRoutes = ['/dashboard']
 const publicOnlyRoutes = ['/login', '/register']
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   const isProtected = protectedRoutes.some((route) => pathname.startsWith(route))

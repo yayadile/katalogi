@@ -6,6 +6,8 @@ import BlockNavigator, { type EditorBlock } from '@/components/editor/BlockNavig
 import CanvasPreview from '@/components/editor/CanvasPreview'
 import BlockSettingsPanel from '@/components/editor/BlockSettingsPanel'
 import { publishWebsite } from '@/lib/actions/website'
+import EditorGuide from '@/components/editor/EditorGuide'
+import { HelpCircle } from 'lucide-react'
 
 type ThemeConfig = {
   primaryColor: string
@@ -95,6 +97,9 @@ export default function EditorClient({
               Live
             </span>
           )}
+
+          {/* Guidance */}
+          <EditorGuide />
 
           {/* Preview link */}
           {isPublished && (

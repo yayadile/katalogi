@@ -1,10 +1,116 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import type { EditorBlock } from './BlockNavigator'
 import { updatePageBlock } from '@/lib/actions/blocks'
 import { updateThemeConfig } from '@/lib/actions/website'
 import type { BlockType } from '@prisma/client'
+import { uploadImage } from '@/lib/upload'
+import { Upload, X, Image as ImageIcon, Link as LinkIcon, Loader2 } from 'lucide-react'
+
+// ─── Image Field Component ───────────────────────────────────────────────────
+
+function ImageField({ 
+  value, 
+  onChange, 
+  label 
+}: { 
+  value: string; 
+  onChange: (val: string) => void; 
+  label: string 
+}) {
+  const [isUploading, setIsUploading] = useState(false)
+  const [mode, setMode] = useState<'url' | 'upload'>(value?.startsWith('http') || !value ? 'url' : 'upload')
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    // Limit file size to 5MB
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Ukuran foto terlalu besar. Maksimal 5MB ya!')
+      return
+    }
+
+    setIsUploading(true)
+    try {
+      const url = await uploadImage(file)
+      onChange(url)
+    } catch (err) {
+      alert('Gagal upload. Pastikan bucket "images" di Supabase sudah siap.')
+    } finally {
+      setIsUploading(false)
+    }
+  }
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between">
+        <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider">{label}</label>
+        <div className="flex bg-white/5 rounded-lg p-0.5">
+          <button 
+            onClick={() => setMode('url')}
+            className={`px-2 py-0.5 rounded-md text-[10px] transition-all ${mode === 'url' ? 'bg-indigo-500 text-white shadow-sm' : 'text-slate-500'}`}
+          >
+            URL
+          </button>
+          <button 
+            onClick={() => setMode('upload')}
+            className={`px-2 py-0.5 rounded-md text-[10px] transition-all ${mode === 'upload' ? 'bg-indigo-500 text-white shadow-sm' : 'text-slate-500'}`}
+          >
+            Upload
+          </button>
+        </div>
+      </div>
+
+      {mode === 'url' ? (
+        <div className="relative group">
+          <input
+            className="settings-input pr-8"
+            value={value}
+            placeholder="https://..."
+            onChange={(e) => onChange(e.target.value)}
+          />
+          <LinkIcon className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-600 group-focus-within:text-indigo-400 transition-colors" />
+        </div>
+      ) : (
+        <div 
+          onClick={() => !isUploading && fileInputRef.current?.click()}
+          className="relative aspect-video bg-white/5 border border-dashed border-white/10 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:bg-white/[0.08] hover:border-indigo-500/50 transition-all group overflow-hidden"
+        >
+          {value ? (
+            <>
+              <img src={value} alt="Preview" className="w-full h-full object-cover opacity-60 group-hover:opacity-40 transition-opacity" />
+              <div className="absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                <Upload className="w-6 h-6 text-white mb-1" />
+                <span className="text-[10px] font-bold text-white uppercase">Ganti Foto</span>
+              </div>
+            </>
+          ) : (
+            <>
+              {isUploading ? (
+                <Loader2 className="w-6 h-6 text-indigo-400 animate-spin" />
+              ) : (
+                <>
+                  <ImageIcon className="w-6 h-6 text-slate-600 mb-1 group-hover:text-indigo-400 transition-colors" />
+                  <span className="text-[10px] font-bold text-slate-500 group-hover:text-slate-300 transition-colors uppercase">Klik untuk Upload</span>
+                </>
+              )}
+            </>
+          )}
+          <input 
+            type="file" 
+            ref={fileInputRef} 
+            className="hidden" 
+            accept="image/*" 
+            onChange={handleUpload} 
+          />
+        </div>
+      )}
+    </div>
+  )
+}
 
 // ─── Hero Settings ─────────────────────────────────────────────────────────────
 
@@ -60,15 +166,14 @@ function HeroSettings({
           onBlur={(e) => save({ ...content, ctaText: e.target.value })}
         />
       </Field>
-      <Field label="URL Gambar Background">
-        <input
-          className="settings-input"
-          defaultValue={String(content.bgImage ?? '')}
-          placeholder="https://..."
-          onChange={(e) => update('bgImage', e.target.value)}
-          onBlur={(e) => save({ ...content, bgImage: e.target.value })}
-        />
-      </Field>
+      <ImageField 
+        label="Background Hero"
+        value={String(content.bgImage ?? '')}
+        onChange={(val) => {
+          update('bgImage', val)
+          save({ ...content, bgImage: val })
+        }}
+      />
       {saving && <p className="text-xs text-indigo-400 animate-pulse">Menyimpan...</p>}
     </div>
   )
@@ -189,15 +294,13 @@ function CatalogSettings({
               }}
               onBlur={() => saveAll(items)}
             />
-            <input
-              className="settings-input text-xs"
+            <ImageField 
+              label="Foto Produk"
               value={item.image}
-              placeholder="URL gambar"
-              onChange={(e) => {
-                const updated = updateItem(item.id, 'image', e.target.value)
-                setItems(updated)
+              onChange={(val) => {
+                const updated = updateItem(item.id, 'image', val)
+                saveAll(updated)
               }}
-              onBlur={() => saveAll(items)}
             />
           </div>
         ))}

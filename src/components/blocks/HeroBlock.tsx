@@ -16,13 +16,23 @@ type HeroBlockProps = {
 export default function HeroBlock({ content, isEditing, primaryColor = '#8b5cf6' }: HeroBlockProps) {
   const { headline, subtext, ctaText, bgImage } = content
 
+  let validBgImage = false
+  try {
+    if (bgImage) {
+      new URL(bgImage)
+      validBgImage = true
+    }
+  } catch {
+    if (bgImage?.startsWith('/')) validBgImage = true
+  }
+
   return (
     <section
       className="relative min-h-[480px] flex items-center justify-center overflow-hidden"
       style={isEditing ? { minHeight: '340px' } : {}}
     >
       {/* Background */}
-      {bgImage ? (
+      {validBgImage && bgImage ? (
         <Image
           src={bgImage}
           alt="Hero background"

@@ -60,18 +60,34 @@ export async function login(state: AuthFormState, formData: FormData): Promise<A
 
   const { email, password } = parsed.data
 
+  // 1. Cari user dulu sebelum masuk blok try
   const user = await prisma.user.findUnique({ where: { email } })
+  
   if (!user) {
     return { message: 'Email atau password salah.' }
   }
 
-  const isValid = await bcrypt.compare(password, user.passwordHash)
-  if (!isValid) {
-    return { message: 'Email atau password salah.' }
+  try {
+    const isValid = await bcrypt.compare(password, user.passwordHash)
+    if (!isValid) {
+      return { message: 'Email atau password salah.' }
+    }
+
+    // 2. Buat session (tunggu sampai beres)
+    await createSession(user.id, user.email, user.name)
+    
+  } catch (error) {
+    // Cek apakah ini error redirect (biar gak ketangkep sebagai error sistem)
+    if (error && typeof error === 'object' && 'digest' in error) {
+        throw error;
+    }
+    console.error("Login Error:", error)
+    return { message: 'Terjadi kesalahan sistem.' }
   }
 
-  await createSession(user.id, user.email, user.name)
+  // 3. Pindah ke dashboard (setelah session beres)
   redirect('/dashboard')
+
 }
 
 // ─── Logout ───────────────────────────────────────────────────────────────────

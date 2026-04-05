@@ -2,12 +2,14 @@ import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import type { Metadata } from 'next'
 import type { BlockType } from '@prisma/client'
+import Link from 'next/link'
 
 
 import HeroBlock from '@/components/blocks/HeroBlock'
 import CatalogBlock from '@/components/blocks/CatalogBlock'
 import ContactBlock from '@/components/blocks/ContactBlock'
 import TextBlock from '@/components/blocks/TextBlock'
+import PageViewTracker from '@/components/published/PageViewTracker'
 
 // ISR: revalidate every 60 seconds
 export const revalidate = 30
@@ -109,6 +111,8 @@ export default async function PublishedPage({
 
   return (
     <>
+      <PageViewTracker websiteId={website.id} />
+      
       {/* JSON-LD */}
       {jsonLd && (
         <script
@@ -169,13 +173,13 @@ export default async function PublishedPage({
 
         {/* Footer badge */}
         <footer className="py-6 text-center border-t border-slate-100 bg-slate-50">
-          <a
+          <Link
             href="/"
             className="inline-flex items-center gap-1.5 text-slate-400 text-xs hover:text-slate-600 transition-colors"
           >
             <span className="w-4 h-4 bg-indigo-500 rounded flex items-center justify-center text-[9px] text-white font-bold">K</span>
             Dibuat dengan <strong className="text-slate-600">Katalogi</strong>
-          </a>
+          </Link>
         </footer>
       </main>
     </>

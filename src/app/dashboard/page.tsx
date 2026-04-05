@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import NewWebsiteForm from '@/components/dashboard/NewWebsiteForm'
 import type { Metadata } from 'next'
-import { Plus, Globe, Sparkles, Clock, Layout, ExternalLink, ChevronRight } from 'lucide-react'
+import { Plus, Globe, Sparkles, Clock, Layout, ExternalLink, ChevronRight, Eye } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'Dashboard — Katalogi',
@@ -92,6 +92,10 @@ export default async function DashboardPage() {
                   )}
 
                   <div className="flex items-center gap-4 text-slate-600 text-[11px] font-medium mb-6">
+                    <div className="flex items-center gap-1" title="Kunjungan Halaman">
+                      <Eye className="w-3.5 h-3.5" />
+                      {website.pageViews}
+                    </div>
                     <div className="flex items-center gap-1">
                       <Layout className="w-3.5 h-3.5" />
                       {website._count.blocks} Block

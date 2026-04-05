@@ -10,19 +10,11 @@ import ContactBlock from '@/components/blocks/ContactBlock'
 import TextBlock from '@/components/blocks/TextBlock'
 
 // ISR: revalidate every 60 seconds
-export const revalidate = 60
+export const revalidate = 30
 
 export const dynamic = 'force-dynamic';
+export const dynamicParams = true; 
 
-// ─── Static Params ─────────────────────────────────────────────────────────────
-
-export async function generateStaticParams() {
-  const websites = await prisma.website.findMany({
-    where: { isPublished: true },
-    select: { slug: true },
-  })
-  return websites.map((w) => ({ slug: w.slug }))
-}
 
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 

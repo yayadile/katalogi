@@ -13,7 +13,10 @@ export async function uploadImage(file: File): Promise<string> {
 
   if (error) {
     console.error('Upload error:', error)
-    throw new Error('Failed to upload image. Please make sure the "images" bucket exists in Supabase.')
+    if (error.message.includes('Bucket not found')) {
+      throw new Error('Bucket "images" belum ada di Supabase. Silakan buat bucket bernama "images" dengan akses Public.')
+    }
+    throw new Error(error.message || 'Gagal upload gambar.')
   }
 
   const { data: { publicUrl } } = supabase.storage

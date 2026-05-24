@@ -45,15 +45,14 @@ export default function EditorClient({
 
   const selectedBlock = blocks.find((b) => b.id === selectedId) ?? null
 
-  // Callback for child components to report save status
+  // Callback buat nge-report status simpan
   const handleSaveStatusChange = useCallback((status: SaveStatus) => {
-    // Clear any pending hide timer
     if (hideTimerRef.current) {
       clearTimeout(hideTimerRef.current)
       hideTimerRef.current = null
     }
     setSaveStatus(status)
-    // Auto-hide after 2.5s when saved or error
+    // Sembunyikan otomatis setelah 2.5 detik kalau udah tersimpan atau error
     if (status === 'saved' || status === 'error') {
       hideTimerRef.current = setTimeout(() => {
         setSaveStatus('idle')
@@ -61,7 +60,7 @@ export default function EditorClient({
     }
   }, [])
 
-  // Warn user before closing tab while saving
+  // Kasih peringatan ke user sebelum nutup tab pas lagi nyimpan
   useEffect(() => {
     const handler = (e: BeforeUnloadEvent) => {
       if (saveStatus === 'saving') {

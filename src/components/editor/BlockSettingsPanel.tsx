@@ -7,6 +7,7 @@ import { updateThemeConfig } from '@/lib/actions/website'
 import type { BlockType } from '@prisma/client'
 import { uploadImage } from '@/lib/upload'
 import { Upload, X, Image as ImageIcon, Link as LinkIcon, Loader2 } from 'lucide-react'
+import type { SaveStatus } from './SaveStatusIndicator'
 
 // ─── Image Field Component ───────────────────────────────────────────────────
 
@@ -118,18 +119,22 @@ function HeroSettings({
   blockId,
   content,
   onChange,
+  onSaveStatus,
 }: {
   blockId: string
   content: Record<string, unknown>
   onChange: (updated: Record<string, unknown>) => void
+  onSaveStatus: (status: SaveStatus) => void
 }) {
-  const [saving, setSaving] = useState(false)
-
   const save = useCallback(async (updated: Record<string, unknown>) => {
-    setSaving(true)
-    await updatePageBlock(blockId, updated)
-    setSaving(false)
-  }, [blockId])
+    onSaveStatus('saving')
+    try {
+      await updatePageBlock(blockId, updated)
+      onSaveStatus('saved')
+    } catch {
+      onSaveStatus('error')
+    }
+  }, [blockId, onSaveStatus])
 
   const update = (key: string, val: string) => {
     const updated = { ...content, [key]: val }
@@ -174,7 +179,6 @@ function HeroSettings({
           save({ ...content, bgImage: val })
         }}
       />
-      {saving && <p className="text-xs text-indigo-400 animate-pulse">Menyimpan...</p>}
     </div>
   )
 }
@@ -187,23 +191,28 @@ function CatalogSettings({
   blockId,
   content,
   onChange,
+  onSaveStatus,
 }: {
   blockId: string
   content: Record<string, unknown>
   onChange: (updated: Record<string, unknown>) => void
+  onSaveStatus: (status: SaveStatus) => void
 }) {
   const [items, setItems] = useState<CatalogItem[]>(
     (content.items as CatalogItem[]) ?? []
   )
-  const [saving, setSaving] = useState(false)
 
   const saveAll = useCallback(async (newItems: CatalogItem[], title?: string) => {
-    setSaving(true)
-    const updated = { ...content, items: newItems, title: title ?? content.title }
-    onChange(updated)
-    await updatePageBlock(blockId, updated)
-    setSaving(false)
-  }, [blockId, content, onChange])
+    onSaveStatus('saving')
+    try {
+      const updated = { ...content, items: newItems, title: title ?? content.title }
+      onChange(updated)
+      await updatePageBlock(blockId, updated)
+      onSaveStatus('saved')
+    } catch {
+      onSaveStatus('error')
+    }
+  }, [blockId, content, onChange, onSaveStatus])
 
   const addItem = () => {
     const newItem: CatalogItem = {
@@ -306,7 +315,6 @@ function CatalogSettings({
         ))}
       </div>
 
-      {saving && <p className="text-xs text-indigo-400 animate-pulse">Menyimpan...</p>}
     </div>
   )
 }
@@ -317,19 +325,23 @@ function ContactSettings({
   blockId,
   content,
   onChange,
+  onSaveStatus,
 }: {
   blockId: string
   content: Record<string, unknown>
   onChange: (updated: Record<string, unknown>) => void
+  onSaveStatus: (status: SaveStatus) => void
 }) {
-  const [saving, setSaving] = useState(false)
-
   const save = useCallback(async (updated: Record<string, unknown>) => {
-    setSaving(true)
-    onChange(updated)
-    await updatePageBlock(blockId, updated)
-    setSaving(false)
-  }, [blockId, onChange])
+    onSaveStatus('saving')
+    try {
+      onChange(updated)
+      await updatePageBlock(blockId, updated)
+      onSaveStatus('saved')
+    } catch {
+      onSaveStatus('error')
+    }
+  }, [blockId, onChange, onSaveStatus])
 
   const update = (key: string, val: string) => ({ ...content, [key]: val })
 
@@ -351,7 +363,6 @@ function ContactSettings({
         <textarea className="settings-input resize-none" rows={2} defaultValue={String(content.address ?? '')} placeholder="Kota, Provinsi"
           onBlur={(e) => save(update('address', e.target.value))} />
       </Field>
-      {saving && <p className="text-xs text-indigo-400 animate-pulse">Menyimpan...</p>}
     </div>
   )
 }
@@ -362,20 +373,24 @@ function TextSettings({
   blockId,
   content,
   onChange,
+  onSaveStatus,
 }: {
   blockId: string
   content: Record<string, unknown>
   onChange: (updated: Record<string, unknown>) => void
+  onSaveStatus: (status: SaveStatus) => void
 }) {
-  const [saving, setSaving] = useState(false)
-
   const save = useCallback(async (text: string) => {
-    setSaving(true)
-    const updated = { ...content, text, html: `<p>${text}</p>` }
-    onChange(updated)
-    await updatePageBlock(blockId, updated)
-    setSaving(false)
-  }, [blockId, content, onChange])
+    onSaveStatus('saving')
+    try {
+      const updated = { ...content, text, html: `<p>${text}</p>` }
+      onChange(updated)
+      await updatePageBlock(blockId, updated)
+      onSaveStatus('saved')
+    } catch {
+      onSaveStatus('error')
+    }
+  }, [blockId, content, onChange, onSaveStatus])
 
   return (
     <div className="space-y-4">
@@ -388,7 +403,6 @@ function TextSettings({
           onBlur={(e) => save(e.target.value)}
         />
       </Field>
-      {saving && <p className="text-xs text-indigo-400 animate-pulse">Menyimpan...</p>}
     </div>
   )
 }
@@ -403,20 +417,24 @@ function ThemeSettings({
   userId,
   currentTheme,
   onThemeChange,
+  onSaveStatus,
 }: {
   websiteId: string
   userId: string
   currentTheme: { primaryColor: string; secondaryColor: string; fontFamily: string }
   onThemeChange: (theme: typeof currentTheme) => void
+  onSaveStatus: (status: SaveStatus) => void
 }) {
-  const [saving, setSaving] = useState(false)
-
   const save = useCallback(async (data: typeof currentTheme) => {
-    setSaving(true)
-    onThemeChange(data)
-    await updateThemeConfig(websiteId, userId, data)
-    setSaving(false)
-  }, [websiteId, userId, onThemeChange])
+    onSaveStatus('saving')
+    try {
+      onThemeChange(data)
+      await updateThemeConfig(websiteId, userId, data)
+      onSaveStatus('saved')
+    } catch {
+      onSaveStatus('error')
+    }
+  }, [websiteId, userId, onThemeChange, onSaveStatus])
 
   return (
     <div className="space-y-5">
@@ -466,7 +484,6 @@ function ThemeSettings({
         </select>
       </Field>
 
-      {saving && <p className="text-xs text-indigo-400 animate-pulse">Menyimpan tema...</p>}
     </div>
   )
 }
@@ -493,6 +510,7 @@ type BlockSettingsPanelProps = {
   theme: { primaryColor: string; secondaryColor: string; fontFamily: string }
   onBlockContentChange: (blockId: string, content: Record<string, unknown>) => void
   onThemeChange: (theme: BlockSettingsPanelProps['theme']) => void
+  onSaveStatusChange: (status: SaveStatus) => void
 }
 
 export default function BlockSettingsPanel({
@@ -502,6 +520,7 @@ export default function BlockSettingsPanel({
   theme,
   onBlockContentChange,
   onThemeChange,
+  onSaveStatusChange,
 }: BlockSettingsPanelProps) {
   const [activeTab, setActiveTab] = useState<'block' | 'theme'>('block')
 
@@ -538,6 +557,7 @@ export default function BlockSettingsPanel({
             userId={userId}
             currentTheme={theme}
             onThemeChange={onThemeChange}
+            onSaveStatus={onSaveStatusChange}
           />
         ) : selectedBlock ? (
           <div>
@@ -551,6 +571,7 @@ export default function BlockSettingsPanel({
                 blockId={selectedBlock.id}
                 content={selectedBlock.content}
                 onChange={(c) => onBlockContentChange(selectedBlock.id, c)}
+                onSaveStatus={onSaveStatusChange}
               />
             )}
             {(selectedBlock.type as BlockType) === 'CATALOG' && (
@@ -558,6 +579,7 @@ export default function BlockSettingsPanel({
                 blockId={selectedBlock.id}
                 content={selectedBlock.content}
                 onChange={(c) => onBlockContentChange(selectedBlock.id, c)}
+                onSaveStatus={onSaveStatusChange}
               />
             )}
             {(selectedBlock.type as BlockType) === 'CONTACT' && (
@@ -565,6 +587,7 @@ export default function BlockSettingsPanel({
                 blockId={selectedBlock.id}
                 content={selectedBlock.content}
                 onChange={(c) => onBlockContentChange(selectedBlock.id, c)}
+                onSaveStatus={onSaveStatusChange}
               />
             )}
             {(selectedBlock.type as BlockType) === 'TEXT' && (
@@ -572,6 +595,7 @@ export default function BlockSettingsPanel({
                 blockId={selectedBlock.id}
                 content={selectedBlock.content}
                 onChange={(c) => onBlockContentChange(selectedBlock.id, c)}
+                onSaveStatus={onSaveStatusChange}
               />
             )}
           </div>

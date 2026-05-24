@@ -1,13 +1,13 @@
 'use client'
 
-import { useState, useCallback, useTransition } from 'react'
+import { useState, useCallback, useTransition, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import BlockNavigator, { type EditorBlock } from '@/components/editor/BlockNavigator'
 import CanvasPreview from '@/components/editor/CanvasPreview'
 import BlockSettingsPanel from '@/components/editor/BlockSettingsPanel'
 import { publishWebsite } from '@/lib/actions/website'
 import EditorGuide from '@/components/editor/EditorGuide'
-import { HelpCircle } from 'lucide-react'
+import SaveStatusIndicator, { type SaveStatus } from '@/components/editor/SaveStatusIndicator'
 
 type ThemeConfig = {
   primaryColor: string
@@ -40,8 +40,37 @@ export default function EditorClient({
   const [theme, setTheme] = useState<ThemeConfig>(initialTheme)
   const [isPublished, setIsPublished] = useState(initialPublished)
   const [isPending, startTransition] = useTransition()
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle')
+  const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const selectedBlock = blocks.find((b) => b.id === selectedId) ?? null
+
+  // Callback for child components to report save status
+  const handleSaveStatusChange = useCallback((status: SaveStatus) => {
+    // Clear any pending hide timer
+    if (hideTimerRef.current) {
+      clearTimeout(hideTimerRef.current)
+      hideTimerRef.current = null
+    }
+    setSaveStatus(status)
+    // Auto-hide after 2.5s when saved or error
+    if (status === 'saved' || status === 'error') {
+      hideTimerRef.current = setTimeout(() => {
+        setSaveStatus('idle')
+      }, 2500)
+    }
+  }, [])
+
+  // Warn user before closing tab while saving
+  useEffect(() => {
+    const handler = (e: BeforeUnloadEvent) => {
+      if (saveStatus === 'saving') {
+        e.preventDefault()
+      }
+    }
+    window.addEventListener('beforeunload', handler)
+    return () => window.removeEventListener('beforeunload', handler)
+  }, [saveStatus])
 
   const handleBlocksChange = useCallback((updated: EditorBlock[]) => {
     setBlocks(updated)
@@ -90,6 +119,9 @@ export default function EditorClient({
 
         {/* Right: actions */}
         <div className="flex items-center gap-2 flex-shrink-0">
+          {/* Save status indicator */}
+          <SaveStatusIndicator status={saveStatus} />
+
           {/* Published status badge */}
           {isPublished && (
             <span className="hidden sm:inline-flex items-center gap-1 text-xs text-green-400 bg-green-400/10 border border-green-400/20 rounded-full px-2.5 py-1">
@@ -177,6 +209,7 @@ export default function EditorClient({
               theme={theme}
               onBlockContentChange={handleBlockContentChange}
               onThemeChange={setTheme}
+              onSaveStatusChange={handleSaveStatusChange}
             />
           </div>
         </aside>

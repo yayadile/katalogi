@@ -55,46 +55,67 @@ function VerifyOTPForm() {
 
   if (!email) {
     return (
-      <div className="bg-slate-900/60 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] p-10 md:p-12 shadow-2xl text-center">
-        <XCircle className="w-16 h-16 text-red-400 mx-auto mb-6" />
-        <h1 className="text-2xl font-bold text-white mb-3">Tautan Tidak Valid</h1>
-        <p className="text-slate-400 mb-8">Email tidak ditemukan. Silakan daftar ulang.</p>
-        <Link href="/register" className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-xl font-medium hover:bg-indigo-700 transition-colors">
-          Kembali ke Daftar
-        </Link>
+      <div className="relative bg-white border border-gray-200 rounded-[2.5rem] p-10 md:p-12 shadow-lg text-center overflow-hidden animate-fade-up">
+        <div
+          className="absolute inset-0 pointer-events-none opacity-[0.03]"
+          style={{
+            backgroundImage: `radial-gradient(circle, #4f46e5 1px, transparent 1px)`,
+            backgroundSize: '24px 24px',
+          }}
+        />
+        <div className="relative z-10">
+          <XCircle className="w-16 h-16 text-red-400 mx-auto mb-6" />
+          <h1 className="text-2xl font-bold text-gray-900 mb-3">Tautan Tidak Valid</h1>
+          <p className="text-gray-500 mb-8">Email tidak ditemukan. Silakan daftar ulang.</p>
+          <Link href="/register" className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-xl font-medium hover:bg-indigo-700 transition-colors">
+            Kembali ke Daftar
+          </Link>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="bg-slate-900/60 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] p-10 md:p-12 shadow-2xl animate-in fade-in zoom-in-95 duration-500">
-      <div className="text-center mb-10">
+    <div className="relative bg-white border border-gray-200 rounded-[2.5rem] p-10 md:p-12 shadow-lg animate-fade-up overflow-hidden">
+      {/* Decorative ring behind card */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full border border-indigo-600/10 animate-ring-pulse pointer-events-none" />
+
+      {/* Decorative dot pattern inside card */}
+      <div
+        className="absolute inset-0 pointer-events-none opacity-[0.03]"
+        style={{
+          backgroundImage: `radial-gradient(circle, #4f46e5 1px, transparent 1px)`,
+          backgroundSize: '24px 24px',
+        }}
+      />
+
+      <div className="text-center mb-10 relative z-10 animate-fade-up delay-100">
         <Link href="/" className="inline-flex items-center gap-3 mb-6 group">
-          <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:scale-110 transition-transform">
+          <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:bg-indigo-700 transition-colors">
             <Sparkles className="w-7 h-7 text-white" />
           </div>
-          <span className="text-white font-bold text-3xl tracking-tight">Katalogi<span className="text-indigo-400">.</span></span>
+          <span className="text-gray-900 font-bold text-3xl tracking-tight">Katalogi<span className="text-indigo-600">.</span></span>
         </Link>
-        <div className="w-16 h-16 bg-indigo-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
-          <Mail className="w-8 h-8 text-indigo-400" />
+        <div className="w-16 h-16 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-4">
+          <Mail className="w-8 h-8 text-indigo-600" />
         </div>
-        <h1 className="text-2xl font-bold text-white mb-2">Cek Email Anda</h1>
-        <p className="text-slate-400 text-sm max-w-sm mx-auto">
-          Kami telah mengirim kode OTP 6 digit ke <strong className="text-slate-300">{email}</strong>
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">Cek Email Anda</h1>
+        <p className="text-gray-500 text-sm max-w-sm mx-auto">
+          Kami telah mengirim kode OTP 6 digit ke <strong className="text-gray-700">{email}</strong>
         </p>
       </div>
 
-      <form action={action} className="space-y-6">
+      <form action={action} className="space-y-6 relative z-10">
         {state?.error && (
-          <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm px-5 py-4 rounded-2xl animate-shake flex items-center gap-2">
+          <div className="bg-red-50 border border-red-200 text-red-600 text-sm px-5 py-4 rounded-2xl animate-fade-in flex items-center gap-2">
             <XCircle className="w-4 h-4 flex-shrink-0" />
             {state.error}
           </div>
         )}
 
         {resendMsg && (
-          <div className={`text-sm px-5 py-4 rounded-2xl flex items-center gap-2 ${
-            resendMsg.includes('dikirim') ? 'bg-emerald-500/10 border border-emerald-500/30 text-emerald-400' : 'bg-red-500/10 border border-red-500/30 text-red-400'
+          <div className={`text-sm px-5 py-4 rounded-2xl flex items-center gap-2 animate-fade-in ${
+            resendMsg.includes('dikirim') ? 'bg-green-50 border border-green-200 text-green-600' : 'bg-red-50 border border-red-200 text-red-600'
           }`}>
             {resendMsg.includes('dikirim') ? <CheckCircle2 className="w-4 h-4 flex-shrink-0" /> : <XCircle className="w-4 h-4 flex-shrink-0" />}
             {resendMsg}
@@ -103,8 +124,8 @@ function VerifyOTPForm() {
 
         <input type="hidden" name="email" value={email} />
 
-        <div className="space-y-1.5">
-          <label htmlFor="otp" className="block text-slate-300 text-xs font-bold uppercase tracking-widest ml-1">
+        <div className="space-y-1.5 animate-fade-up delay-200">
+          <label htmlFor="otp" className="block text-gray-700 text-xs font-bold uppercase tracking-widest ml-1">
             Kode OTP
           </label>
           <input
@@ -116,21 +137,21 @@ function VerifyOTPForm() {
             required
             maxLength={6}
             placeholder="000000"
-            className="w-full bg-white/5 border border-white/10 text-white placeholder-slate-600 rounded-2xl px-5 py-4 text-center text-3xl font-mono tracking-[12px] focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all"
+            className="w-full bg-gray-50 border border-gray-200 text-gray-900 placeholder-gray-300 rounded-2xl px-5 py-4 text-center text-3xl font-mono tracking-[12px] focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all"
           />
         </div>
 
         <button type="submit" disabled={pending}
-          className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold py-4 rounded-2xl transition-all duration-300 hover:shadow-2xl hover:shadow-indigo-500/30 disabled:opacity-60 disabled:cursor-not-allowed text-base flex items-center justify-center gap-2 active:scale-95">
+          className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-2xl transition-all duration-200 hover:shadow-lg hover:shadow-indigo-500/25 disabled:opacity-60 disabled:cursor-not-allowed text-base flex items-center justify-center gap-2 active:scale-95 animate-fade-up delay-300">
           {pending ? <Loader2 className="w-5 h-5 animate-spin" /> : <>Verifikasi <ArrowRight className="w-5 h-5" /></>}
         </button>
       </form>
 
-      <div className="text-center mt-8">
+      <div className="text-center mt-8 animate-fade-up delay-400">
         <button
           onClick={handleResend}
           disabled={resending || countdown > 0}
-          className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-indigo-400 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+          className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-indigo-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
         >
           <RotateCw className={`w-4 h-4 ${resending ? 'animate-spin' : ''}`} />
           {countdown > 0
@@ -147,8 +168,18 @@ function VerifyOTPForm() {
 export default function VerifyOTPPage() {
   return (
     <Suspense fallback={
-      <div className="bg-slate-900/60 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] p-10 md:p-12 shadow-2xl text-center">
-        <Loader2 className="w-10 h-10 text-indigo-400 animate-spin mx-auto" />
+      <div className="relative bg-white border border-gray-200 rounded-[2.5rem] p-10 md:p-12 shadow-lg text-center overflow-hidden">
+        <div
+          className="absolute inset-0 pointer-events-none opacity-[0.03]"
+          style={{
+            backgroundImage: `radial-gradient(circle, #4f46e5 1px, transparent 1px)`,
+            backgroundSize: '24px 24px',
+          }}
+        />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full border border-indigo-600/10 animate-ring-pulse pointer-events-none" />
+        <div className="relative z-10">
+          <Loader2 className="w-10 h-10 text-indigo-600 animate-spin mx-auto" />
+        </div>
       </div>
     }>
       <VerifyOTPForm />

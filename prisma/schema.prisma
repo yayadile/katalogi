@@ -17,14 +17,22 @@ model User {
   websites       Website[]
 }
 
+enum TokenType {
+  EMAIL_VERIFICATION
+  PASSWORD_RESET
+}
+
 model VerificationToken {
   id        String    @id @default(cuid())
   email     String
   token     String
-  type      String    @default("email_verification")
+  type      TokenType @default(EMAIL_VERIFICATION)
   expiresAt DateTime
   createdAt DateTime  @default(now())
   usedAt    DateTime?
+
+  @@index([email])
+  @@index([token])
 }
 
 model Website {

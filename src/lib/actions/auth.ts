@@ -36,17 +36,21 @@ export async function register(state: AuthFormState, formData: FormData): Promis
 
   const existing = await prisma.user.findUnique({ where: { email } })
   if (existing) {
-    if (!existing.emailVerified) {
-      await prisma.user.delete({ where: { email } })
-    } else {
+    if (existing.emailVerified) {
       return { message: 'Email sudah terdaftar.' }
     }
-  }
 
-  const passwordHash = await bcrypt.hash(password, 10)
-  await prisma.user.create({
-    data: { email, passwordHash, name, emailVerified: false },
-  })
+    const passwordHash = await bcrypt.hash(password, 10)
+    await prisma.user.update({
+      where: { email },
+      data: { passwordHash, name, emailVerified: false },
+    })
+  } else {
+    const passwordHash = await bcrypt.hash(password, 10)
+    await prisma.user.create({
+      data: { email, passwordHash, name, emailVerified: false },
+    })
+  }
 
   const otpResult = await sendOTP(email)
   if (!otpResult.success) {

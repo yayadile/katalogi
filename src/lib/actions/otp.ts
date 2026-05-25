@@ -18,7 +18,7 @@ export async function sendOTP(email: string): Promise<OTPResult> {
     }
 
     await prisma.verificationToken.updateMany({
-      where: { email, type: 'email_verification', usedAt: null },
+      where: { email, type: 'EMAIL_VERIFICATION', usedAt: null },
       data: { usedAt: new Date() },
     })
 
@@ -29,7 +29,7 @@ export async function sendOTP(email: string): Promise<OTPResult> {
       data: {
         email,
         token: otp,
-        type: 'email_verification',
+        type: 'EMAIL_VERIFICATION',
         expiresAt,
       },
     })
@@ -63,7 +63,7 @@ export async function verifyOTP(
       where: {
         email,
         token: otp,
-        type: 'email_verification',
+        type: 'EMAIL_VERIFICATION',
         usedAt: null,
         expiresAt: { gte: new Date() },
       },
@@ -113,7 +113,7 @@ export async function verifyOTPRedirect(
       where: {
         email,
         token: otp,
-        type: 'email_verification',
+        type: 'EMAIL_VERIFICATION',
         usedAt: null,
         expiresAt: { gte: new Date() },
       },

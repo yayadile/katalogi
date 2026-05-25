@@ -90,8 +90,8 @@ function SortableBlockItem({
       style={style}
       className={`flex items-center gap-2 px-3 py-2.5 rounded-xl cursor-pointer group transition-all ${
         isSelected
-          ? 'bg-indigo-500/15 border border-indigo-500/40 text-indigo-300'
-          : 'hover:bg-white/5 border border-transparent text-slate-400'
+          ? 'bg-indigo-50 border border-indigo-200 text-indigo-700'
+          : 'hover:bg-gray-100 border border-transparent text-gray-500'
       }`}
       onClick={onSelect}
     >
@@ -109,7 +109,7 @@ function SortableBlockItem({
       </button>
 
       {/* Icon */}
-      <span className={isSelected ? 'text-indigo-400' : 'text-slate-500'}>
+      <span className={isSelected ? 'text-indigo-600' : 'text-gray-400'}>
         {BLOCK_ICONS[block.type]}
       </span>
 
@@ -124,7 +124,7 @@ function SortableBlockItem({
           e.stopPropagation()
           onDelete()
         }}
-        className="opacity-0 group-hover:opacity-60 hover:!opacity-100 hover:text-red-400 transition-all flex-shrink-0"
+        className="opacity-0 group-hover:opacity-60 hover:!opacity-100 hover:text-red-500 transition-all flex-shrink-0"
         aria-label="Delete block"
       >
         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -170,7 +170,7 @@ function AddBlockMenu({
     <div className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl border border-dashed border-white/20 text-slate-400 hover:text-slate-200 hover:border-white/40 transition-all text-sm font-medium"
+        className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl border border-dashed border-gray-300 text-gray-500 hover:text-gray-700 hover:border-gray-400 transition-all text-sm font-medium"
       >
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -179,15 +179,15 @@ function AddBlockMenu({
       </button>
 
       {open && (
-        <div className="absolute top-full left-0 right-0 mt-1.5 bg-slate-800 border border-white/10 rounded-xl shadow-2xl overflow-hidden z-50">
+        <div className="absolute top-full left-0 right-0 mt-1.5 bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden z-50">
           {blockTypes.map((type) => (
             <button
               key={type}
               onClick={() => handleAdd(type)}
               disabled={!!loading}
-              className="w-full flex items-center gap-3 px-3 py-2.5 text-left text-slate-300 hover:bg-white/5 transition-colors text-sm disabled:opacity-50"
+              className="w-full flex items-center gap-3 px-3 py-2.5 text-left text-gray-700 hover:bg-gray-50 transition-colors text-sm disabled:opacity-50"
             >
-              <span className="text-slate-400">{BLOCK_ICONS[type]}</span>
+              <span className="text-gray-400">{BLOCK_ICONS[type]}</span>
               {loading === type ? 'Menambahkan...' : BLOCK_LABELS[type]}
             </button>
           ))}
@@ -260,7 +260,7 @@ export default function BlockNavigator({
 
   return (
     <div className="flex flex-col gap-1 h-full">
-      <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-1 mb-2">
+      <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-1 mb-2">
         Blocks ({blocks.length})
       </p>
 
@@ -272,7 +272,7 @@ export default function BlockNavigator({
         <SortableContext items={blocks.map((b) => b.id)} strategy={verticalListSortingStrategy}>
           <div className="flex flex-col gap-1 flex-1 overflow-y-auto">
             {blocks.length === 0 && (
-              <p className="text-xs text-slate-600 text-center py-8">
+              <p className="text-xs text-gray-400 text-center py-8">
                 Belum ada block. Tambahkan block pertama!
               </p>
             )}
@@ -289,7 +289,7 @@ export default function BlockNavigator({
         </SortableContext>
       </DndContext>
 
-      <div className="mt-3 pt-3 border-t border-white/5">
+      <div className="mt-3 pt-3 border-t border-gray-200">
         <AddBlockMenu
           websiteId={websiteId}
           currentCount={blocks.length}

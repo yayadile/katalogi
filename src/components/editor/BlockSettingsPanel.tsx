@@ -35,13 +35,13 @@ export default function BlockSettingsPanel({
   return (
     <div className="flex flex-col h-full">
       {/* Tabs */}
-      <div className="flex border-b border-white/10 mb-4">
+      <div className="flex border-b border-gray-200 mb-4">
         <button
           onClick={() => setActiveTab('block')}
           className={`flex-1 py-2.5 text-xs font-semibold transition-colors ${
             activeTab === 'block'
-              ? 'text-indigo-400 border-b-2 border-indigo-500'
-              : 'text-slate-500 hover:text-slate-400'
+              ? 'text-indigo-600 border-b-2 border-indigo-600'
+              : 'text-gray-400 hover:text-gray-600'
           }`}
         >
           Block
@@ -50,8 +50,8 @@ export default function BlockSettingsPanel({
           onClick={() => setActiveTab('theme')}
           className={`flex-1 py-2.5 text-xs font-semibold transition-colors ${
             activeTab === 'theme'
-              ? 'text-indigo-400 border-b-2 border-indigo-500'
-              : 'text-slate-500 hover:text-slate-400'
+              ? 'text-indigo-600 border-b-2 border-indigo-600'
+              : 'text-gray-400 hover:text-gray-600'
           }`}
         >
           Tema
@@ -70,7 +70,7 @@ export default function BlockSettingsPanel({
         ) : selectedBlock ? (
           <div>
             <div className="mb-4">
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+              <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">
                 {selectedBlock.type}
               </span>
             </div>
@@ -108,7 +108,7 @@ export default function BlockSettingsPanel({
             )}
           </div>
         ) : (
-          <div className="text-center py-16 text-slate-600 text-sm">
+          <div className="text-center py-16 text-gray-400 text-sm">
             <svg className="w-10 h-10 mx-auto mb-3 opacity-30" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5" />
             </svg>

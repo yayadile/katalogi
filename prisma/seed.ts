@@ -1,27 +1,22 @@
-// Ganti baris 1 yang tadinya { PrismaClient }
-import { Prisma } from '@prisma/client'
-import { PrismaClient } from '@prisma/client/extension' // Tergantung instalasi Prisma 7 kamu
+import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcryptjs'
 
-// Cara inisialisasi yang lebih aman di Prisma 7
-const prisma = new (require('@prisma/client').PrismaClient)() 
+const prisma = new PrismaClient()
 
 async function main() {
-  async function main() {
   const passwordHash = await bcrypt.hash('password123', 10)
 
-  // 1. Create a dummy user
   const user = await prisma.user.upsert({
     where: { email: 'demo@katalogi.id' },
     update: {},
     create: {
       email: 'demo@katalogi.id',
       name: 'Demo User',
-      passwordHash: passwordHash,
+      passwordHash,
+      emailVerified: true,
     },
   })
 
-  // 2. Create a website
   const website = await prisma.website.upsert({
     where: { slug: 'toko-demo' },
     update: {},
@@ -75,8 +70,6 @@ async function main() {
   })
 
   console.log({ user, website })
-}
-
 }
 
 main()

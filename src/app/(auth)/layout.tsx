@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Katalogi — Login & Daftar',
+  title: 'Katalogi — Akun',
 }
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {

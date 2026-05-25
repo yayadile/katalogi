@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+
 
 import type { BlockType } from '@prisma/client'
 import type { EditorBlock, BlockPosition } from './BlockNavigator'
@@ -8,22 +8,46 @@ import HeroBlock from '@/components/blocks/HeroBlock'
 import CatalogBlock from '@/components/blocks/CatalogBlock'
 import ContactBlock from '@/components/blocks/ContactBlock'
 import TextBlock from '@/components/blocks/TextBlock'
+import { HeadingBlock, ParagraphBlock, QuoteBlock } from '@/components/blocks/TypographyBlocks'
+import { VideoBlock, GalleryBlock } from '@/components/blocks/MediaBlocks'
+import { DivBlock, ColumnBlock, GridBlock, ListBlock, LinkBlock, CMSBlock, ButtonBlock } from '@/components/blocks/StructureBlocks'
 import DraggableWrapper from './DraggableWrapper'
 
-const BLOCK_TYPE_LABELS: Record<BlockType, string> = {
+const BLOCK_TYPE_LABELS: Record<string, string> = {
   HERO: 'Hero',
   CATALOG: 'Katalog',
   CONTACT: 'Kontak',
   TEXT: 'Teks',
   GALLERY: 'Galeri',
+  DIV: 'Div Block',
+  CMS: 'CMS',
+  COLUMN: 'Kolom',
+  GRID: 'Grid',
+  LINK_BLOCK: 'Link Block',
+  LIST: 'List',
+  HEADING: 'Heading',
+  PARAGRAPH: 'Paragraph',
+  QUOTE: 'Quote',
+  BUTTON: 'Tombol',
+  VIDEO: 'Video',
 }
 
-const BLOCK_TYPE_COLORS: Record<BlockType, string> = {
+const BLOCK_TYPE_COLORS: Record<string, string> = {
   HERO: 'bg-violet-500',
   CATALOG: 'bg-blue-500',
   CONTACT: 'bg-green-500',
   TEXT: 'bg-slate-500',
   GALLERY: 'bg-orange-500',
+  DIV: 'bg-gray-500',
+  CMS: 'bg-indigo-500',
+  COLUMN: 'bg-sky-500',
+  GRID: 'bg-cyan-500',
+  LINK_BLOCK: 'bg-pink-500',
+  LIST: 'bg-teal-500',
+  HEADING: 'bg-amber-500',
+  PARAGRAPH: 'bg-orange-400',
+  QUOTE: 'bg-yellow-500',
+  VIDEO: 'bg-red-500',
 }
 
 function BlockWrapper({
@@ -47,7 +71,7 @@ function BlockWrapper({
   const content = block.content
 
   const renderBlock = () => {
-    switch (block.type as BlockType) {
+    switch (block.type as string) {
       case 'HERO':
         return (
           <HeroBlock
@@ -77,6 +101,41 @@ function BlockWrapper({
             theme={theme}
           />
         )
+      case 'HEADING':
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return <HeadingBlock content={content as any} theme={theme} />
+      case 'PARAGRAPH':
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return <ParagraphBlock content={content as any} theme={theme} />
+      case 'QUOTE':
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return <QuoteBlock content={content as any} theme={theme} />
+      case 'VIDEO':
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return <VideoBlock content={content as any} theme={theme} />
+      case 'GALLERY':
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return <GalleryBlock content={content as any} />
+      case 'DIV':
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return <DivBlock content={content as any} />
+      case 'COLUMN':
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return <ColumnBlock content={content as any} />
+      case 'GRID':
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return <GridBlock content={content as any} />
+      case 'LIST':
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return <ListBlock content={content as any} theme={theme} />
+      case 'LINK_BLOCK':
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return <LinkBlock content={content as any} />
+      case 'BUTTON':
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return <ButtonBlock content={content as any} theme={theme} />
+      case 'CMS':
+        return <CMSBlock />
       default:
         return (
           <div className="p-8 text-center text-slate-400 bg-slate-100">
@@ -86,13 +145,17 @@ function BlockWrapper({
     }
   }
 
+  const styles = (block.content?.styles || {}) as React.CSSProperties
+
   return (
     <div
-      className={`relative group cursor-pointer transition-all duration-200 rounded-lg overflow-hidden w-full h-full ${
+      id={block.content?.htmlId ? String(block.content.htmlId) : undefined}
+      className={`relative group cursor-pointer transition-all duration-200 overflow-hidden w-full ${
         isSelected
-          ? 'ring-2 ring-indigo-500 shadow-lg shadow-indigo-500/20'
-          : 'ring-1 ring-transparent hover:ring-slate-300 hover:shadow-md'
+          ? 'ring-2 ring-indigo-600'
+          : 'ring-1 ring-transparent hover:ring-gray-300'
       }`}
+      style={styles}
       onClick={onClick}
     >
       {/* Type badge */}
@@ -110,7 +173,7 @@ function BlockWrapper({
       )}
 
       {/* Block content — pointer-events-none so click goes to wrapper */}
-      <div className="pointer-events-none select-none h-full">{renderBlock()}</div>
+      <div className="pointer-events-none select-none w-full">{renderBlock()}</div>
     </div>
   )
 }
@@ -141,8 +204,7 @@ export default function CanvasPreview({
 }: CanvasPreviewProps) {
 
   return (
-    <div className="h-full overflow-y-auto bg-slate-950 flex flex-col items-center py-8 px-4 relative">
-
+    <div className="h-full w-full overflow-y-auto overflow-x-hidden flex flex-col items-center py-8 px-4 relative">
 
       {/* Dynamic Font Style Injection for the preview */}
       <style>{`
@@ -156,10 +218,10 @@ export default function CanvasPreview({
 
       {/* Mockup Frame / Canvas Area */}
       <div 
-        className={`bg-white shadow-2xl relative overflow-hidden transition-all duration-500 ease-in-out ${
+        className={`bg-white relative shrink-0 overflow-hidden transition-all duration-500 ease-in-out shadow-xl ring-1 ring-black/5 ${
           previewMode === 'mobile' 
-            ? 'w-[375px] min-h-[812px] rounded-[3rem] border-8 border-slate-900 ring-1 ring-white/10 mt-8 mb-16 mx-auto'
-            : 'w-full min-h-full border border-slate-800'
+            ? 'w-[375px] min-h-[812px] border-[14px] border-gray-900 rounded-[3rem] mt-4 mb-16 mx-auto'
+            : 'w-full max-w-[1280px] min-h-[800px] rounded-lg mt-0 mb-16'
         } preview-content`}
         style={{ fontFamily: `"${theme.fontFamily}", sans-serif` }}
         onClick={(e) => {
@@ -169,42 +231,33 @@ export default function CanvasPreview({
       >
         {/* Device specific UI (Notch for mobile, Browser Bar for desktop) */}
         {previewMode === 'mobile' ? (
-          <div className="absolute top-0 inset-x-0 h-6 flex justify-center z-50">
-            <div className="w-32 h-6 bg-slate-900 rounded-b-3xl"></div>
+          <div className="absolute top-0 inset-x-0 h-7 flex justify-center z-50">
+            <div className="w-32 h-7 bg-gray-900 rounded-b-3xl"></div>
           </div>
-        ) : (
-          <div className="bg-slate-100 h-8 flex items-center px-4 gap-2 border-b border-slate-200">
-            <div className="w-3 h-3 rounded-full bg-red-400"></div>
-            <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
-            <div className="w-3 h-3 rounded-full bg-green-400"></div>
-          </div>
-        )}
+        ) : null}
 
         {/* Content Area */}
         <div 
-          className="h-full relative transition-colors duration-300"
-          style={{ backgroundColor: theme.backgroundColor || '#F8FAFC' }}
+          className="flex flex-col w-full min-h-full relative transition-colors duration-300"
+          style={{ backgroundColor: theme.backgroundColor || '#FFFFFF' }}
         >
-          {/* Grid Background for Canvas */}
-          <div className="absolute inset-0 pointer-events-none opacity-[0.03]" 
-               style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
 
           {blocks.length === 0 ? (
-            <div className="absolute inset-0 flex flex-col items-center justify-center py-32 text-slate-400">
-              <svg className="w-16 h-16 mb-4 opacity-30" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            <div className="absolute inset-0 flex flex-col items-center justify-center py-32 text-gray-400">
+              <svg className="w-16 h-16 mb-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
-              <p className="text-sm">Tambahkan block dari panel kiri</p>
+              <p className="text-sm font-bold uppercase tracking-widest text-gray-500">Area Kanvas Kosong</p>
             </div>
           ) : (
             blocks.map((block, index) => {
-              const pos = block.position as Record<string, any> | null
+              const pos = block.position as Record<string, unknown> | null
               const position = {
-                x: pos?.x ?? 0,
-                y: pos?.y ?? index * 500, // Cascade Y coordinate for empty positions
-                width: pos?.width ?? '100%',
-                height: pos?.height ?? 'auto',
-                zIndex: pos?.zIndex ?? index + 1
+                x: (pos?.x as number) ?? 0,
+                y: (pos?.y as number) ?? 0,
+                width: (pos?.width as string | number) ?? '100%',
+                height: (pos?.height as string | number) ?? 'auto',
+                zIndex: (pos?.zIndex as number) ?? index + 1
               }
               return (
                 <DraggableWrapper
@@ -213,8 +266,8 @@ export default function CanvasPreview({
                   position={position as BlockPosition}
                   isSelected={selectedId === block.id}
                   onSelect={onSelect}
-                  onDragStop={(id, x, y) => onPositionChange?.(id, { x, y })}
-                  onResizeStop={(id, width, height, x, y) => onPositionChange?.(id, { width, height, x, y })}
+                  onDragStop={() => {}} // Disabled
+                  onResizeStop={() => {}} // Disabled
                 >
                   <BlockWrapper
                     block={block}

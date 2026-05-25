@@ -31,6 +31,20 @@ export function ContactSettings({
 
   return (
     <div className="space-y-4">
+      <Field label="Tampilan / Layout">
+        <select
+          className="settings-input"
+          value={String(content.layout ?? 'split')}
+          onChange={(e) => {
+            const updated = update('layout', e.target.value)
+            onChange(updated)
+            save(updated)
+          }}
+        >
+          <option value="split">Terbagi (Kiri-Kanan)</option>
+          <option value="stacked">Bertumpuk (Tengah)</option>
+        </select>
+      </Field>
       <Field label="Judul Seksi">
         <input className="settings-input" defaultValue={String(content.title ?? '')} placeholder="Hubungi Kami"
           onBlur={(e) => save(update('title', e.target.value))} />

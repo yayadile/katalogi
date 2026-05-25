@@ -105,8 +105,8 @@ export function ThemeSettings({
               onClick={() => save(update('buttonStyle', style))}
               className={`flex-1 py-2 px-3 text-xs font-semibold border rounded-md transition-colors ${
                 (theme.buttonStyle || 'rounded') === style
-                  ? 'bg-indigo-500 border-indigo-500 text-white'
-                  : 'bg-transparent border-slate-700 text-slate-400 hover:border-slate-500'
+                  ? 'bg-indigo-600 border-indigo-600 text-white'
+                  : 'bg-transparent border-gray-300 text-gray-500 hover:border-gray-400'
               }`}
             >
               {style.charAt(0).toUpperCase() + style.slice(1)}

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import BlockNavigator, { type EditorBlock, type BlockPosition } from '@/components/editor/BlockNavigator'
 import CanvasPreview from '@/components/editor/CanvasPreview'
 import BlockSettingsPanel from '@/components/editor/BlockSettingsPanel'
+import ElementsPanel from '@/components/editor/ElementsPanel'
 import { publishWebsite } from '@/lib/actions/website'
 import EditorGuide from '@/components/editor/EditorGuide'
 import SaveStatusIndicator, { type SaveStatus } from '@/components/editor/SaveStatusIndicator'
@@ -79,6 +80,11 @@ export default function EditorClient({
     setBlocks(updated)
   }, [])
 
+  const handleBlockAdded = useCallback((block: EditorBlock) => {
+    setBlocks((prev) => [...prev, block])
+    setSelectedId(block.id)
+  }, [])
+
   const handleBlockContentChange = useCallback((blockId: string, content: Record<string, unknown>) => {
     setBlocks((prev) =>
       prev.map((b) => (b.id === blockId ? { ...b, content } : b))
@@ -110,93 +116,80 @@ export default function EditorClient({
   }, [isPublished, websiteId, userId])
 
   return (
-    <div className="flex flex-col h-screen bg-slate-950 overflow-hidden">
-      {/* ──────────────── Top Bar ──────────────── */}
-      <header className="flex items-center justify-between px-4 py-3 bg-slate-900 border-b border-white/5 shrink-0 z-30">
+    <div className="flex flex-col h-screen bg-[#f3f4f6] overflow-hidden font-sans text-gray-900">
+      {/* ──────────────── Top Bar (High Density) ──────────────── */}
+      <header className="relative flex items-center justify-between px-3 h-12 bg-white border-b border-gray-200 shrink-0 z-30">
         {/* Left: back + title */}
-        <div className="flex items-center gap-3 min-w-0">
+        <div className="flex items-center gap-3">
           <button
             onClick={() => router.push('/dashboard')}
-            className="text-slate-400 hover:text-white transition-colors shrink-0"
+            className="text-gray-500 hover:text-gray-900 transition-colors shrink-0 p-1.5 rounded hover:bg-gray-100"
             aria-label="Back to dashboard"
           >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
+          <div className="w-px h-4 bg-gray-200 mx-1" />
           <div className="flex items-center gap-2 min-w-0">
-            <div className="w-7 h-7 bg-linear-to-br from-indigo-500 to-violet-600 rounded-lg flex items-center justify-center shrink-0">
-              <span className="text-white font-bold text-sm">K</span>
+            <div className="w-6 h-6 bg-gray-900 rounded flex items-center justify-center shrink-0">
+              <span className="text-white font-bold text-[10px]">K</span>
             </div>
-            <div className="min-w-0">
-              <p className="text-white font-semibold text-sm truncate">{websiteTitle}</p>
-              <p className="text-slate-500 text-xs truncate">/{websiteSlug}</p>
+            <div className="flex items-center gap-1.5 min-w-0">
+              <p className="font-semibold text-[13px] truncate">{websiteTitle}</p>
+              <span className="text-gray-400 text-[11px]">/</span>
+              <p className="text-gray-500 text-[11px] truncate">{websiteSlug}</p>
             </div>
           </div>
         </div>
 
+        {/* Center: Device Toggles (Absolute Center) */}
+        <div className="absolute left-1/2 -translate-x-1/2 flex items-center bg-gray-100/80 rounded-md p-0.5 border border-gray-200">
+          <button
+            onClick={() => setPreviewMode('desktop')}
+            className={`p-1.5 rounded transition-colors ${previewMode === 'desktop' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}
+            title="Desktop"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+          </button>
+          <button
+            onClick={() => setPreviewMode('mobile')}
+            className={`p-1.5 rounded transition-colors ${previewMode === 'mobile' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}
+            title="Mobile"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+            </svg>
+          </button>
+        </div>
+
         {/* Right: actions */}
-        <div className="flex items-center gap-2 shrink-0">
-          
-          {/* Device Toggles (Center-ish, moved to right for simplicity or keep in right group) */}
-          <div className="flex items-center bg-slate-950 rounded-lg p-1 mr-4 border border-white/5">
-            <button
-              onClick={() => setPreviewMode('desktop')}
-              className={`p-1.5 rounded-md transition-colors ${previewMode === 'desktop' ? 'bg-slate-800 text-white' : 'text-slate-500 hover:text-slate-300'}`}
-              title="Desktop"
-            >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-              </svg>
-            </button>
-            <button
-              onClick={() => setPreviewMode('mobile')}
-              className={`p-1.5 rounded-md transition-colors ${previewMode === 'mobile' ? 'bg-slate-800 text-white' : 'text-slate-500 hover:text-slate-300'}`}
-              title="Mobile"
-            >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
-              </svg>
-            </button>
+        <div className="flex items-center gap-3 shrink-0">
+          {/* Save status indicator */}
+          <div className="scale-90 origin-right">
+            <SaveStatusIndicator status={saveStatus} />
           </div>
 
-          {/* Save status indicator */}
-          <SaveStatusIndicator status={saveStatus} />
+          <div className="w-px h-4 bg-gray-200" />
 
           {/* Published status badge */}
           {isPublished && (
-            <span className="hidden sm:inline-flex items-center gap-1 text-xs text-green-400 bg-green-400/10 border border-green-400/20 rounded-full px-2.5 py-1">
-              <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
+            <span className="hidden sm:inline-flex items-center gap-1.5 text-[11px] font-semibold text-green-600 bg-green-50 border border-green-200 rounded px-2 py-0.5">
+              <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
               Live
             </span>
-          )}
-
-          {/* Guidance */}
-          <EditorGuide />
-
-          {/* Preview link */}
-          {isPublished && (
-            <a
-              href={`/${websiteSlug}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-all text-xs font-medium"
-            >
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-              </svg>
-              Preview
-            </a>
           )}
 
           {/* Publish toggle */}
           <button
             onClick={handlePublishToggle}
             disabled={isPending}
-            className={`flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-[11px] font-semibold transition-all border ${
               isPublished
-                ? 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-                : 'bg-linear-to-r from-indigo-500 to-violet-600 text-white hover:from-indigo-600 hover:to-violet-700 shadow-lg shadow-indigo-500/20'
+                ? 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
+                : 'bg-indigo-600 border-indigo-600 text-white hover:bg-indigo-700'
             } disabled:opacity-50`}
           >
             {isPending ? (
@@ -204,14 +197,24 @@ export default function EditorClient({
             ) : isPublished ? (
               'Unpublish'
             ) : (
-              <>
-                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                </svg>
-                Publish
-              </>
+              'Publish'
             )}
           </button>
+
+          {/* Preview link */}
+          {isPublished && (
+            <a
+              href={`/${websiteSlug}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center w-7 h-7 rounded border border-gray-200 text-gray-500 hover:text-gray-900 hover:bg-gray-50 transition-colors"
+              title="Lihat Website"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+            </a>
+          )}
         </div>
       </header>
 
@@ -219,32 +222,32 @@ export default function EditorClient({
       <div className="flex flex-1 overflow-hidden">
         
         {/* Left Toolbar (Thin Navigation) */}
-        <nav className="w-14 shrink-0 bg-slate-950 border-r border-white/5 flex flex-col items-center py-4 gap-4 z-20">
+        <nav className="w-12 shrink-0 bg-white border-r border-gray-200 flex flex-col items-center py-3 gap-2 z-20">
           <button 
             onClick={() => setLeftPanel('elements')}
-            className={`p-2.5 rounded-xl transition-all ${leftPanel === 'elements' ? 'bg-indigo-500 text-white' : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'}`}
+            className={`relative p-2 rounded transition-colors ${leftPanel === 'elements' ? 'text-gray-900 bg-gray-100' : 'text-gray-400 hover:text-gray-800'}`}
             title="Add Elements"
           >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
           </button>
           <button 
             onClick={() => setLeftPanel('layers')}
-            className={`p-2.5 rounded-xl transition-all ${leftPanel === 'layers' ? 'bg-slate-800 text-white' : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'}`}
-            title="Layers"
+            className={`relative p-2 rounded transition-colors ${leftPanel === 'layers' ? 'text-gray-900 bg-gray-100' : 'text-gray-400 hover:text-gray-800'}`}
+            title="Lapisan"
           >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
             </svg>
           </button>
           <div className="mt-auto">
             <button 
               onClick={() => setLeftPanel('settings')}
-              className={`p-2.5 rounded-xl transition-all ${leftPanel === 'settings' ? 'bg-slate-800 text-white' : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'}`}
+              className={`relative p-2 rounded transition-colors ${leftPanel === 'settings' ? 'text-gray-900 bg-gray-100' : 'text-gray-400 hover:text-gray-800'}`}
               title="Site Settings"
             >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
@@ -253,8 +256,8 @@ export default function EditorClient({
         </nav>
 
         {/* Secondary Left Panel: Dynamic Content (240px) */}
-        <aside className="w-60 shrink-0 bg-slate-900 border-r border-white/5 flex flex-col overflow-hidden relative">
-          <div className="flex-1 overflow-y-auto p-3">
+        <aside className="w-[240px] shrink-0 bg-white border-r border-gray-200 flex flex-col overflow-hidden relative">
+          <div className="flex-1 overflow-y-auto">
             {leftPanel === 'layers' && (
               <BlockNavigator
                 websiteId={websiteId}
@@ -265,15 +268,15 @@ export default function EditorClient({
               />
             )}
             {leftPanel === 'elements' && (
-              <div className="p-2 text-slate-400 text-sm">
-                <h3 className="font-semibold text-white mb-4">Add Elements</h3>
-                {/* We will replace this with ElementsPanel component */}
-                <p>Fitur Elements belum diimplementasi (akan ditambahkan di langkah selanjutnya).</p>
-              </div>
+              <ElementsPanel 
+                websiteId={websiteId}
+                currentCount={blocks.length}
+                onBlockAdded={handleBlockAdded}
+              />
             )}
             {leftPanel === 'settings' && (
-              <div className="p-2 text-slate-400 text-sm">
-                <h3 className="font-semibold text-white mb-4">Site Settings</h3>
+              <div className="p-4 text-gray-500 text-xs">
+                <h3 className="font-semibold text-gray-900 mb-2">Site Settings</h3>
                 <p>Pengaturan global website Anda.</p>
               </div>
             )}
@@ -281,20 +284,22 @@ export default function EditorClient({
         </aside>
 
         {/* Center Panel: Canvas Preview */}
-        <main className="flex-1 overflow-hidden bg-slate-950">
-          <CanvasPreview
-            blocks={blocks}
-            selectedId={selectedId}
-            onSelect={setSelectedId}
-            onPositionChange={handleBlockPositionChange}
-            theme={theme}
-            previewMode={previewMode}
-          />
+        <main className="flex-1 overflow-hidden relative grid-overlay flex flex-col">
+          <div className="flex-1 w-full p-4 md:p-8 overflow-y-auto overflow-x-hidden flex justify-center">
+            <CanvasPreview
+              blocks={blocks}
+              selectedId={selectedId}
+              onSelect={setSelectedId}
+              onPositionChange={handleBlockPositionChange}
+              theme={theme}
+              previewMode={previewMode}
+            />
+          </div>
         </main>
 
-        {/* Right Panel: Settings (280px) */}
-        <aside className="w-70 shrink-0 bg-slate-900 border-l border-white/5 flex flex-col overflow-hidden">
-          <div className="flex-1 overflow-y-auto p-4">
+        {/* Right Panel: Settings (260px) */}
+        <aside className="w-[260px] shrink-0 bg-white border-l border-gray-200 flex flex-col overflow-hidden">
+          <div className="flex-1 overflow-y-auto">
             <BlockSettingsPanel
               selectedBlock={selectedBlock}
               websiteId={websiteId}

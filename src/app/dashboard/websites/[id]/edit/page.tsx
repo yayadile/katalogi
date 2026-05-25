@@ -10,7 +10,9 @@ type Props = {
 
 export async function generateMetadata({ params }: Props) {
   const { id } = await params
+  console.log("generateMetadata executing for id:", id)
   const website = await prisma.website.findUnique({ where: { id }, select: { title: true } })
+  console.log("generateMetadata found website:", !!website)
   return { title: website ? `Edit: ${website.title} — Katalogi` : 'Editor — Katalogi' }
 }
 
@@ -18,10 +20,14 @@ export default async function EditPage({ params }: Props) {
   const session = await requireAuth()
   const { id } = await params
 
+  console.log("EditPage executing for id:", id)
+
   const website = await prisma.website.findUnique({
     where: { id },
     include: { blocks: { orderBy: { sortOrder: 'asc' } } },
   })
+  
+  console.log("Website found:", !!website)
 
   if (!website) notFound()
   if (website.userId !== session.userId) redirect('/dashboard')

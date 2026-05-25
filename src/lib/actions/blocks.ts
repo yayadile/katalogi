@@ -3,29 +3,44 @@
 import { prisma } from '@/lib/prisma'
 import { type ActionResult } from '@/lib/validations'
 import { revalidatePath } from 'next/cache'
-import type { PageBlock, BlockType } from '@prisma/client'
+import type { PageBlock, BlockType, Prisma } from '@prisma/client'
 
 // ─── Add Page Block ───────────────────────────────────────────────────────────
 
-const defaultContent: Record<BlockType, object> = {
+const defaultContent: Record<string, Record<string, unknown>> = {
   HERO: { headline: 'Judul Baru', subtext: 'Deskripsi singkat', ctaText: 'Mulai', bgImage: '' },
   CATALOG: { title: 'Produk', items: [] },
   CONTACT: { title: 'Hubungi Kami', email: '', whatsapp: '', address: '' },
   TEXT: { text: '', html: '<p>Tulis konten Anda di sini</p>' },
   GALLERY: { title: 'Galeri', images: [] },
+  // Structure
+  DIV: { style: {} },
+  CMS: { collectionId: '' },
+  COLUMN: { columns: 2, gap: 4 },
+  GRID: { columns: 3, gap: 4 },
+  LINK_BLOCK: { url: '#', target: '_self' },
+  LIST: { items: ['Item 1', 'Item 2', 'Item 3'] },
+  // Typography
+  HEADING: { text: 'Headline Baru', level: 1 },
+  PARAGRAPH: { text: 'Ini adalah paragraf baru. Anda dapat mengubah teks ini sesuai kebutuhan.' },
+  QUOTE: { text: 'Kutipan inspiratif di sini.', author: 'Nama Penulis' },
+  BUTTON: { text: 'Klik Disini', url: '#', target: '_self', variant: 'solid' },
+  // Media
+  VIDEO: { url: '', platform: 'youtube' },
 }
 
 export async function addPageBlock(
   websiteId: string,
   type: BlockType,
-  sortOrder: number
+  sortOrder: number,
+  initialContent?: Record<string, unknown>
 ): Promise<ActionResult<PageBlock>> {
   try {
     const block = await prisma.pageBlock.create({
       data: {
         websiteId,
         type,
-        content: defaultContent[type],
+        content: (initialContent || defaultContent[type]) as Prisma.InputJsonObject,
         sortOrder,
       },
     })
@@ -45,9 +60,9 @@ export async function updatePageBlock(
   positionJSON?: Record<string, unknown>
 ): Promise<ActionResult<PageBlock>> {
   try {
-    const dataToUpdate: { content: Record<string, unknown>; position?: Record<string, unknown> } = { content: contentJSON }
+    const dataToUpdate: Prisma.PageBlockUpdateInput = { content: contentJSON as Prisma.InputJsonObject }
     if (positionJSON) {
-      dataToUpdate.position = positionJSON
+      dataToUpdate.position = positionJSON as Prisma.InputJsonObject
     }
     const block = await prisma.pageBlock.update({
       where: { id: blockId },

@@ -1,6 +1,7 @@
 generator client {
   provider = "prisma-client-js"
   previewFeatures = ["driverAdapters"]
+  
 }
 
 datasource db {
@@ -37,6 +38,20 @@ enum BlockType {
   CONTACT
   TEXT
   GALLERY
+  // Structure
+  DIV
+  CMS
+  COLUMN
+  GRID
+  LINK_BLOCK
+  LIST
+  // Typography
+  HEADING
+  PARAGRAPH
+  QUOTE
+  BUTTON
+  // Media
+  VIDEO
 }
 
 model PageBlock {

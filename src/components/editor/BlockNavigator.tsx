@@ -29,13 +29,13 @@ export type BlockPosition = {
 
 export type EditorBlock = {
   id: string
-  type: 'HERO' | 'CATALOG' | 'CONTACT' | 'TEXT' | 'GALLERY'
+  type: BlockType
   content: Record<string, unknown>
   sortOrder: number
   position?: BlockPosition
 }
 
-const BLOCK_ICONS: Record<BlockType, React.ReactNode> = {
+const BLOCK_ICONS: Record<string, React.ReactNode> = {
   HERO: (
     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -61,14 +61,36 @@ const BLOCK_ICONS: Record<BlockType, React.ReactNode> = {
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
     </svg>
   ),
+  DIV: <div className="w-4 h-4 border border-gray-400 rounded-sm flex items-center justify-center text-[8px]">D</div>,
+  CMS: <div className="w-4 h-4 bg-indigo-200 rounded-sm" />,
+  COLUMN: <div className="w-4 h-4 border-l border-r border-gray-400" />,
+  GRID: <div className="w-4 h-4 grid grid-cols-2 gap-[2px] p-[2px] border border-gray-400"><div className="bg-gray-400"/><div className="bg-gray-400"/><div className="bg-gray-400"/><div className="bg-gray-400"/></div>,
+  LINK_BLOCK: <div className="w-4 h-4 flex items-center justify-center text-[10px] font-bold">L</div>,
+  LIST: <div className="w-4 h-4 flex flex-col justify-center gap-[2px]"><div className="w-full h-[2px] bg-gray-400"/><div className="w-3/4 h-[2px] bg-gray-400"/></div>,
+  HEADING: <div className="w-4 h-4 flex items-center justify-center font-bold text-xs">H</div>,
+  PARAGRAPH: <div className="w-4 h-4 flex items-center justify-center font-serif text-xs">P</div>,
+  QUOTE: <div className="w-4 h-4 flex items-center justify-center font-bold text-xs">&quot;</div>,
+  BUTTON: <div className="w-4 h-4 flex items-center justify-center bg-indigo-100 text-indigo-500 rounded-sm text-[8px]">B</div>,
+  VIDEO: <div className="w-4 h-4 flex items-center justify-center bg-red-100 text-red-500 rounded-sm text-[8px]">▶</div>,
 }
 
-const BLOCK_LABELS: Record<BlockType, string> = {
+const BLOCK_LABELS: Record<string, string> = {
   HERO: 'Hero',
   CATALOG: 'Katalog',
   CONTACT: 'Kontak',
   TEXT: 'Teks',
   GALLERY: 'Galeri',
+  DIV: 'Div Block',
+  CMS: 'CMS',
+  COLUMN: 'Kolom',
+  GRID: 'Grid',
+  LINK_BLOCK: 'Link Block',
+  LIST: 'List',
+  HEADING: 'Judul (Heading)',
+  PARAGRAPH: 'Paragraf',
+  QUOTE: 'Kutipan',
+  BUTTON: 'Tombol',
+  VIDEO: 'Video',
 }
 
 // ─── Sortable Item ─────────────────────────────────────────────────────────────
@@ -97,114 +119,50 @@ function SortableBlockItem({
     <div
       ref={setNodeRef}
       style={style}
-      className={`flex items-center gap-2 px-3 py-2.5 rounded-xl cursor-pointer group transition-all ${
+      className={`flex items-center gap-2 px-2 py-1.5 cursor-pointer group transition-all text-xs border-b border-gray-100 last:border-0 ${
         isSelected
-          ? 'bg-indigo-500/15 border border-indigo-500/40 text-indigo-300'
-          : 'hover:bg-white/5 border border-transparent text-slate-400'
+          ? 'bg-indigo-50/50 text-indigo-700'
+          : 'hover:bg-gray-50 text-gray-600'
       }`}
       onClick={onSelect}
     >
-      {/* Drag Handle */}
-      <button
-        {...attributes}
-        {...listeners}
-        className="cursor-grab active:cursor-grabbing opacity-30 group-hover:opacity-60 hover:opacity-100! transition-opacity shrink-0"
-        onClick={(e) => e.stopPropagation()}
-        aria-label="Drag to reorder"
-      >
-        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8h16M4 16h16" />
-        </svg>
-      </button>
+      <div className="flex items-center gap-2 flex-1 min-w-0">
+        <button
+          {...attributes}
+          {...listeners}
+          className="cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600"
+          onClick={(e) => e.stopPropagation()}
+          aria-label="Drag to reorder"
+        >
+          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8h16M4 16h16" />
+          </svg>
+        </button>
 
-      {/* Icon */}
-      <span className={isSelected ? 'text-indigo-400' : 'text-slate-500'}>
-        {BLOCK_ICONS[block.type]}
-      </span>
+        <span className={`truncate ${isSelected ? 'font-semibold text-indigo-900' : 'text-gray-700'}`}>
+          {BLOCK_LABELS[block.type as string] || block.type}
+        </span>
+      </div>
 
-      {/* Label */}
-      <span className="text-sm font-medium flex-1 min-w-0 truncate">
-        {BLOCK_LABELS[block.type]}
-      </span>
-
-      {/* Delete */}
-      <button
-        onClick={(e) => {
-          e.stopPropagation()
-          onDelete()
-        }}
-        className="opacity-0 group-hover:opacity-60 hover:opacity-100! hover:text-red-400 transition-all shrink-0"
-        aria-label="Delete block"
-      >
-        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
+      <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity gap-0.5 ml-auto">
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            onDelete()
+          }}
+          className="p-1 rounded text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+          title="Hapus blok"
+        >
+          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
     </div>
   )
 }
 
-// ─── Add Block Menu ────────────────────────────────────────────────────────────
 
-function AddBlockMenu({
-  websiteId,
-  currentCount,
-  onBlockAdded,
-}: {
-  websiteId: string
-  currentCount: number
-  onBlockAdded: (block: EditorBlock) => void
-}) {
-  const [open, setOpen] = useState(false)
-  const [loading, setLoading] = useState<BlockType | null>(null)
-
-  const blockTypes: BlockType[] = ['HERO', 'CATALOG', 'CONTACT', 'TEXT', 'GALLERY']
-
-  const handleAdd = async (type: BlockType) => {
-    setLoading(type)
-    const result = await addPageBlock(websiteId, type, currentCount + 1)
-    setLoading(null)
-    setOpen(false)
-    if (result.success && result.data) {
-      onBlockAdded({
-        id: result.data.id,
-        type: result.data.type,
-        content: result.data.content as Record<string, unknown>,
-        sortOrder: result.data.sortOrder,
-      })
-    }
-  }
-
-  return (
-    <div className="relative">
-      <button
-        onClick={() => setOpen(!open)}
-        className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl border border-dashed border-white/20 text-slate-400 hover:text-slate-200 hover:border-white/40 transition-all text-sm font-medium"
-      >
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-        </svg>
-        Tambah Block
-      </button>
-
-      {open && (
-        <div className="absolute top-full left-0 right-0 mt-1.5 bg-slate-800 border border-white/10 rounded-xl shadow-2xl overflow-hidden z-50">
-          {blockTypes.map((type) => (
-            <button
-              key={type}
-              onClick={() => handleAdd(type)}
-              disabled={!!loading}
-              className="w-full flex items-center gap-3 px-3 py-2.5 text-left text-slate-300 hover:bg-white/5 transition-colors text-sm disabled:opacity-50"
-            >
-              <span className="text-slate-400">{BLOCK_ICONS[type]}</span>
-              {loading === type ? 'Menambahkan...' : BLOCK_LABELS[type]}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  )
-}
 
 // ─── Block Navigator ───────────────────────────────────────────────────────────
 
@@ -257,21 +215,13 @@ export default function BlockNavigator({
     [blocks, onBlocksChange]
   )
 
-  const handleBlockAdded = useCallback(
-    (block: EditorBlock) => {
-      const updated = [...blocks, block]
-      setBlocks(updated)
-      onBlocksChange(updated)
-      onSelect(block.id)
-    },
-    [blocks, onBlocksChange, onSelect]
-  )
+
 
   return (
-    <div className="flex flex-col gap-1 h-full">
-      <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-1 mb-2">
-        Blocks ({blocks.length})
-      </p>
+    <div className="flex flex-col h-full">
+      <div className="flex items-center justify-between mb-2 border-b border-gray-200 px-3 py-2 bg-white">
+        <h2 className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Lapisan (Layers)</h2>
+      </div>
 
       <DndContext
         sensors={sensors}
@@ -279,32 +229,28 @@ export default function BlockNavigator({
         onDragEnd={handleDragEnd}
       >
         <SortableContext items={blocks.map((b) => b.id)} strategy={verticalListSortingStrategy}>
-          <div className="flex flex-col gap-1 flex-1 overflow-y-auto">
-            {blocks.length === 0 && (
-              <p className="text-xs text-slate-600 text-center py-8">
-                Belum ada block. Tambahkan block pertama!
-              </p>
+          <div className="px-2 pb-2">
+            {blocks.length === 0 ? (
+              <div className="text-center p-4 border border-dashed border-gray-200 rounded-sm bg-gray-50">
+                <p className="text-[11px] text-gray-400">Belum ada layer.</p>
+              </div>
+            ) : (
+              <div className="flex flex-col bg-white border border-gray-200 rounded-md shadow-sm overflow-hidden">
+                {blocks.map((block) => (
+                  <SortableBlockItem
+                    key={block.id}
+                    block={block}
+                    isSelected={selectedId === block.id}
+                    onSelect={() => onSelect(block.id)}
+                    onDelete={() => handleDelete(block.id)}
+                  />
+                ))}
+              </div>
             )}
-            {blocks.map((block) => (
-              <SortableBlockItem
-                key={block.id}
-                block={block}
-                isSelected={selectedId === block.id}
-                onSelect={() => onSelect(block.id)}
-                onDelete={() => handleDelete(block.id)}
-              />
-            ))}
           </div>
         </SortableContext>
       </DndContext>
 
-      <div className="mt-3 pt-3 border-t border-white/5">
-        <AddBlockMenu
-          websiteId={websiteId}
-          currentCount={blocks.length}
-          onBlockAdded={handleBlockAdded}
-        />
-      </div>
     </div>
   )
 }

@@ -11,6 +11,10 @@ import { CatalogSettings } from './settings/CatalogSettings'
 import { ContactSettings } from './settings/ContactSettings'
 import { TextSettings } from './settings/TextSettings'
 import { ThemeSettings } from './settings/ThemeSettings'
+import { HeadingSettings, ParagraphSettings, QuoteSettings } from './settings/TypographySettings'
+import { VideoSettings, GallerySettings } from './settings/MediaSettings'
+import { ColumnSettings, GridSettings, LinkBlockSettings, ListSettings, DivSettings, CMSSettings, ButtonSettings } from './settings/StructureSettings'
+import { UniversalSettings } from './settings/UniversalSettings'
 
 type BlockSettingsPanelProps = {
   selectedBlock: EditorBlock | null
@@ -34,6 +38,7 @@ export default function BlockSettingsPanel({
   onSaveStatusChange,
 }: BlockSettingsPanelProps) {
   const [activeTab, setActiveTab] = useState<'block' | 'theme'>('block')
+  const [activeBlockTab, setActiveBlockTab] = useState<'style' | 'settings'>('style')
   // Auto-save effect
   useEffect(() => {
     if (!selectedBlock) return
@@ -63,25 +68,25 @@ export default function BlockSettingsPanel({
   }, [selectedBlock, userId, onSaveStatusChange])
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full bg-white">
       {/* Tabs */}
-      <div className="flex border-b border-white/10 mb-4">
+      <div className="flex p-2 gap-1 border-b border-gray-100 bg-gray-50/50">
         <button
           onClick={() => setActiveTab('block')}
-          className={`flex-1 py-2.5 text-xs font-semibold transition-colors ${
+          className={`flex-1 py-1.5 px-2 rounded-sm text-[11px] font-semibold transition-colors ${
             activeTab === 'block'
-              ? 'text-indigo-400 border-b-2 border-indigo-500'
-              : 'text-slate-500 hover:text-slate-400'
+              ? 'bg-white shadow-sm border border-gray-200 text-gray-900'
+              : 'text-gray-500 hover:text-gray-700'
           }`}
         >
-          Block
+          Blok
         </button>
         <button
           onClick={() => setActiveTab('theme')}
-          className={`flex-1 py-2.5 text-xs font-semibold transition-colors ${
+          className={`flex-1 py-1.5 px-2 rounded-sm text-[11px] font-semibold transition-colors ${
             activeTab === 'theme'
-              ? 'text-indigo-400 border-b-2 border-indigo-500'
-              : 'text-slate-500 hover:text-slate-400'
+              ? 'bg-white shadow-sm border border-gray-200 text-gray-900'
+              : 'text-gray-500 hover:text-gray-700'
           }`}
         >
           Tema
@@ -98,79 +103,44 @@ export default function BlockSettingsPanel({
             onSaveStatus={onSaveStatusChange}
           />
         ) : selectedBlock ? (
-          <div className="space-y-6">
-            <div className="mb-4 flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+          <div className="flex flex-col">
+            <div className="flex items-center justify-between border-b border-gray-200 px-3 py-2 bg-white">
+              <span className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
                 {selectedBlock.type}
               </span>
             </div>
 
             {/* Panel Tabs */}
-            <div className="flex items-center gap-4 border-b border-white/5 mb-6 pb-2">
+            <div className="flex items-center gap-3 px-3 py-1.5 border-b border-gray-200 bg-gray-50/30">
               <button 
-                onClick={() => setActiveTab('block')}
-                className={`text-sm font-medium ${activeTab === 'block' ? 'text-white' : 'text-slate-500 hover:text-slate-300'}`}
+                onClick={() => setActiveBlockTab('style')}
+                className={`text-[10px] font-semibold tracking-wider uppercase ${activeBlockTab === 'style' ? 'text-gray-900' : 'text-gray-400 hover:text-gray-600'}`}
               >
-                Style
+                Gaya
               </button>
               <button 
-                onClick={() => setActiveTab('theme')}
-                className={`text-sm font-medium ${activeTab === 'theme' ? 'text-white' : 'text-slate-500 hover:text-slate-300'}`}
+                onClick={() => setActiveBlockTab('settings')}
+                className={`text-[10px] font-semibold tracking-wider uppercase ${activeBlockTab === 'settings' ? 'text-gray-900' : 'text-gray-400 hover:text-gray-600'}`}
               >
-                Settings
+                Properti
               </button>
             </div>
 
-            {activeTab === 'block' && (
-              <div className="space-y-6">
-                {/* Common Position & Size Settings (Layout & Sizing equivalent) */}
-                <section className="bg-slate-800/50 rounded-xl p-4 border border-white/5">
-                  <h3 className="text-white font-semibold text-sm mb-4">
-                    Layout & Sizing
-                  </h3>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="space-y-1.5 flex flex-col">
-                      <label className="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Position X</label>
-                      <input 
-                        type="number"
-                        value={Math.round(selectedBlock.position?.x || 0)}
-                        onChange={(e) => onBlockPositionChange?.(selectedBlock.id, { x: parseInt(e.target.value) || 0 })}
-                        className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                      />
-                    </div>
-                    <div className="space-y-1.5 flex flex-col">
-                      <label className="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Position Y</label>
-                      <input 
-                        type="number"
-                        value={Math.round(selectedBlock.position?.y || 0)}
-                        onChange={(e) => onBlockPositionChange?.(selectedBlock.id, { y: parseInt(e.target.value) || 0 })}
-                        className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                      />
-                    </div>
-                    <div className="space-y-1.5 flex flex-col">
-                      <label className="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Width</label>
-                      <input 
-                        type="text"
-                        value={selectedBlock.position?.width || '100%'}
-                        onChange={(e) => onBlockPositionChange?.(selectedBlock.id, { width: e.target.value })}
-                        className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                      />
-                    </div>
-                    <div className="space-y-1.5 flex flex-col">
-                      <label className="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Height</label>
-                      <input 
-                        type="text"
-                        value={selectedBlock.position?.height || 'auto'}
-                        onChange={(e) => onBlockPositionChange?.(selectedBlock.id, { height: e.target.value })}
-                        className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                      />
-                    </div>
-                  </div>
-                </section>
+            {activeBlockTab === 'style' && (
+              <div className="flex flex-col p-2 space-y-4">
+                <UniversalSettings 
+                  styles={(selectedBlock.content?.styles || {}) as Record<string, string | number>} 
+                  onChange={(updatedStyles) => {
+                    onBlockContentChange(selectedBlock.id, {
+                      ...selectedBlock.content,
+                      styles: updatedStyles
+                    })
+                  }} 
+                />
               </div>
             )}
 
-            {activeTab === 'theme' && (
+            {activeBlockTab === 'settings' && (
               <div className="space-y-6">
                 {(selectedBlock.type as BlockType) === 'HERO' && (
                   <HeroSettings
@@ -204,15 +174,121 @@ export default function BlockSettingsPanel({
                     onSaveStatus={onSaveStatusChange}
                   />
                 )}
+                {(selectedBlock.type as string) === 'HEADING' && (
+                  <HeadingSettings
+                    blockId={selectedBlock.id}
+                    content={selectedBlock.content}
+                    onChange={(c) => onBlockContentChange(selectedBlock.id, c)}
+                    onSaveStatus={onSaveStatusChange}
+                  />
+                )}
+                {(selectedBlock.type as string) === 'PARAGRAPH' && (
+                  <ParagraphSettings
+                    blockId={selectedBlock.id}
+                    content={selectedBlock.content}
+                    onChange={(c) => onBlockContentChange(selectedBlock.id, c)}
+                    onSaveStatus={onSaveStatusChange}
+                  />
+                )}
+                {(selectedBlock.type as string) === 'QUOTE' && (
+                  <QuoteSettings
+                    blockId={selectedBlock.id}
+                    content={selectedBlock.content}
+                    onChange={(c) => onBlockContentChange(selectedBlock.id, c)}
+                    onSaveStatus={onSaveStatusChange}
+                  />
+                )}
+                {(selectedBlock.type as string) === 'VIDEO' && (
+                  <VideoSettings
+                    blockId={selectedBlock.id}
+                    content={selectedBlock.content}
+                    onChange={(c) => onBlockContentChange(selectedBlock.id, c)}
+                    onSaveStatus={onSaveStatusChange}
+                  />
+                )}
+                {(selectedBlock.type as string) === 'GALLERY' && (
+                  <GallerySettings
+                    blockId={selectedBlock.id}
+                    content={selectedBlock.content}
+                    onChange={(c) => onBlockContentChange(selectedBlock.id, c)}
+                    onSaveStatus={onSaveStatusChange}
+                  />
+                )}
+                {(selectedBlock.type as string) === 'COLUMN' && (
+                  <ColumnSettings
+                    blockId={selectedBlock.id}
+                    content={selectedBlock.content}
+                    onChange={(c) => onBlockContentChange(selectedBlock.id, c)}
+                    onSaveStatus={onSaveStatusChange}
+                  />
+                )}
+                {(selectedBlock.type as string) === 'GRID' && (
+                  <GridSettings
+                    blockId={selectedBlock.id}
+                    content={selectedBlock.content}
+                    onChange={(c) => onBlockContentChange(selectedBlock.id, c)}
+                    onSaveStatus={onSaveStatusChange}
+                  />
+                )}
+                {(selectedBlock.type as string) === 'DIV' && (
+                  <DivSettings
+                    blockId={selectedBlock.id}
+                    content={selectedBlock.content}
+                    onChange={(c) => onBlockContentChange(selectedBlock.id, c)}
+                    onSaveStatus={onSaveStatusChange}
+                  />
+                )}
+                {(selectedBlock.type as string) === 'CMS' && (
+                  <CMSSettings
+                    blockId={selectedBlock.id}
+                    content={selectedBlock.content}
+                    onChange={(c) => onBlockContentChange(selectedBlock.id, c)}
+                    onSaveStatus={onSaveStatusChange}
+                  />
+                )}
+                {(selectedBlock.type as string) === 'LINK_BLOCK' && (
+                  <LinkBlockSettings
+                    blockId={selectedBlock.id}
+                    content={selectedBlock.content}
+                    onChange={(c) => onBlockContentChange(selectedBlock.id, c)}
+                    onSaveStatus={onSaveStatusChange}
+                  />
+                )}
+                {(selectedBlock.type as string) === 'LIST' && (
+                  <ListSettings
+                    blockId={selectedBlock.id}
+                    content={selectedBlock.content}
+                    onChange={(c) => onBlockContentChange(selectedBlock.id, c)}
+                    onSaveStatus={onSaveStatusChange}
+                  />
+                )}
+                {(selectedBlock.type as string) === 'BUTTON' && (
+                  <ButtonSettings
+                    blockId={selectedBlock.id}
+                    content={selectedBlock.content}
+                    onChange={(c) => onBlockContentChange(selectedBlock.id, c)}
+                    onSaveStatus={onSaveStatusChange}
+                  />
+                )}
+
+                {/* Empty State Fallback */}
+                {['HERO', 'CATALOG', 'CONTACT', 'TEXT', 'HEADING', 'PARAGRAPH', 'QUOTE', 'VIDEO', 'GALLERY', 'COLUMN', 'GRID', 'DIV', 'CMS', 'LINK_BLOCK', 'LIST', 'BUTTON'].indexOf(selectedBlock.type) === -1 && (
+                  <div className="text-center py-10 px-4 text-gray-400">
+                    <svg className="w-8 h-8 mx-auto mb-2 opacity-30" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <p className="text-[11px]">Elemen ini tidak memiliki pengaturan spesifik. Silakan gunakan tab <b>GAYA</b> untuk mengubah tampilannya.</p>
+                  </div>
+                )}
               </div>
             )}
           </div>
         ) : (
-          <div className="text-center py-16 text-slate-600 text-sm">
+          <div className="text-center py-16 text-gray-400 text-sm">
             <svg className="w-10 h-10 mx-auto mb-3 opacity-30" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5" />
             </svg>
-            Klik block di canvas untuk edit
+            Klik blok di kanvas untuk mulai mengedit
           </div>
         )}
       </div>

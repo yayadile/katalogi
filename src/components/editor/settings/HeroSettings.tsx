@@ -18,6 +18,7 @@ export function HeroSettings({
 }) {
   const save = useCallback(async (updated: Record<string, unknown>) => {
     onSaveStatus('saving')
+    
     try {
       await updatePageBlock(blockId, updated)
       onSaveStatus('saved')
@@ -33,6 +34,20 @@ export function HeroSettings({
 
   return (
     <div className="space-y-4">
+      <Field label="Tampilan / Layout">
+        <select
+          className="settings-input"
+          value={String(content.variant ?? 'centered')}
+          onChange={(e) => {
+            update('variant', e.target.value)
+            save({ ...content, variant: e.target.value })
+          }}
+        >
+          <option value="centered">Teks di Tengah (Centered)</option>
+          <option value="split-left">Terbagi (Teks di Kiri)</option>
+          <option value="split-right">Terbagi (Teks di Kanan)</option>
+        </select>
+      </Field>
       <Field label="Judul Utama">
         <input
           className="settings-input"

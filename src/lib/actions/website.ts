@@ -3,13 +3,14 @@
 import { prisma } from '@/lib/prisma'
 import { websiteSchema, themeConfigSchema, type ActionResult } from '@/lib/validations'
 import { revalidatePath } from 'next/cache'
-import type { Website, PageBlock } from '@prisma/client'
+import type { Website, PageBlock, Prisma, BlockType } from '@prisma/client'
+import { FULL_TEMPLATES } from '@/lib/templates'
 
 // ─── Create Website ───────────────────────────────────────────────────────────
 
 export async function createWebsite(
   userId: string,
-  data: { slug: string; title: string; description?: string }
+  data: { slug: string; title: string; description?: string; templateId?: string }
 ): Promise<ActionResult<Website>> {
   const parsed = websiteSchema.safeParse(data)
   if (!parsed.success) {
@@ -22,13 +23,23 @@ export async function createWebsite(
       return { success: false, error: 'Slug sudah digunakan. Pilih slug lain.' }
     }
 
+    const template = FULL_TEMPLATES.find(t => t.id === data.templateId) || FULL_TEMPLATES[0]
+
     const website = await prisma.website.create({
       data: {
         userId,
         slug: parsed.data.slug,
         title: parsed.data.title,
         description: parsed.data.description,
-        themeConfig: { primaryColor: '#8b5cf6', fontFamily: 'Inter', secondaryColor: '#1e293b' },
+        themeConfig: template.themeConfig,
+        blocks: {
+          create: template.blocks.map((block, idx) => ({
+            type: block.type as unknown as BlockType,
+            content: block.content as Prisma.InputJsonObject,
+            sortOrder: idx,
+            position: { x: 0, y: idx * 500, width: '100%', height: 'auto', zIndex: idx + 1 } as Prisma.InputJsonObject
+          }))
+        }
       },
     })
 

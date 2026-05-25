@@ -10,7 +10,10 @@ export type SessionPayload = {
   expiresAt: Date
 }
 
-const secretKey = process.env.SESSION_SECRET ?? 'fallback-secret-please-set-env'
+const secretKey = process.env.SESSION_SECRET
+if (!secretKey) {
+  throw new Error('SESSION_SECRET is not configured in environment variables!')
+}
 const encodedKey = new TextEncoder().encode(secretKey)
 
 export async function encrypt(payload: SessionPayload) {

@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server'
 import { decrypt } from '@/lib/session'
 
 const protectedRoutes = ['/dashboard']
-const publicOnlyRoutes = ['/login', '/register']
+const publicOnlyRoutes = ['/login', '/register', '/verify-otp']
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
@@ -30,14 +30,6 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except:
-     * - api routes
-     * - _next/static (static files)
-     * - _next/image (image optimization)
-     * - favicon.ico
-     * - public folder files
-     */
     '/((?!api|_next/static|_next/image|favicon.ico|.*\\..*$).*)',
   ],
 }

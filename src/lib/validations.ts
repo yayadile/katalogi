@@ -8,7 +8,10 @@ export const userSchema = z.object({
     .string()
     .min(8, { error: 'Password minimal 8 karakter.' })
     .trim(),
-  name: z.string().min(2, { error: 'Nama minimal 2 karakter.' }).optional(),
+  name: z
+    .string()
+    .transform((val) => (val === '' || !val ? undefined : val))
+    .pipe(z.string().min(2, { error: 'Nama minimal 2 karakter.' }).optional()),
 })
 
 export const loginSchema = z.object({

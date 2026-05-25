@@ -9,12 +9,31 @@ datasource db {
 }
 
 model User {
-  id           String    @id @default(cuid())
-  email        String    @unique
-  passwordHash String
-  name         String?
-  createdAt    DateTime  @default(now())
-  websites     Website[]
+  id             String    @id @default(cuid())
+  email          String    @unique
+  passwordHash   String
+  name           String?
+  emailVerified  Boolean   @default(false)
+  createdAt      DateTime  @default(now())
+  websites       Website[]
+}
+
+enum TokenType {
+  EMAIL_VERIFICATION
+  PASSWORD_RESET
+}
+
+model VerificationToken {
+  id        String    @id @default(cuid())
+  email     String
+  token     String
+  type      TokenType @default(EMAIL_VERIFICATION)
+  expiresAt DateTime
+  createdAt DateTime  @default(now())
+  usedAt    DateTime?
+
+  @@index([email])
+  @@index([token])
 }
 
 model Website {

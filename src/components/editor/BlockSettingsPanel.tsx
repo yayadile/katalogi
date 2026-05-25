@@ -70,13 +70,13 @@ export default function BlockSettingsPanel({
   return (
     <div className="flex flex-col h-full bg-white">
       {/* Tabs */}
-      <div className="flex p-2 gap-1 border-b border-gray-100 bg-gray-50/50">
+      <div className="flex border-b border-gray-200 mb-4">
         <button
           onClick={() => setActiveTab('block')}
           className={`flex-1 py-1.5 px-2 rounded-sm text-[11px] font-semibold transition-colors ${
             activeTab === 'block'
-              ? 'bg-white shadow-sm border border-gray-200 text-gray-900'
-              : 'text-gray-500 hover:text-gray-700'
+              ? 'text-indigo-600 border-b-2 border-indigo-600'
+              : 'text-gray-400 hover:text-gray-600'
           }`}
         >
           Blok
@@ -85,8 +85,8 @@ export default function BlockSettingsPanel({
           onClick={() => setActiveTab('theme')}
           className={`flex-1 py-1.5 px-2 rounded-sm text-[11px] font-semibold transition-colors ${
             activeTab === 'theme'
-              ? 'bg-white shadow-sm border border-gray-200 text-gray-900'
-              : 'text-gray-500 hover:text-gray-700'
+              ? 'text-indigo-600 border-b-2 border-indigo-600'
+              : 'text-gray-400 hover:text-gray-600'
           }`}
         >
           Tema
@@ -103,9 +103,9 @@ export default function BlockSettingsPanel({
             onSaveStatus={onSaveStatusChange}
           />
         ) : selectedBlock ? (
-          <div className="flex flex-col">
-            <div className="flex items-center justify-between border-b border-gray-200 px-3 py-2 bg-white">
-              <span className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+          <div>
+            <div className="mb-4">
+              <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">
                 {selectedBlock.type}
               </span>
             </div>

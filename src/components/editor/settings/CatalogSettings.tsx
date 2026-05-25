@@ -101,7 +101,7 @@ export function CatalogSettings({
 
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Produk</span>
+          <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Produk</span>
           <button
             onClick={addItem}
             className="text-xs px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition-colors"

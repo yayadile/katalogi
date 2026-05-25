@@ -13,15 +13,15 @@ export default function SaveStatusIndicator({ status }: SaveStatusIndicatorProps
     <span
       className={`inline-flex items-center gap-1.5 text-xs rounded-full px-2.5 py-1 transition-all duration-300 ${
         status === 'saving'
-          ? 'bg-amber-400/10 text-amber-400 border border-amber-400/20'
+          ? 'bg-amber-50 text-amber-700 border border-amber-200'
           : status === 'saved'
-            ? 'bg-emerald-400/10 text-emerald-400 border border-emerald-400/20'
-            : 'bg-red-400/10 text-red-400 border border-red-400/20'
+            ? 'bg-green-50 text-green-700 border border-green-200'
+            : 'bg-red-50 text-red-700 border border-red-200'
       }`}
     >
       {status === 'saving' && (
         <>
-          <span className="w-1.5 h-1.5 bg-amber-400 rounded-full animate-pulse" />
+          <span className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse" />
           Menyimpan...
         </>
       )}

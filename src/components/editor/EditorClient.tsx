@@ -85,6 +85,8 @@ export default function EditorClient({
     setSelectedId(block.id)
   }, [])
 
+
+
   const handleBlockContentChange = useCallback((blockId: string, content: Record<string, unknown>) => {
     setBlocks((prev) =>
       prev.map((b) => (b.id === blockId ? { ...b, content } : b))
@@ -116,14 +118,14 @@ export default function EditorClient({
   }, [isPublished, websiteId, userId])
 
   return (
-    <div className="flex flex-col h-screen bg-[#f3f4f6] overflow-hidden font-sans text-gray-900">
-      {/* ──────────────── Top Bar (High Density) ──────────────── */}
-      <header className="relative flex items-center justify-between px-3 h-12 bg-white border-b border-gray-200 shrink-0 z-30">
+    <div className="flex flex-col h-screen bg-white overflow-hidden">
+      {/* ──────────────── Top Bar ──────────────── */}
+      <header className="flex items-center justify-between px-4 py-3 bg-white border-b border-gray-200 shrink-0 z-30">
         {/* Left: back + title */}
         <div className="flex items-center gap-3">
           <button
             onClick={() => router.push('/dashboard')}
-            className="text-gray-500 hover:text-gray-900 transition-colors shrink-0 p-1.5 rounded hover:bg-gray-100"
+            className="text-gray-400 hover:text-gray-600 transition-colors shrink-0"
             aria-label="Back to dashboard"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -132,13 +134,12 @@ export default function EditorClient({
           </button>
           <div className="w-px h-4 bg-gray-200 mx-1" />
           <div className="flex items-center gap-2 min-w-0">
-            <div className="w-6 h-6 bg-gray-900 rounded flex items-center justify-center shrink-0">
-              <span className="text-white font-bold text-[10px]">K</span>
+            <div className="w-7 h-7 bg-indigo-600 rounded-lg flex items-center justify-center shrink-0">
+              <span className="text-white font-bold text-sm">K</span>
             </div>
-            <div className="flex items-center gap-1.5 min-w-0">
-              <p className="font-semibold text-[13px] truncate">{websiteTitle}</p>
-              <span className="text-gray-400 text-[11px]">/</span>
-              <p className="text-gray-500 text-[11px] truncate">{websiteSlug}</p>
+            <div className="min-w-0">
+              <p className="text-gray-900 font-semibold text-sm truncate">{websiteTitle}</p>
+              <p className="text-gray-400 text-xs truncate">/{websiteSlug}</p>
             </div>
           </div>
         </div>
@@ -176,10 +177,28 @@ export default function EditorClient({
 
           {/* Published status badge */}
           {isPublished && (
-            <span className="hidden sm:inline-flex items-center gap-1.5 text-[11px] font-semibold text-green-600 bg-green-50 border border-green-200 rounded px-2 py-0.5">
+            <span className="hidden sm:inline-flex items-center gap-1 text-xs text-green-600 bg-green-50 border border-green-200 rounded-full px-2.5 py-1">
               <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
               Live
             </span>
+          )}
+
+          {/* Guidance */}
+          <EditorGuide />
+
+          {/* Preview link */}
+          {isPublished && (
+            <a
+              href={`/${websiteSlug}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-all text-xs font-medium"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+              Preview
+            </a>
           )}
 
           {/* Publish toggle */}
@@ -188,8 +207,8 @@ export default function EditorClient({
             disabled={isPending}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-[11px] font-semibold transition-all border ${
               isPublished
-                ? 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
-                : 'bg-indigo-600 border-indigo-600 text-white hover:bg-indigo-700'
+                ? 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg shadow-indigo-500/20'
             } disabled:opacity-50`}
           >
             {isPending ? (
@@ -220,7 +239,6 @@ export default function EditorClient({
 
       {/* ──────────────── 3-Panel Layout ──────────────── */}
       <div className="flex flex-1 overflow-hidden">
-        
         {/* Left Toolbar (Thin Navigation) */}
         <nav className="w-12 shrink-0 bg-white border-r border-gray-200 flex flex-col items-center py-3 gap-2 z-20">
           <button 
@@ -259,13 +277,16 @@ export default function EditorClient({
         <aside className="w-[240px] shrink-0 bg-white border-r border-gray-200 flex flex-col overflow-hidden relative">
           <div className="flex-1 overflow-y-auto">
             {leftPanel === 'layers' && (
-              <BlockNavigator
-                websiteId={websiteId}
-                initialBlocks={blocks}
-                selectedId={selectedId}
-                onSelect={setSelectedId}
-                onBlocksChange={handleBlocksChange}
-              />
+              <div className="p-3 h-full">
+                <BlockNavigator
+                  websiteId={websiteId}
+                  initialBlocks={blocks}
+                  selectedId={selectedId}
+                  onSelect={setSelectedId}
+                  onBlocksChange={handleBlocksChange}
+                  onBlockAdded={handleBlockAdded}
+                />
+              </div>
             )}
             {leftPanel === 'elements' && (
               <ElementsPanel 
@@ -297,9 +318,9 @@ export default function EditorClient({
           </div>
         </main>
 
-        {/* Right Panel: Settings (260px) */}
-        <aside className="w-[260px] shrink-0 bg-white border-l border-gray-200 flex flex-col overflow-hidden">
-          <div className="flex-1 overflow-y-auto">
+        {/* Right Panel: Settings (280px) */}
+        <aside className="w-70 shrink-0 bg-gray-50 border-l border-gray-200 flex flex-col overflow-hidden">
+          <div className="flex-1 overflow-y-auto p-4">
             <BlockSettingsPanel
               selectedBlock={selectedBlock}
               websiteId={websiteId}

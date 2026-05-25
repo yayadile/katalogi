@@ -9,27 +9,39 @@ export default function LoginPage() {
   const [state, action, pending] = useActionState(login, undefined)
 
   return (
-    <div className="bg-slate-900/60 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] p-10 md:p-12 shadow-2xl animate-in fade-in zoom-in-95 duration-500">
+    <div className="relative bg-white border border-gray-200 rounded-[2.5rem] p-10 md:p-12 shadow-lg animate-fade-up overflow-hidden">
+      {/* Decorative ring behind card */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full border border-indigo-600/10 animate-ring-pulse pointer-events-none" />
+
+      {/* Decorative dot pattern inside card */}
+      <div
+        className="absolute inset-0 pointer-events-none opacity-[0.03]"
+        style={{
+          backgroundImage: `radial-gradient(circle, #4f46e5 1px, transparent 1px)`,
+          backgroundSize: '24px 24px',
+        }}
+      />
+
       {/* Logo */}
-      <div className="text-center mb-10">
+      <div className="text-center mb-10 relative z-10 animate-fade-up delay-100">
         <Link href="/" className="inline-flex items-center gap-3 mb-6 group">
-          <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:scale-110 transition-transform">
+          <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:bg-indigo-700 transition-colors">
             <Sparkles className="w-7 h-7 text-white" />
           </div>
-          <span className="text-white font-bold text-3xl tracking-tight">Katalogi<span className="text-indigo-400">.</span></span>
+          <span className="text-gray-900 font-bold text-3xl tracking-tight">Katalogi<span className="text-indigo-600">.</span></span>
         </Link>
-        <p className="text-slate-400 text-lg font-medium">Bikin katalog online sekejap.</p>
+        <p className="text-gray-500 text-lg font-medium">Bikin katalog online sekejap.</p>
       </div>
 
-      <form action={action} className="space-y-5">
+      <form action={action} className="space-y-5 relative z-10">
         {state?.message && (
-          <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm px-5 py-4 rounded-2xl animate-shake">
+          <div className="bg-red-50 border border-red-200 text-red-600 text-sm px-5 py-4 rounded-2xl animate-fade-in">
             {state.message}
           </div>
         )}
 
-        <div className="space-y-1.5">
-          <label htmlFor="email" className="block text-slate-300 text-xs font-bold uppercase tracking-widest ml-1">
+        <div className="space-y-1.5 animate-fade-up delay-200">
+          <label htmlFor="email" className="block text-gray-700 text-xs font-bold uppercase tracking-widest ml-1">
             Email
           </label>
           <div className="relative group">
@@ -40,18 +52,18 @@ export default function LoginPage() {
               autoComplete="email"
               required
               placeholder="nama@email.com"
-              className="w-full bg-white/5 border border-white/10 text-white placeholder-slate-600 rounded-2xl px-5 py-4 pl-12 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all"
+              className="w-full bg-gray-50 border border-gray-200 text-gray-900 placeholder-gray-400 rounded-2xl px-5 py-4 pl-12 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all"
             />
-            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-600 group-focus-within:text-indigo-400 transition-colors" />
+            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-indigo-500 transition-colors" />
           </div>
           {state?.errors?.email && (
-            <p className="text-red-400 text-xs ml-1 mt-1">{state.errors.email[0]}</p>
+            <p className="text-red-500 text-xs ml-1 mt-1">{state.errors.email[0]}</p>
           )}
         </div>
 
-        <div className="space-y-1.5">
+        <div className="space-y-1.5 animate-fade-up delay-300">
           <div className="flex items-center justify-between ml-1">
-            <label htmlFor="password" className="block text-slate-300 text-xs font-bold uppercase tracking-widest">
+            <label htmlFor="password" className="block text-gray-700 text-xs font-bold uppercase tracking-widest">
               Password
             </label>
           </div>
@@ -63,19 +75,19 @@ export default function LoginPage() {
               autoComplete="current-password"
               required
               placeholder="••••••••"
-              className="w-full bg-white/5 border border-white/10 text-white placeholder-slate-600 rounded-2xl px-5 py-4 pl-12 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all"
+              className="w-full bg-gray-50 border border-gray-200 text-gray-900 placeholder-gray-400 rounded-2xl px-5 py-4 pl-12 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all"
             />
-            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-600 group-focus-within:text-indigo-400 transition-colors" />
+            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-indigo-500 transition-colors" />
           </div>
           {state?.errors?.password && (
-            <p className="text-red-400 text-xs ml-1 mt-1">{state.errors.password[0]}</p>
+            <p className="text-red-500 text-xs ml-1 mt-1">{state.errors.password[0]}</p>
           )}
         </div>
 
         <button
           type="submit"
           disabled={pending}
-          className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold py-4 rounded-2xl transition-all duration-300 hover:shadow-2xl hover:shadow-indigo-500/30 disabled:opacity-60 disabled:cursor-not-allowed text-base mt-2 flex items-center justify-center gap-2 active:scale-95"
+          className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-2xl transition-all duration-200 hover:shadow-lg hover:shadow-indigo-500/25 disabled:opacity-60 disabled:cursor-not-allowed text-base mt-2 flex items-center justify-center gap-2 active:scale-95 animate-fade-up delay-400"
         >
           {pending ? (
             <Loader2 className="w-5 h-5 animate-spin" />
@@ -85,9 +97,9 @@ export default function LoginPage() {
         </button>
       </form>
 
-      <p className="text-center text-slate-500 text-sm mt-10 font-medium">
+      <p className="text-center text-gray-500 text-sm mt-10 font-medium animate-fade-up delay-500">
         Belum punya akun?{' '}
-        <Link href="/register" className="text-indigo-400 hover:text-indigo-300 font-bold transition">
+        <Link href="/register" className="text-indigo-600 hover:text-indigo-700 font-bold transition">
           Daftar sekarang
         </Link>
       </p>

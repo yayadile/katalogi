@@ -121,8 +121,8 @@ function SortableBlockItem({
       style={style}
       className={`flex items-center gap-2 px-2 py-1.5 cursor-pointer group transition-all text-xs border-b border-gray-100 last:border-0 ${
         isSelected
-          ? 'bg-indigo-50/50 text-indigo-700'
-          : 'hover:bg-gray-50 text-gray-600'
+          ? 'bg-indigo-50 border border-indigo-200 text-indigo-700'
+          : 'hover:bg-gray-100 border border-transparent text-gray-500'
       }`}
       onClick={onSelect}
     >
@@ -139,25 +139,92 @@ function SortableBlockItem({
           </svg>
         </button>
 
-        <span className={`truncate ${isSelected ? 'font-semibold text-indigo-900' : 'text-gray-700'}`}>
-          {BLOCK_LABELS[block.type as string] || block.type}
-        </span>
-      </div>
+      {/* Icon */}
+      <span className={isSelected ? 'text-indigo-600' : 'text-gray-400'}>
+        {BLOCK_ICONS[block.type]}
+      </span>
 
-      <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity gap-0.5 ml-auto">
-        <button
-          onClick={(e) => {
-            e.stopPropagation()
-            onDelete()
-          }}
-          className="p-1 rounded text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
-          title="Hapus blok"
-        >
-          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
+      {/* Label */}
+      <span className="text-sm font-medium flex-1 min-w-0 truncate">
+        {BLOCK_LABELS[block.type]}
+      </span>
+
+      {/* Delete */}
+      <button
+        onClick={(e) => {
+          e.stopPropagation()
+          onDelete()
+        }}
+        className="opacity-0 group-hover:opacity-60 hover:!opacity-100 hover:text-red-500 transition-all shrink-0"
+        aria-label="Delete block"
+      >
+        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
       </div>
+    </div>
+  )
+}
+
+// ─── Add Block Menu ────────────────────────────────────────────────────────────
+
+function AddBlockMenu({
+  websiteId,
+  currentCount,
+  onBlockAdded,
+}: {
+  websiteId: string
+  currentCount: number
+  onBlockAdded: (block: EditorBlock) => void
+}) {
+  const [open, setOpen] = useState(false)
+  const [loading, setLoading] = useState<BlockType | null>(null)
+
+  const blockTypes: BlockType[] = ['HERO', 'CATALOG', 'CONTACT', 'TEXT', 'GALLERY']
+
+  const handleAdd = async (type: BlockType) => {
+    setLoading(type)
+    const result = await addPageBlock(websiteId, type, currentCount + 1)
+    setLoading(null)
+    setOpen(false)
+    if (result.success && result.data) {
+      onBlockAdded({
+        id: result.data.id,
+        type: result.data.type,
+        content: result.data.content as Record<string, unknown>,
+        sortOrder: result.data.sortOrder,
+      })
+    }
+  }
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl border border-dashed border-gray-300 text-gray-500 hover:text-gray-700 hover:border-gray-400 transition-all text-sm font-medium"
+      >
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+        </svg>
+        Tambah Block
+      </button>
+
+      {open && (
+        <div className="absolute top-full left-0 right-0 mt-1.5 bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden z-50">
+          {blockTypes.map((type) => (
+            <button
+              key={type}
+              onClick={() => handleAdd(type)}
+              disabled={!!loading}
+              className="w-full flex items-center gap-3 px-3 py-2.5 text-left text-gray-700 hover:bg-gray-50 transition-colors text-sm disabled:opacity-50"
+            >
+              <span className="text-gray-400">{BLOCK_ICONS[type]}</span>
+              {loading === type ? 'Menambahkan...' : BLOCK_LABELS[type]}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
@@ -184,6 +251,13 @@ export default function BlockNavigator({
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
   )
+
+  const handleBlockAdded = useCallback((newBlock: EditorBlock) => {
+    const updated = [...blocks, newBlock]
+    setBlocks(updated)
+    onBlocksChange(updated)
+    onSelect(newBlock.id)
+  }, [blocks, onBlocksChange, onSelect])
 
   const handleDragEnd = useCallback(
     async (event: DragEndEvent) => {
@@ -218,10 +292,10 @@ export default function BlockNavigator({
 
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex items-center justify-between mb-2 border-b border-gray-200 px-3 py-2 bg-white">
-        <h2 className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Lapisan (Layers)</h2>
-      </div>
+    <div className="flex flex-col gap-1 h-full">
+      <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-1 mb-2">
+        Blocks ({blocks.length})
+      </p>
 
       <DndContext
         sensors={sensors}
@@ -229,28 +303,32 @@ export default function BlockNavigator({
         onDragEnd={handleDragEnd}
       >
         <SortableContext items={blocks.map((b) => b.id)} strategy={verticalListSortingStrategy}>
-          <div className="px-2 pb-2">
-            {blocks.length === 0 ? (
-              <div className="text-center p-4 border border-dashed border-gray-200 rounded-sm bg-gray-50">
-                <p className="text-[11px] text-gray-400">Belum ada layer.</p>
-              </div>
-            ) : (
-              <div className="flex flex-col bg-white border border-gray-200 rounded-md shadow-sm overflow-hidden">
-                {blocks.map((block) => (
-                  <SortableBlockItem
-                    key={block.id}
-                    block={block}
-                    isSelected={selectedId === block.id}
-                    onSelect={() => onSelect(block.id)}
-                    onDelete={() => handleDelete(block.id)}
-                  />
-                ))}
-              </div>
+          <div className="flex flex-col gap-1 flex-1 overflow-y-auto">
+            {blocks.length === 0 && (
+              <p className="text-xs text-gray-400 text-center py-8">
+                Belum ada block. Tambahkan block pertama!
+              </p>
             )}
+            {blocks.map((block) => (
+              <SortableBlockItem
+                key={block.id}
+                block={block}
+                isSelected={selectedId === block.id}
+                onSelect={() => onSelect(block.id)}
+                onDelete={() => handleDelete(block.id)}
+              />
+            ))}
           </div>
         </SortableContext>
       </DndContext>
 
+      <div className="mt-3 pt-3 border-t border-gray-200">
+        <AddBlockMenu
+          websiteId={websiteId}
+          currentCount={blocks.length}
+          onBlockAdded={handleBlockAdded}
+        />
+      </div>
     </div>
   )
 }

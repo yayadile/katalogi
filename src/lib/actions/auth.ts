@@ -1,10 +1,11 @@
 'use server'
 
 import { prisma } from '@/lib/prisma'
-import { userSchema, loginSchema, type ActionResult } from '@/lib/validations'
+import { userSchema, loginSchema } from '@/lib/validations'
 import { createSession, deleteSession } from '@/lib/session'
 import { redirect } from 'next/navigation'
 import bcrypt from 'bcryptjs'
+import { sendOTP } from './otp'
 
 // ─── Register ─────────────────────────────────────────────────────────────────
 
@@ -15,6 +16,7 @@ type AuthFormStateData = {
     name?: string[]
   }
   message?: string
+  email?: string
 }
 
 export type AuthFormState = AuthFormStateData | null | undefined
@@ -34,16 +36,28 @@ export async function register(state: AuthFormState, formData: FormData): Promis
 
   const existing = await prisma.user.findUnique({ where: { email } })
   if (existing) {
-    return { message: 'Email sudah terdaftar.' }
+    if (existing.emailVerified) {
+      return { message: 'Email sudah terdaftar.' }
+    }
+
+    const passwordHash = await bcrypt.hash(password, 10)
+    await prisma.user.update({
+      where: { email },
+      data: { passwordHash, name, emailVerified: false },
+    })
+  } else {
+    const passwordHash = await bcrypt.hash(password, 10)
+    await prisma.user.create({
+      data: { email, passwordHash, name, emailVerified: false },
+    })
   }
 
-  const passwordHash = await bcrypt.hash(password, 10)
-  const user = await prisma.user.create({
-    data: { email, passwordHash, name },
-  })
+  const otpResult = await sendOTP(email)
+  if (!otpResult.success) {
+    return { message: 'Gagal mengirim kode verifikasi. Silakan coba lagi.' }
+  }
 
-  await createSession(user.id, user.email, user.name)
-  redirect('/dashboard')
+  redirect(`/verify-otp?email=${encodeURIComponent(email)}`)
 }
 
 // ─── Login ────────────────────────────────────────────────────────────────────
@@ -60,11 +74,18 @@ export async function login(state: AuthFormState, formData: FormData): Promise<A
 
   const { email, password } = parsed.data
 
-  // 1. Cari user dulu sebelum masuk blok try
   const user = await prisma.user.findUnique({ where: { email } })
-  
+
   if (!user) {
     return { message: 'Email atau password salah.' }
+  }
+
+  if (!user.emailVerified) {
+    const otpResult = await sendOTP(email)
+    if (otpResult.success) {
+      redirect(`/verify-otp?email=${encodeURIComponent(email)}`)
+    }
+    return { message: 'Email belum diverifikasi. Gagal mengirim ulang OTP.' }
   }
 
   try {
@@ -73,11 +94,9 @@ export async function login(state: AuthFormState, formData: FormData): Promise<A
       return { message: 'Email atau password salah.' }
     }
 
-    // 2. Buat session (tunggu sampai beres)
     await createSession(user.id, user.email, user.name)
-    
+
   } catch (error) {
-    // Cek apakah ini error redirect (biar gak ketangkep sebagai error sistem)
     if (error && typeof error === 'object' && 'digest' in error) {
         throw error;
     }
@@ -85,9 +104,7 @@ export async function login(state: AuthFormState, formData: FormData): Promise<A
     return { message: 'Terjadi kesalahan sistem.' }
   }
 
-  // 3. Pindah ke dashboard (setelah session beres)
   redirect('/dashboard')
-
 }
 
 // ─── Logout ───────────────────────────────────────────────────────────────────

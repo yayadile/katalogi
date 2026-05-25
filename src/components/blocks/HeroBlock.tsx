@@ -10,10 +10,19 @@ export type HeroContent = {
 type HeroBlockProps = {
   content: HeroContent
   isEditing?: boolean
-  primaryColor?: string
+  theme?: {
+    primaryColor: string
+    secondaryColor: string
+    backgroundColor?: string
+    buttonStyle?: 'sharp' | 'rounded' | 'pill'
+    fontFamily?: string
+  }
 }
 
-export default function HeroBlock({ content, isEditing, primaryColor = '#8b5cf6' }: HeroBlockProps) {
+export default function HeroBlock({ content, isEditing, theme }: HeroBlockProps) {
+  const primaryColor = theme?.primaryColor || '#8b5cf6'
+  const buttonStyle = theme?.buttonStyle || 'rounded'
+  const buttonRadius = buttonStyle === 'sharp' ? 'rounded-none' : buttonStyle === 'pill' ? 'rounded-full' : 'rounded-2xl'
   const { headline, subtext, ctaText, bgImage } = content
 
   let validBgImage = false
@@ -84,7 +93,7 @@ export default function HeroBlock({ content, isEditing, primaryColor = '#8b5cf6'
 
         {ctaText && (
           <button
-            className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl font-semibold text-white shadow-xl transition-all duration-200 hover:scale-105 hover:shadow-2xl"
+            className={`inline-flex items-center gap-2 px-8 py-4 ${buttonRadius} font-semibold text-white shadow-xl transition-all duration-200 hover:scale-105 hover:shadow-2xl`}
             style={{ background: primaryColor }}
           >
             {ctaText}

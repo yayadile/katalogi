@@ -5,10 +5,17 @@ export type TextContent = {
 
 type TextBlockProps = {
   content: TextContent
-  primaryColor?: string
+  theme?: {
+    primaryColor: string
+    secondaryColor: string
+    backgroundColor?: string
+    buttonStyle?: 'sharp' | 'rounded' | 'pill'
+    fontFamily?: string
+  }
 }
 
-export default function TextBlock({ content, primaryColor = '#8b5cf6' }: TextBlockProps) {
+export default function TextBlock({ content, theme }: TextBlockProps) {
+  const primaryColor = theme?.primaryColor || '#8b5cf6'
   const { html, text } = content
 
   return (

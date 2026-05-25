@@ -41,12 +41,17 @@ export async function addPageBlock(
 
 export async function updatePageBlock(
   blockId: string,
-  contentJSON: Record<string, unknown>
+  contentJSON: Record<string, unknown>,
+  positionJSON?: Record<string, unknown>
 ): Promise<ActionResult<PageBlock>> {
   try {
+    const dataToUpdate: { content: Record<string, unknown>; position?: Record<string, unknown> } = { content: contentJSON }
+    if (positionJSON) {
+      dataToUpdate.position = positionJSON
+    }
     const block = await prisma.pageBlock.update({
       where: { id: blockId },
-      data: { content: contentJSON as any },
+      data: dataToUpdate,
     })
     revalidatePath(`/dashboard/websites/${block.websiteId}/edit`)
 

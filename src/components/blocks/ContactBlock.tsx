@@ -7,10 +7,17 @@ export type ContactContent = {
 
 type ContactBlockProps = {
   content: ContactContent
-  primaryColor?: string
+  theme?: {
+    primaryColor: string
+    secondaryColor: string
+    backgroundColor?: string
+    buttonStyle?: 'sharp' | 'rounded' | 'pill'
+    fontFamily?: string
+  }
 }
 
-export default function ContactBlock({ content, primaryColor = '#8b5cf6' }: ContactBlockProps) {
+export default function ContactBlock({ content, theme }: ContactBlockProps) {
+  const primaryColor = theme?.primaryColor || '#8b5cf6'
   const { title, email, whatsapp, address } = content
 
   const waLink = whatsapp

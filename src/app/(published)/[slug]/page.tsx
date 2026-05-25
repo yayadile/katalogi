@@ -54,8 +54,11 @@ export async function generateMetadata({
 
 type ThemeConfig = {
   primaryColor?: string
-  fontFamily?: string
   secondaryColor?: string
+  backgroundColor?: string
+  buttonStyle?: 'sharp' | 'rounded' | 'pill'
+  fontFamily?: string
+  headingFont?: string
 }
 
 // JSON-LD for LocalBusiness (if CONTACT block exists)
@@ -100,7 +103,9 @@ export default async function PublishedPage({
 
   const theme = (website.themeConfig as ThemeConfig) ?? {}
   const primaryColor = theme.primaryColor ?? '#8b5cf6'
+  const secondaryColor = theme.secondaryColor ?? '#1e293b'
   const fontFamily = theme.fontFamily ?? 'Inter'
+  const headingFont = theme.headingFont ?? fontFamily
 
   // Find a CONTACT block for JSON-LD
   const contactBlock = website.blocks.find((b) => b.type === 'CONTACT')
@@ -121,12 +126,25 @@ export default async function PublishedPage({
         />
       )}
 
+      {/* Dynamic Font Injection */}
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=${fontFamily.replace(/\s+/g, '+')}:wght@300;400;500;600;700&display=swap');
+        ${headingFont !== fontFamily ? `@import url('https://fonts.googleapis.com/css2?family=${headingFont.replace(/\s+/g, '+')}:wght@500;600;700;800&display=swap');` : ''}
+
+        .published-content h1, .published-content h2, .published-content h3, .published-content h4 {
+          font-family: "${headingFont}", sans-serif !important;
+        }
+      `}</style>
+
       <main
+        className="published-content"
         style={
           {
             '--primary-color': primaryColor,
             '--font-family': `'${fontFamily}', sans-serif`,
             fontFamily: `'${fontFamily}', sans-serif`,
+            backgroundColor: theme.backgroundColor || '#F8FAFC',
+            minHeight: '100vh',
           } as React.CSSProperties
         }
       >
@@ -139,7 +157,7 @@ export default async function PublishedPage({
                 <HeroBlock
                   key={block.id}
                   content={content as Parameters<typeof HeroBlock>[0]['content']}
-                  primaryColor={primaryColor}
+                  theme={{ ...theme, primaryColor, secondaryColor }}
                 />
               )
             case 'CATALOG':
@@ -147,7 +165,7 @@ export default async function PublishedPage({
                 <CatalogBlock
                   key={block.id}
                   content={content as Parameters<typeof CatalogBlock>[0]['content']}
-                  primaryColor={primaryColor}
+                  theme={{ ...theme, primaryColor, secondaryColor }}
                 />
               )
             case 'CONTACT':
@@ -155,7 +173,7 @@ export default async function PublishedPage({
                 <ContactBlock
                   key={block.id}
                   content={content as Parameters<typeof ContactBlock>[0]['content']}
-                  primaryColor={primaryColor}
+                  theme={{ ...theme, primaryColor, secondaryColor }}
                 />
               )
             case 'TEXT':
@@ -163,7 +181,7 @@ export default async function PublishedPage({
                 <TextBlock
                   key={block.id}
                   content={content as Parameters<typeof TextBlock>[0]['content']}
-                  primaryColor={primaryColor}
+                  theme={{ ...theme, primaryColor, secondaryColor }}
                 />
               )
             default:
@@ -172,12 +190,15 @@ export default async function PublishedPage({
         })}
 
         {/* Footer badge */}
-        <footer className="py-6 text-center border-t border-slate-100 bg-slate-50">
+        <footer 
+          className="py-6 text-center border-t border-slate-200/50"
+          style={{ backgroundColor: theme.backgroundColor || '#F8FAFC' }}
+        >
           <Link
             href="/"
             className="inline-flex items-center gap-1.5 text-slate-400 text-xs hover:text-slate-600 transition-colors"
           >
-            <span className="w-4 h-4 bg-indigo-500 rounded flex items-center justify-center text-[9px] text-white font-bold">K</span>
+            <span className="w-4 h-4 rounded flex items-center justify-center text-[9px] text-white font-bold" style={{ backgroundColor: primaryColor }}>K</span>
             Dibuat dengan <strong className="text-slate-600">Katalogi</strong>
           </Link>
         </footer>

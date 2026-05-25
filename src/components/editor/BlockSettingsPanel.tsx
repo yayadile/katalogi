@@ -1,9 +1,10 @@
 'use client'
 
-import { useState } from 'react'
-import type { EditorBlock } from './BlockNavigator'
+import { useState, useEffect } from 'react'
+import type { EditorBlock, BlockPosition } from './BlockNavigator'
 import type { BlockType } from '@prisma/client'
 import type { SaveStatus } from './SaveStatusIndicator'
+import { updatePageBlock } from '@/lib/actions/blocks'
 
 import { HeroSettings } from './settings/HeroSettings'
 import { CatalogSettings } from './settings/CatalogSettings'
@@ -15,8 +16,9 @@ type BlockSettingsPanelProps = {
   selectedBlock: EditorBlock | null
   websiteId: string
   userId: string
-  theme: { primaryColor: string; secondaryColor: string; fontFamily: string }
+  theme: { primaryColor: string; secondaryColor: string; backgroundColor?: string; buttonStyle?: 'sharp' | 'rounded' | 'pill'; fontFamily: string }
   onBlockContentChange: (blockId: string, content: Record<string, unknown>) => void
+  onBlockPositionChange?: (blockId: string, position: Partial<BlockPosition>) => void
   onThemeChange: (theme: BlockSettingsPanelProps['theme']) => void
   onSaveStatusChange: (status: SaveStatus) => void
 }
@@ -27,10 +29,38 @@ export default function BlockSettingsPanel({
   userId,
   theme,
   onBlockContentChange,
+  onBlockPositionChange,
   onThemeChange,
   onSaveStatusChange,
 }: BlockSettingsPanelProps) {
   const [activeTab, setActiveTab] = useState<'block' | 'theme'>('block')
+  // Auto-save effect
+  useEffect(() => {
+    if (!selectedBlock) return
+
+    const saveChanges = async () => {
+      onSaveStatusChange('saving')
+      
+      try {
+        const result = await updatePageBlock(
+          selectedBlock.id, 
+          selectedBlock.content,
+          selectedBlock.position as Record<string, unknown> | undefined
+        )
+        if (result.success) {
+          onSaveStatusChange('saved')
+        } else {
+          onSaveStatusChange('error')
+        }
+      } catch (error) {
+        console.error(error)
+        onSaveStatusChange('error')
+      }
+    }
+
+    const timer = setTimeout(saveChanges, 1000)
+    return () => clearTimeout(timer)
+  }, [selectedBlock, userId, onSaveStatusChange])
 
   return (
     <div className="flex flex-col h-full">
@@ -68,43 +98,113 @@ export default function BlockSettingsPanel({
             onSaveStatus={onSaveStatusChange}
           />
         ) : selectedBlock ? (
-          <div>
-            <div className="mb-4">
+          <div className="space-y-6">
+            <div className="mb-4 flex items-center justify-between">
               <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
                 {selectedBlock.type}
               </span>
             </div>
-            {(selectedBlock.type as BlockType) === 'HERO' && (
-              <HeroSettings
-                blockId={selectedBlock.id}
-                content={selectedBlock.content}
-                onChange={(c) => onBlockContentChange(selectedBlock.id, c)}
-                onSaveStatus={onSaveStatusChange}
-              />
+
+            {/* Panel Tabs */}
+            <div className="flex items-center gap-4 border-b border-white/5 mb-6 pb-2">
+              <button 
+                onClick={() => setActiveTab('block')}
+                className={`text-sm font-medium ${activeTab === 'block' ? 'text-white' : 'text-slate-500 hover:text-slate-300'}`}
+              >
+                Style
+              </button>
+              <button 
+                onClick={() => setActiveTab('theme')}
+                className={`text-sm font-medium ${activeTab === 'theme' ? 'text-white' : 'text-slate-500 hover:text-slate-300'}`}
+              >
+                Settings
+              </button>
+            </div>
+
+            {activeTab === 'block' && (
+              <div className="space-y-6">
+                {/* Common Position & Size Settings (Layout & Sizing equivalent) */}
+                <section className="bg-slate-800/50 rounded-xl p-4 border border-white/5">
+                  <h3 className="text-white font-semibold text-sm mb-4">
+                    Layout & Sizing
+                  </h3>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1.5 flex flex-col">
+                      <label className="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Position X</label>
+                      <input 
+                        type="number"
+                        value={Math.round(selectedBlock.position?.x || 0)}
+                        onChange={(e) => onBlockPositionChange?.(selectedBlock.id, { x: parseInt(e.target.value) || 0 })}
+                        className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      />
+                    </div>
+                    <div className="space-y-1.5 flex flex-col">
+                      <label className="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Position Y</label>
+                      <input 
+                        type="number"
+                        value={Math.round(selectedBlock.position?.y || 0)}
+                        onChange={(e) => onBlockPositionChange?.(selectedBlock.id, { y: parseInt(e.target.value) || 0 })}
+                        className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      />
+                    </div>
+                    <div className="space-y-1.5 flex flex-col">
+                      <label className="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Width</label>
+                      <input 
+                        type="text"
+                        value={selectedBlock.position?.width || '100%'}
+                        onChange={(e) => onBlockPositionChange?.(selectedBlock.id, { width: e.target.value })}
+                        className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      />
+                    </div>
+                    <div className="space-y-1.5 flex flex-col">
+                      <label className="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Height</label>
+                      <input 
+                        type="text"
+                        value={selectedBlock.position?.height || 'auto'}
+                        onChange={(e) => onBlockPositionChange?.(selectedBlock.id, { height: e.target.value })}
+                        className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      />
+                    </div>
+                  </div>
+                </section>
+              </div>
             )}
-            {(selectedBlock.type as BlockType) === 'CATALOG' && (
-              <CatalogSettings
-                blockId={selectedBlock.id}
-                content={selectedBlock.content}
-                onChange={(c) => onBlockContentChange(selectedBlock.id, c)}
-                onSaveStatus={onSaveStatusChange}
-              />
-            )}
-            {(selectedBlock.type as BlockType) === 'CONTACT' && (
-              <ContactSettings
-                blockId={selectedBlock.id}
-                content={selectedBlock.content}
-                onChange={(c) => onBlockContentChange(selectedBlock.id, c)}
-                onSaveStatus={onSaveStatusChange}
-              />
-            )}
-            {(selectedBlock.type as BlockType) === 'TEXT' && (
-              <TextSettings
-                blockId={selectedBlock.id}
-                content={selectedBlock.content}
-                onChange={(c) => onBlockContentChange(selectedBlock.id, c)}
-                onSaveStatus={onSaveStatusChange}
-              />
+
+            {activeTab === 'theme' && (
+              <div className="space-y-6">
+                {(selectedBlock.type as BlockType) === 'HERO' && (
+                  <HeroSettings
+                    blockId={selectedBlock.id}
+                    content={selectedBlock.content}
+                    onChange={(c) => onBlockContentChange(selectedBlock.id, c)}
+                    onSaveStatus={onSaveStatusChange}
+                  />
+                )}
+                {(selectedBlock.type as BlockType) === 'CATALOG' && (
+                  <CatalogSettings
+                    blockId={selectedBlock.id}
+                    content={selectedBlock.content}
+                    onChange={(c) => onBlockContentChange(selectedBlock.id, c)}
+                    onSaveStatus={onSaveStatusChange}
+                  />
+                )}
+                {(selectedBlock.type as BlockType) === 'CONTACT' && (
+                  <ContactSettings
+                    blockId={selectedBlock.id}
+                    content={selectedBlock.content}
+                    onChange={(c) => onBlockContentChange(selectedBlock.id, c)}
+                    onSaveStatus={onSaveStatusChange}
+                  />
+                )}
+                {(selectedBlock.type as BlockType) === 'TEXT' && (
+                  <TextSettings
+                    blockId={selectedBlock.id}
+                    content={selectedBlock.content}
+                    onChange={(c) => onBlockContentChange(selectedBlock.id, c)}
+                    onSaveStatus={onSaveStatusChange}
+                  />
+                )}
+              </div>
             )}
           </div>
         ) : (

@@ -22,10 +22,16 @@ export function CatalogSettings({
     (content.items as CatalogItem[]) ?? []
   )
 
-  const saveAll = useCallback(async (newItems: CatalogItem[], title?: string) => {
+  const saveAll = useCallback(async (newItems: CatalogItem[], title?: string, layout?: string, imageRatio?: string) => {
     onSaveStatus('saving')
     try {
-      const updated = { ...content, items: newItems, title: title ?? content.title }
+      const updated = { 
+        ...content, 
+        items: newItems, 
+        title: title ?? content.title,
+        layout: layout ?? content.layout,
+        imageRatio: imageRatio ?? content.imageRatio 
+      }
       onChange(updated)
       await updatePageBlock(blockId, updated)
       onSaveStatus('saved')
@@ -68,6 +74,29 @@ export function CatalogSettings({
           placeholder="Produk Unggulan"
           onBlur={(e) => saveAll(items, e.target.value)}
         />
+      </Field>
+
+      <Field label="Layout Katalog">
+        <select
+          className="settings-input"
+          defaultValue={String(content.layout ?? 'grid')}
+          onChange={(e) => saveAll(items, undefined, e.target.value, undefined)}
+        >
+          <option value="grid">Grid (Kotak-kotak)</option>
+          <option value="list">List (Memanjang)</option>
+        </select>
+      </Field>
+
+      <Field label="Rasio Foto Produk">
+        <select
+          className="settings-input"
+          defaultValue={String(content.imageRatio ?? '4:3')}
+          onChange={(e) => saveAll(items, undefined, undefined, e.target.value)}
+        >
+          <option value="1:1">1:1 (Square)</option>
+          <option value="4:3">4:3 (Portrait/Landscape)</option>
+          <option value="16:9">16:9 (Widescreen)</option>
+        </select>
       </Field>
 
       <div className="space-y-3">

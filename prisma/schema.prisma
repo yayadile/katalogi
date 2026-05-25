@@ -44,6 +44,7 @@ model PageBlock {
   websiteId String
   type      BlockType
   content   Json
+  position  Json?     // Stores {x, y, width, height, zIndex}
   sortOrder Int
   createdAt DateTime  @default(now())
   website   Website   @relation(fields: [websiteId], references: [id], onDelete: Cascade)

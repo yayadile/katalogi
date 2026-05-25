@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useTransition, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import BlockNavigator, { type EditorBlock } from '@/components/editor/BlockNavigator'
+import BlockNavigator, { type EditorBlock, type BlockPosition } from '@/components/editor/BlockNavigator'
 import CanvasPreview from '@/components/editor/CanvasPreview'
 import BlockSettingsPanel from '@/components/editor/BlockSettingsPanel'
 import { publishWebsite } from '@/lib/actions/website'
@@ -12,6 +12,8 @@ import SaveStatusIndicator, { type SaveStatus } from '@/components/editor/SaveSt
 type ThemeConfig = {
   primaryColor: string
   secondaryColor: string
+  backgroundColor?: string
+  buttonStyle?: 'sharp' | 'rounded' | 'pill'
   fontFamily: string
 }
 
@@ -41,6 +43,8 @@ export default function EditorClient({
   const [isPublished, setIsPublished] = useState(initialPublished)
   const [isPending, startTransition] = useTransition()
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle')
+  const [leftPanel, setLeftPanel] = useState<'elements' | 'layers' | 'settings'>('elements')
+  const [previewMode, setPreviewMode] = useState<'mobile' | 'desktop'>('desktop')
   const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const selectedBlock = blocks.find((b) => b.id === selectedId) ?? null
@@ -81,6 +85,21 @@ export default function EditorClient({
     )
   }, [])
 
+  const handleBlockPositionChange = useCallback((blockId: string, position: Partial<EditorBlock['position']>) => {
+    setBlocks((prev) =>
+      prev.map((b) => {
+        if (b.id === blockId) {
+          const currentPos = b.position || { x: 0, y: 0, width: '100%', height: 'auto', zIndex: 1 }
+          return {
+            ...b,
+            position: { ...currentPos, ...position } as BlockPosition
+          }
+        }
+        return b
+      })
+    )
+  }, [])
+
   const handlePublishToggle = useCallback(() => {
     startTransition(async () => {
       const result = await publishWebsite(websiteId, userId, !isPublished)
@@ -93,12 +112,12 @@ export default function EditorClient({
   return (
     <div className="flex flex-col h-screen bg-slate-950 overflow-hidden">
       {/* ──────────────── Top Bar ──────────────── */}
-      <header className="flex items-center justify-between px-4 py-3 bg-slate-900 border-b border-white/5 flex-shrink-0 z-30">
+      <header className="flex items-center justify-between px-4 py-3 bg-slate-900 border-b border-white/5 shrink-0 z-30">
         {/* Left: back + title */}
         <div className="flex items-center gap-3 min-w-0">
           <button
             onClick={() => router.push('/dashboard')}
-            className="text-slate-400 hover:text-white transition-colors flex-shrink-0"
+            className="text-slate-400 hover:text-white transition-colors shrink-0"
             aria-label="Back to dashboard"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -106,7 +125,7 @@ export default function EditorClient({
             </svg>
           </button>
           <div className="flex items-center gap-2 min-w-0">
-            <div className="w-7 h-7 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-lg flex items-center justify-center flex-shrink-0">
+            <div className="w-7 h-7 bg-linear-to-br from-indigo-500 to-violet-600 rounded-lg flex items-center justify-center shrink-0">
               <span className="text-white font-bold text-sm">K</span>
             </div>
             <div className="min-w-0">
@@ -117,7 +136,30 @@ export default function EditorClient({
         </div>
 
         {/* Right: actions */}
-        <div className="flex items-center gap-2 flex-shrink-0">
+        <div className="flex items-center gap-2 shrink-0">
+          
+          {/* Device Toggles (Center-ish, moved to right for simplicity or keep in right group) */}
+          <div className="flex items-center bg-slate-950 rounded-lg p-1 mr-4 border border-white/5">
+            <button
+              onClick={() => setPreviewMode('desktop')}
+              className={`p-1.5 rounded-md transition-colors ${previewMode === 'desktop' ? 'bg-slate-800 text-white' : 'text-slate-500 hover:text-slate-300'}`}
+              title="Desktop"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+            </button>
+            <button
+              onClick={() => setPreviewMode('mobile')}
+              className={`p-1.5 rounded-md transition-colors ${previewMode === 'mobile' ? 'bg-slate-800 text-white' : 'text-slate-500 hover:text-slate-300'}`}
+              title="Mobile"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+              </svg>
+            </button>
+          </div>
+
           {/* Save status indicator */}
           <SaveStatusIndicator status={saveStatus} />
 
@@ -154,7 +196,7 @@ export default function EditorClient({
             className={`flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               isPublished
                 ? 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-                : 'bg-gradient-to-r from-indigo-500 to-violet-600 text-white hover:from-indigo-600 hover:to-violet-700 shadow-lg shadow-indigo-500/20'
+                : 'bg-linear-to-r from-indigo-500 to-violet-600 text-white hover:from-indigo-600 hover:to-violet-700 shadow-lg shadow-indigo-500/20'
             } disabled:opacity-50`}
           >
             {isPending ? (
@@ -175,31 +217,83 @@ export default function EditorClient({
 
       {/* ──────────────── 3-Panel Layout ──────────────── */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Left Panel: Block Navigator (240px) */}
-        <aside className="w-60 flex-shrink-0 bg-slate-900 border-r border-white/5 flex flex-col overflow-hidden">
+        
+        {/* Left Toolbar (Thin Navigation) */}
+        <nav className="w-14 shrink-0 bg-slate-950 border-r border-white/5 flex flex-col items-center py-4 gap-4 z-20">
+          <button 
+            onClick={() => setLeftPanel('elements')}
+            className={`p-2.5 rounded-xl transition-all ${leftPanel === 'elements' ? 'bg-indigo-500 text-white' : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'}`}
+            title="Add Elements"
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+          </button>
+          <button 
+            onClick={() => setLeftPanel('layers')}
+            className={`p-2.5 rounded-xl transition-all ${leftPanel === 'layers' ? 'bg-slate-800 text-white' : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'}`}
+            title="Layers"
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+          </button>
+          <div className="mt-auto">
+            <button 
+              onClick={() => setLeftPanel('settings')}
+              className={`p-2.5 rounded-xl transition-all ${leftPanel === 'settings' ? 'bg-slate-800 text-white' : 'text-slate-500 hover:text-slate-300 hover:bg-white/5'}`}
+              title="Site Settings"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </button>
+          </div>
+        </nav>
+
+        {/* Secondary Left Panel: Dynamic Content (240px) */}
+        <aside className="w-60 shrink-0 bg-slate-900 border-r border-white/5 flex flex-col overflow-hidden relative">
           <div className="flex-1 overflow-y-auto p-3">
-            <BlockNavigator
-              websiteId={websiteId}
-              initialBlocks={blocks}
-              selectedId={selectedId}
-              onSelect={setSelectedId}
-              onBlocksChange={handleBlocksChange}
-            />
+            {leftPanel === 'layers' && (
+              <BlockNavigator
+                websiteId={websiteId}
+                initialBlocks={blocks}
+                selectedId={selectedId}
+                onSelect={setSelectedId}
+                onBlocksChange={handleBlocksChange}
+              />
+            )}
+            {leftPanel === 'elements' && (
+              <div className="p-2 text-slate-400 text-sm">
+                <h3 className="font-semibold text-white mb-4">Add Elements</h3>
+                {/* We will replace this with ElementsPanel component */}
+                <p>Fitur Elements belum diimplementasi (akan ditambahkan di langkah selanjutnya).</p>
+              </div>
+            )}
+            {leftPanel === 'settings' && (
+              <div className="p-2 text-slate-400 text-sm">
+                <h3 className="font-semibold text-white mb-4">Site Settings</h3>
+                <p>Pengaturan global website Anda.</p>
+              </div>
+            )}
           </div>
         </aside>
 
         {/* Center Panel: Canvas Preview */}
-        <main className="flex-1 overflow-hidden">
+        <main className="flex-1 overflow-hidden bg-slate-950">
           <CanvasPreview
             blocks={blocks}
             selectedId={selectedId}
             onSelect={setSelectedId}
-            primaryColor={theme.primaryColor}
+            onPositionChange={handleBlockPositionChange}
+            theme={theme}
+            previewMode={previewMode}
           />
         </main>
 
         {/* Right Panel: Settings (280px) */}
-        <aside className="w-70 flex-shrink-0 bg-slate-900 border-l border-white/5 flex flex-col overflow-hidden">
+        <aside className="w-70 shrink-0 bg-slate-900 border-l border-white/5 flex flex-col overflow-hidden">
           <div className="flex-1 overflow-y-auto p-4">
             <BlockSettingsPanel
               selectedBlock={selectedBlock}
@@ -207,6 +301,7 @@ export default function EditorClient({
               userId={userId}
               theme={theme}
               onBlockContentChange={handleBlockContentChange}
+              onBlockPositionChange={handleBlockPositionChange}
               onThemeChange={setTheme}
               onSaveStatusChange={handleSaveStatusChange}
             />

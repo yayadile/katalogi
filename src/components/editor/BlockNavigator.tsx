@@ -19,11 +19,20 @@ import { CSS } from '@dnd-kit/utilities'
 import type { BlockType } from '@prisma/client'
 import { reorderBlocks, addPageBlock, deletePageBlock } from '@/lib/actions/blocks'
 
+export type BlockPosition = {
+  x: number
+  y: number
+  width: number | string
+  height: number | string
+  zIndex: number
+}
+
 export type EditorBlock = {
   id: string
-  type: BlockType
+  type: 'HERO' | 'CATALOG' | 'CONTACT' | 'TEXT' | 'GALLERY'
   content: Record<string, unknown>
   sortOrder: number
+  position?: BlockPosition
 }
 
 const BLOCK_ICONS: Record<BlockType, React.ReactNode> = {
@@ -99,7 +108,7 @@ function SortableBlockItem({
       <button
         {...attributes}
         {...listeners}
-        className="cursor-grab active:cursor-grabbing opacity-30 group-hover:opacity-60 hover:!opacity-100 transition-opacity flex-shrink-0"
+        className="cursor-grab active:cursor-grabbing opacity-30 group-hover:opacity-60 hover:opacity-100! transition-opacity shrink-0"
         onClick={(e) => e.stopPropagation()}
         aria-label="Drag to reorder"
       >
@@ -124,7 +133,7 @@ function SortableBlockItem({
           e.stopPropagation()
           onDelete()
         }}
-        className="opacity-0 group-hover:opacity-60 hover:!opacity-100 hover:text-red-400 transition-all flex-shrink-0"
+        className="opacity-0 group-hover:opacity-60 hover:opacity-100! hover:text-red-400 transition-all shrink-0"
         aria-label="Delete block"
       >
         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -14,7 +14,7 @@ type DraggableWrapperProps = {
 
 export default function DraggableWrapper({
   id,
-  position, // Still pass position if needed for other things
+  position, 
   isSelected,
   onSelect,
   children

@@ -76,6 +76,16 @@ export function HeroSettings({
           onBlur={(e) => save({ ...content, ctaText: e.target.value })}
         />
       </Field>
+      <Field label="Tautan / Link CTA">
+        <input
+          className="settings-input"
+          defaultValue={String(content.ctaLink ?? '')}
+          placeholder="URL atau #id-elemen"
+          onChange={(e) => update('ctaLink', e.target.value)}
+          onBlur={(e) => save({ ...content, ctaLink: e.target.value })}
+        />
+        <p className="text-[9px] text-gray-400 mt-1">Gunakan #id untuk gulir ke elemen lain (contoh: #katalog), atau http://... untuk link luar.</p>
+      </Field>
       <ImageField 
         label="Background Hero"
         value={String(content.bgImage ?? '')}

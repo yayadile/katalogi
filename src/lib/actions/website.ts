@@ -3,7 +3,7 @@
 import { prisma } from '@/lib/prisma'
 import { websiteSchema, themeConfigSchema, type ActionResult } from '@/lib/validations'
 import { revalidatePath } from 'next/cache'
-import type { Website, PageBlock, Prisma, BlockType } from '@prisma/client'
+import type { Website, PageBlock, Prisma, BlockType, Page } from '@prisma/client'
 import { FULL_TEMPLATES } from '@/lib/templates'
 
 // ─── Create Website ───────────────────────────────────────────────────────────
@@ -32,16 +32,30 @@ export async function createWebsite(
         title: parsed.data.title,
         description: parsed.data.description,
         themeConfig: template.themeConfig,
-        blocks: {
-          create: template.blocks.map((block, idx) => ({
-            type: block.type as unknown as BlockType,
-            content: block.content as Prisma.InputJsonObject,
-            sortOrder: idx,
-            position: { x: 0, y: idx * 500, width: '100%', height: 'auto', zIndex: idx + 1 } as Prisma.InputJsonObject
-          }))
-        }
       },
     })
+
+    const page = await prisma.page.create({
+      data: {
+        websiteId: website.id,
+        slug: 'home',
+        title: 'Beranda',
+        sortOrder: 0,
+      }
+    })
+
+    if (template.blocks.length > 0) {
+      await prisma.pageBlock.createMany({
+        data: template.blocks.map((block, idx) => ({
+          pageId: page.id,
+          websiteId: website.id,
+          type: block.type as unknown as BlockType,
+          content: block.content as Prisma.InputJsonObject,
+          sortOrder: idx,
+          position: { x: 0, y: idx * 500, width: '100%', height: 'auto', zIndex: idx + 1 } as Prisma.InputJsonObject
+        }))
+      })
+    }
 
     revalidatePath('/dashboard')
     return { success: true, data: website }
@@ -70,11 +84,16 @@ export async function getUserWebsites(userId: string): Promise<ActionResult<Webs
 
 export async function getWebsiteWithBlocks(
   websiteId: string
-): Promise<ActionResult<Website & { blocks: PageBlock[] }>> {
+): Promise<ActionResult<Website & { pages: (Page & { blocks: PageBlock[] })[] }>> {
   try {
     const website = await prisma.website.findUnique({
       where: { id: websiteId },
-      include: { blocks: { orderBy: { sortOrder: 'asc' } } },
+      include: {
+        pages: {
+          orderBy: { sortOrder: 'asc' },
+          include: { blocks: { orderBy: { sortOrder: 'asc' } } }
+        }
+      },
     })
     if (!website) return { success: false, error: 'Website tidak ditemukan.' }
     return { success: true, data: website }

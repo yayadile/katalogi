@@ -1,22 +1,30 @@
 'use client'
 
-import { useState, useCallback, useTransition, useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import BlockNavigator, { type EditorBlock, type BlockPosition } from '@/components/editor/BlockNavigator'
+import { useEditorStore } from './store'
+import type { EditorBlock, ThemeConfig, PageInfo } from './store'
+import BlockNavigator from '@/components/editor/BlockNavigator'
 import CanvasPreview from '@/components/editor/CanvasPreview'
 import BlockSettingsPanel from '@/components/editor/BlockSettingsPanel'
 import ElementsPanel from '@/components/editor/ElementsPanel'
-import { publishWebsite } from '@/lib/actions/website'
+import { publishWebsite, updateWebsite } from '@/lib/actions/website'
+import { updatePageBlock, reorderBlocks, addPageBlock, deletePageBlock } from '@/lib/actions/blocks'
+import { ThemeSettings } from '@/components/editor/settings/ThemeSettings'
+import { PageManager } from '@/components/editor/PageManager'
 import EditorGuide from '@/components/editor/EditorGuide'
-import SaveStatusIndicator, { type SaveStatus } from '@/components/editor/SaveStatusIndicator'
-
-type ThemeConfig = {
-  primaryColor: string
-  secondaryColor: string
-  backgroundColor?: string
-  buttonStyle?: 'sharp' | 'rounded' | 'pill'
-  fontFamily: string
-}
+import SaveStatusIndicator from '@/components/editor/SaveStatusIndicator'
+import { 
+  Plus, 
+  LayoutTemplate, 
+  Palette, 
+  ArrowLeft, 
+  X, 
+  Check, 
+  Loader2,
+  Undo,
+  Redo
+} from 'lucide-react'
 
 type EditorClientProps = {
   websiteId: string
@@ -25,7 +33,9 @@ type EditorClientProps = {
   websiteSlug: string
   isPublished: boolean
   initialBlocks: EditorBlock[]
-  initialTheme: ThemeConfig
+  initialTheme: unknown
+  initialPages?: PageInfo[]
+  initialPageId?: string
 }
 
 export default function EditorClient({
@@ -36,304 +46,634 @@ export default function EditorClient({
   isPublished: initialPublished,
   initialBlocks,
   initialTheme,
+  initialPages,
+  initialPageId,
 }: EditorClientProps) {
   const router = useRouter()
-  const [blocks, setBlocks] = useState<EditorBlock[]>(initialBlocks)
-  const [selectedId, setSelectedId] = useState<string | null>(null)
-  const [theme, setTheme] = useState<ThemeConfig>(initialTheme)
+  const setBlocks = useEditorStore((state) => state.setBlocks)
+  const setTheme = useEditorStore((state) => state.setTheme)
+  const setPages = useEditorStore((state) => state.setPages)
+  const setCurrentPage = useEditorStore((state) => state.setCurrentPage)
+  const theme = useEditorStore((state) => state.theme)
+  const leftPanel = useEditorStore((state) => state.leftPanel)
+  const setLeftPanel = useEditorStore((state) => state.setLeftPanel)
+  const previewMode = useEditorStore((state) => state.previewMode)
+  const setPreviewMode = useEditorStore((state) => state.setPreviewMode)
+  const saveStatus = useEditorStore((state) => state.saveStatus)
+  const setSaveStatus = useEditorStore((state) => state.setSaveStatus)
+  const blocks = useEditorStore((state) => state.blocks)
+  const past = useEditorStore((state) => state.past)
+  const future = useEditorStore((state) => state.future)
+  const undo = useEditorStore((state) => state.undo)
+  const redo = useEditorStore((state) => state.redo)
+  const duplicateBlock = useEditorStore((state) => state.duplicateBlock)
+  const deleteBlock = useEditorStore((state) => state.deleteBlock)
+  const selectedId = useEditorStore((state) => state.selectedId)
+
+  // Local UX States
+  const [isPreviewMode, setIsPreviewMode] = useState(false)
+  const [isPublishModalOpen, setIsPublishModalOpen] = useState(false)
+  const [isPublishing, setIsPublishing] = useState(false)
   const [isPublished, setIsPublished] = useState(initialPublished)
-  const [isPending, startTransition] = useTransition()
-  const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle')
-  const [leftPanel, setLeftPanel] = useState<'elements' | 'layers' | 'settings'>('elements')
-  const [previewMode, setPreviewMode] = useState<'mobile' | 'desktop'>('desktop')
-  const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  
+  // Site settings local inputs
+  const [siteTitle, setSiteTitle] = useState(websiteTitle)
+  const [siteSlug, setSiteSlug] = useState(websiteSlug)
+  const [isSavingIdentity, setIsSavingIdentity] = useState(false)
+  const [activeSettingsTab, setActiveSettingsTab] = useState<'theme' | 'identity'>('theme')
+  const [showCopySuccess, setShowCopySuccess] = useState(false)
 
-  const selectedBlock = blocks.find((b) => b.id === selectedId) ?? null
-
-  // Callback buat nge-report status simpan
-  const handleSaveStatusChange = useCallback((status: SaveStatus) => {
-    if (hideTimerRef.current) {
-      clearTimeout(hideTimerRef.current)
-      hideTimerRef.current = null
-    }
-    setSaveStatus(status)
-    // Sembunyikan otomatis setelah 2.5 detik kalau udah tersimpan atau error
-    if (status === 'saved' || status === 'error') {
-      hideTimerRef.current = setTimeout(() => {
-        setSaveStatus('idle')
-      }, 2500)
-    }
+  // Fix hydration mismatch for undo/redo buttons
+  const [isMounted, setIsMounted] = useState(false)
+  useEffect(() => {
+    setIsMounted(true)
   }, [])
 
-  // Kasih peringatan ke user sebelum nutup tab pas lagi nyimpan
+  // Initialize store on mount exactly once
+  const isInitializedRef = useRef(false)
   useEffect(() => {
-    const handler = (e: BeforeUnloadEvent) => {
-      if (saveStatus === 'saving') {
+    if (isInitializedRef.current) return
+    isInitializedRef.current = true
+
+    const formattedBlocks = initialBlocks.map(b => ({
+      ...b,
+      content: b.content || { style: {} },
+    }))
+    setBlocks(formattedBlocks)
+    setTheme(initialTheme as ThemeConfig)
+    
+    if (initialPages && initialPageId) {
+      setPages(initialPages, initialPageId)
+    }
+  }, [initialBlocks, initialTheme, setBlocks, setTheme, initialPages, initialPageId, setPages])
+
+  // Keyboard Shortcuts Listener for high-speed professional editing
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignore shortcuts if the user is typing in input, textarea, or contenteditable fields
+      const activeEl = document.activeElement
+      if (
+        activeEl &&
+        (activeEl.tagName === 'INPUT' ||
+          activeEl.tagName === 'TEXTAREA' ||
+          activeEl.getAttribute('contenteditable') === 'true')
+      ) {
+        return
+      }
+
+      // Ctrl + Z: Undo
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
         e.preventDefault()
+        undo()
+      }
+
+      // Ctrl + Y / Ctrl + Shift + Z: Redo
+      if ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === 'y' || (e.shiftKey && e.key.toLowerCase() === 'z'))) {
+        e.preventDefault()
+        redo()
+      }
+
+      // Ctrl + D: Duplicate block (preventing default browser bookmark behavior)
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'd') {
+        if (selectedId) {
+          e.preventDefault()
+          duplicateBlock(selectedId)
+        }
+      }
+
+      // Backspace / Delete: Direct high-speed delete with Undo recovery support
+      if (e.key === 'Delete' || e.key === 'Backspace') {
+        if (selectedId) {
+          e.preventDefault()
+          deleteBlock(selectedId)
+        }
       }
     }
-    window.addEventListener('beforeunload', handler)
-    return () => window.removeEventListener('beforeunload', handler)
-  }, [saveStatus])
 
-  const handleBlocksChange = useCallback((updated: EditorBlock[]) => {
-    setBlocks(updated)
-  }, [])
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [selectedId, undo, redo, duplicateBlock, deleteBlock])
 
-  const handleBlockAdded = useCallback((block: EditorBlock) => {
-    setBlocks((prev) => [...prev, block])
-    setSelectedId(block.id)
-  }, [])
+  // Seamless Debounced Background Auto-Saver
+  const prevBlocksRef = useRef<string>('')
+  
+  useEffect(() => {
+    if (blocks.length === 0) return
 
+    const blocksJson = JSON.stringify(blocks)
+    if (prevBlocksRef.current === '') {
+      prevBlocksRef.current = blocksJson
+      return
+    }
 
+    if (prevBlocksRef.current === blocksJson) return
 
-  const handleBlockContentChange = useCallback((blockId: string, content: Record<string, unknown>) => {
-    setBlocks((prev) =>
-      prev.map((b) => (b.id === blockId ? { ...b, content } : b))
-    )
-  }, [])
+    const timeout = setTimeout(async () => {
+      setSaveStatus('saving')
+      try {
+        const prevBlocks = JSON.parse(prevBlocksRef.current) as EditorBlock[]
+        
+        // 1. Identify added and deleted blocks
+        const addedBlocks = blocks.filter(b => !prevBlocks.some(pb => pb.id === b.id))
+        const deletedBlocks = prevBlocks.filter(pb => !blocks.some(b => b.id === pb.id))
+        const existingBlocks = blocks.filter(b => prevBlocks.some(pb => pb.id === b.id))
+        
+        // 2. Add new blocks to DB first (so reorder doesn't fail due to missing IDs)
+        for (const block of addedBlocks) {
+          await addPageBlock(
+            websiteId,
+            block.type,
+            block.sortOrder,
+            block.content,
+            undefined, // pageId (default to websiteId inside function)
+            block.id   // Keep the ID from local store so it matches
+          )
+        }
+        
+        // 3. Delete removed blocks from DB
+        for (const block of deletedBlocks) {
+          await deletePageBlock(block.id)
+        }
 
-  const handleBlockPositionChange = useCallback((blockId: string, position: Partial<EditorBlock['position']>) => {
-    setBlocks((prev) =>
-      prev.map((b) => {
-        if (b.id === blockId) {
-          const currentPos = b.position || { x: 0, y: 0, width: '100%', height: 'auto', zIndex: 1 }
-          return {
-            ...b,
-            position: { ...currentPos, ...position } as BlockPosition
+        // 4. Update modified existing blocks
+        for (const block of existingBlocks) {
+          const prevBlock = prevBlocks.find(pb => pb.id === block.id)
+          if (prevBlock && JSON.stringify(prevBlock.content) !== JSON.stringify(block.content)) {
+            await updatePageBlock(block.id, block.content)
           }
         }
-        return b
-      })
-    )
-  }, [])
 
-  const handlePublishToggle = useCallback(() => {
-    startTransition(async () => {
-      const result = await publishWebsite(websiteId, userId, !isPublished)
-      if (result.success) {
-        setIsPublished(!isPublished)
+        // 5. Persist block order changes if they differ
+        const orderChanged = blocks.map(b => b.id).join(',') !== prevBlocks.map(b => b.id).join(',')
+        if (orderChanged) {
+          await reorderBlocks(websiteId, blocks.map(b => b.id))
+        }
+
+        prevBlocksRef.current = blocksJson
+        setSaveStatus('saved')
+      } catch (err) {
+        console.error("Auto-save failed:", err)
+        setSaveStatus('error')
       }
-    })
-  }, [isPublished, websiteId, userId])
+    }, 1200) // 1.2s debounce for highly fluid auto-saves
+
+    return () => clearTimeout(timeout)
+  }, [blocks, websiteId, setSaveStatus])
+
+  // Publish site handler
+  const handlePublish = async () => {
+    setIsPublishing(true)
+    setSaveStatus('saving')
+    try {
+      const res = await publishWebsite(websiteId, userId, true)
+      if (res.success) {
+        setIsPublished(true)
+        setSaveStatus('saved')
+        setIsPublishModalOpen(true)
+      } else {
+        setSaveStatus('error')
+        alert(res.error || "Gagal mempublikasikan katalog")
+      }
+    } catch (err) {
+      setSaveStatus('error')
+      console.error(err)
+    } finally {
+      setIsPublishing(false)
+    }
+  };
+
+  // Site Identity Save Handler
+  const handleSaveIdentity = async () => {
+    if (!siteTitle.trim() || !siteSlug.trim()) {
+      alert("Judul dan slug tidak boleh kosong")
+      return
+    }
+    setIsSavingIdentity(true)
+    setSaveStatus('saving')
+    try {
+      const res = await updateWebsite(websiteId, userId, {
+        title: siteTitle,
+        slug: siteSlug
+      })
+      if (res.success) {
+        setSaveStatus('saved')
+        alert("Identitas katalog berhasil diperbarui!")
+      } else {
+        setSaveStatus('error')
+        alert(res.error || "Gagal memperbarui identitas")
+      }
+    } catch (err) {
+      setSaveStatus('error')
+      console.error(err)
+    } finally {
+      setIsSavingIdentity(false)
+    }
+  }
+
+  // Copy live link to clipboard
+  const handleCopyLink = () => {
+    const liveLink = `${window.location.protocol}//${window.location.host}/${siteSlug}`
+    navigator.clipboard.writeText(liveLink)
+    setShowCopySuccess(true)
+    setTimeout(() => setShowCopySuccess(false), 2000)
+  }
 
   return (
-    <div className="flex flex-col h-screen bg-white overflow-hidden">
-      {/* ──────────────── Top Bar ──────────────── */}
-      <header className="flex items-center justify-between px-4 py-3 bg-white border-b border-gray-200 shrink-0 z-30">
-        {/* Left: back + title */}
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => router.push('/dashboard')}
-            className="text-gray-400 hover:text-gray-600 transition-colors shrink-0"
-            aria-label="Back to dashboard"
-          >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-          <div className="w-px h-4 bg-gray-200 mx-1" />
-          <div className="flex items-center gap-2 min-w-0">
-            <div className="w-7 h-7 bg-indigo-600 rounded-lg flex items-center justify-center shrink-0">
-              <span className="text-white font-bold text-sm">K</span>
-            </div>
-            <div className="min-w-0">
-              <p className="text-gray-900 font-semibold text-sm truncate">{websiteTitle}</p>
-              <p className="text-gray-400 text-xs truncate">/{websiteSlug}</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Center: Device Toggles (Absolute Center) */}
-        <div className="absolute left-1/2 -translate-x-1/2 flex items-center bg-gray-100/80 rounded-md p-0.5 border border-gray-200">
-          <button
-            onClick={() => setPreviewMode('desktop')}
-            className={`p-1.5 rounded transition-colors ${previewMode === 'desktop' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}
-            title="Desktop"
-          >
-            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-            </svg>
-          </button>
-          <button
-            onClick={() => setPreviewMode('mobile')}
-            className={`p-1.5 rounded transition-colors ${previewMode === 'mobile' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}
-            title="Mobile"
-          >
-            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
-            </svg>
-          </button>
-        </div>
-
-        {/* Right: actions */}
-        <div className="flex items-center gap-3 shrink-0">
-          {/* Save status indicator */}
-          <div className="scale-90 origin-right">
-            <SaveStatusIndicator status={saveStatus} />
-          </div>
-
-          <div className="w-px h-4 bg-gray-200" />
-
-          {/* Published status badge */}
-          {isPublished && (
-            <span className="hidden sm:inline-flex items-center gap-1 text-xs text-green-600 bg-green-50 border border-green-200 rounded-full px-2.5 py-1">
-              <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-              Live
-            </span>
-          )}
-
-          {/* Guidance */}
-          <EditorGuide />
-
-          {/* Preview link */}
-          {isPublished && (
-            <a
-              href={`/${websiteSlug}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-all text-xs font-medium"
+    <div className="flex flex-col h-screen bg-slate-50 font-sans overflow-hidden select-none relative text-slate-800">
+      
+      {/* ──────────────── Top Bar (Wix/Canva Premium Light Theme) ──────────────── */}
+      {!isPreviewMode && (
+        <header className="flex items-center justify-between px-6 py-3.5 bg-white border-b border-slate-200 shrink-0 z-30 shadow-sm text-slate-800">
+          {/* Brand Info & Back Action */}
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => router.push('/dashboard')}
+              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-all duration-200 shrink-0"
+              title="Kembali ke Dashboard"
             >
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-              </svg>
-              Preview
-            </a>
-          )}
+              <ArrowLeft className="w-4 h-4" />
+            </button>
+            <div className="w-px h-5 bg-slate-200" />
+            
+            {/* Undo / Redo Actions */}
+            <div className="flex items-center bg-slate-100 rounded-lg p-0.5 border border-slate-200/60 shadow-sm shrink-0">
+              <button
+                onClick={() => undo()}
+                disabled={!isMounted || past.length === 0}
+                className="p-1 rounded text-slate-500 hover:text-indigo-600 hover:bg-white disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-slate-500 transition-all duration-150"
+                title="Undo (Ctrl+Z)"
+              >
+                <Undo className="w-3.5 h-3.5" />
+              </button>
+              <button
+                onClick={() => redo()}
+                disabled={!isMounted || future.length === 0}
+                className="p-1 rounded text-slate-500 hover:text-indigo-600 hover:bg-white disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-slate-500 transition-all duration-150"
+                title="Redo (Ctrl+Y)"
+              >
+                <Redo className="w-3.5 h-3.5" />
+              </button>
+            </div>
+            
+            <div className="w-px h-5 bg-slate-200" />
+            
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="min-w-0">
+                <div className="flex items-center gap-2">
+                  <p className="text-slate-900 font-bold text-xs uppercase tracking-wider truncate leading-none">{siteTitle}</p>
+                  {isPublished ? (
+                    <span className="px-1.5 py-0.5 rounded text-[8px] font-extrabold uppercase bg-emerald-50 text-emerald-600 border border-emerald-200/50">Live</span>
+                  ) : (
+                    <span className="px-1.5 py-0.5 rounded text-[8px] font-extrabold uppercase bg-slate-100 text-slate-500 border border-slate-200">Draf</span>
+                  )}
+                </div>
+                <p className="text-slate-400 text-[10px] font-semibold truncate mt-0.5">/{siteSlug}</p>
+              </div>
+            </div>
 
-          {/* Publish toggle */}
-          <button
-            onClick={handlePublishToggle}
-            disabled={isPending}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-[11px] font-semibold transition-all border ${
-              isPublished
-                ? 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg shadow-indigo-500/20'
-            } disabled:opacity-50`}
-          >
-            {isPending ? (
-              'Memproses...'
-            ) : isPublished ? (
-              'Unpublish'
-            ) : (
-              'Publish'
-            )}
-          </button>
+            <div className="w-px h-5 bg-slate-200" />
+            
+            <PageManager
+              websiteId={websiteId}
+              userId={userId}
+              onPagesChange={(newPages, newCurrentId) => {
+                setPages(newPages, newCurrentId)
+              }}
+            />
+          </div>
 
-          {/* Preview link */}
-          {isPublished && (
-            <a
-              href={`/${websiteSlug}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center w-7 h-7 rounded border border-gray-200 text-gray-500 hover:text-gray-900 hover:bg-gray-50 transition-colors"
-              title="Lihat Website"
-            >
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-              </svg>
-            </a>
-          )}
-        </div>
-      </header>
-
-      {/* ──────────────── 3-Panel Layout ──────────────── */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Left Toolbar (Thin Navigation) */}
-        <nav className="w-12 shrink-0 bg-white border-r border-gray-200 flex flex-col items-center py-3 gap-2 z-20">
-          <button 
-            onClick={() => setLeftPanel('elements')}
-            className={`relative p-2 rounded transition-colors ${leftPanel === 'elements' ? 'text-gray-900 bg-gray-100' : 'text-gray-400 hover:text-gray-800'}`}
-            title="Add Elements"
-          >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-          </button>
-          <button 
-            onClick={() => setLeftPanel('layers')}
-            className={`relative p-2 rounded transition-colors ${leftPanel === 'layers' ? 'text-gray-900 bg-gray-100' : 'text-gray-400 hover:text-gray-800'}`}
-            title="Lapisan"
-          >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-            </svg>
-          </button>
-          <div className="mt-auto">
-            <button 
-              onClick={() => setLeftPanel('settings')}
-              className={`relative p-2 rounded transition-colors ${leftPanel === 'settings' ? 'text-gray-900 bg-gray-100' : 'text-gray-400 hover:text-gray-800'}`}
-              title="Site Settings"
+          {/* Device Toggles (Centered, Icons only for absolute clean look) */}
+          <div className="absolute left-1/2 -translate-x-1/2 flex items-center bg-slate-100 rounded-full p-1 border border-slate-200/80 shadow-inner gap-0.5">
+            <button
+              onClick={() => setPreviewMode('desktop')}
+              className={`p-2 rounded-full transition-all duration-300 ${
+                previewMode === 'desktop' 
+                  ? 'bg-white text-indigo-600 shadow-sm border border-slate-200/30' 
+                  : 'text-slate-500 hover:text-slate-800'
+              }`}
+              title="Desktop Layout"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+            </button>
+            <button
+              onClick={() => setPreviewMode('mobile')}
+              className={`p-2 rounded-full transition-all duration-300 ${
+                previewMode === 'mobile' 
+                  ? 'bg-white text-indigo-600 shadow-sm border border-slate-200/30' 
+                  : 'text-slate-500 hover:text-slate-800'
+              }`}
+              title="Mobile Layout"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
               </svg>
             </button>
           </div>
-        </nav>
 
-        {/* Secondary Left Panel: Dynamic Content (240px) */}
-        <aside className="w-[240px] shrink-0 bg-white border-r border-gray-200 flex flex-col overflow-hidden relative">
-          <div className="flex-1 overflow-y-auto">
-            {leftPanel === 'layers' && (
-              <div className="p-3 h-full">
-                <BlockNavigator
-                  websiteId={websiteId}
-                  initialBlocks={blocks}
-                  selectedId={selectedId}
-                  onSelect={setSelectedId}
-                  onBlocksChange={handleBlocksChange}
-                  onBlockAdded={handleBlockAdded}
-                />
-              </div>
-            )}
-            {leftPanel === 'elements' && (
-              <ElementsPanel 
-                websiteId={websiteId}
-                currentCount={blocks.length}
-                onBlockAdded={handleBlockAdded}
-              />
-            )}
-            {leftPanel === 'settings' && (
-              <div className="p-4 text-gray-500 text-xs">
-                <h3 className="font-semibold text-gray-900 mb-2">Site Settings</h3>
-                <p>Pengaturan global website Anda.</p>
-              </div>
-            )}
+          {/* Quick Actions (Right, static solid colors, minimal decoration) */}
+          <div className="flex items-center gap-4 shrink-0">
+            <div className="scale-90 origin-right">
+              <SaveStatusIndicator status={saveStatus} />
+            </div>
+            
+            <div className="w-px h-5 bg-slate-200" />
+            
+            {/* Guide Button */}
+            <EditorGuide />
+            
+            {/* Full Preview Toggle */}
+            <button
+              onClick={() => setIsPreviewMode(true)}
+              className="px-3.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-600 hover:text-slate-900 transition-all text-xs font-semibold"
+            >
+              Pratinjau
+            </button>
+
+            {/* Solid Publish Button */}
+            <button
+              onClick={handlePublish}
+              disabled={isPublishing}
+              className="px-4 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs transition-all disabled:opacity-50 shadow-sm"
+            >
+              {isPublishing ? (
+                <div className="flex items-center gap-1.5">
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  Menerbitkan...
+                </div>
+              ) : (
+                'Publikasikan'
+              )}
+            </button>
           </div>
-        </aside>
+        </header>
+      )}
 
-        {/* Center Panel: Canvas Preview */}
-        <main className="flex-1 overflow-hidden relative grid-overlay flex flex-col">
-          <div className="flex-1 w-full p-4 md:p-8 overflow-y-auto overflow-x-hidden flex justify-center">
-            <CanvasPreview
-              blocks={blocks}
-              selectedId={selectedId}
-              onSelect={setSelectedId}
-              onPositionChange={handleBlockPositionChange}
-              theme={theme}
-              previewMode={previewMode}
-            />
+      {/* ──────────────── Central Workspace ──────────────── */}
+      <div className="flex flex-1 overflow-hidden relative bg-slate-50">
+        
+        {/* Left Side toolbox bar (Vertical Light Panel) */}
+        {!isPreviewMode && (
+          <nav className="w-16 shrink-0 bg-white border-r border-slate-200 flex flex-col items-center py-4 gap-4.5 z-20 shadow-sm">
+            <button 
+              onClick={() => setLeftPanel('elements')}
+              className={`relative p-3 rounded-xl transition-all duration-200 flex flex-col items-center gap-1 group ${
+                leftPanel === 'elements' 
+                  ? 'text-indigo-600 bg-indigo-50/80 border border-indigo-100 shadow-sm font-semibold' 
+                  : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'
+              }`}
+              title="Tambah Elemen & Blok"
+            >
+              <Plus className="w-5 h-5 transition-transform group-hover:scale-110" />
+              <span className="text-[9px] font-bold tracking-wider uppercase mt-1">Tambah</span>
+            </button>
+            
+            <button 
+              onClick={() => setLeftPanel('layers')}
+              className={`relative p-3 rounded-xl transition-all duration-200 flex flex-col items-center gap-1 group ${
+                leftPanel === 'layers' 
+                  ? 'text-indigo-600 bg-indigo-50/80 border border-indigo-100 shadow-sm font-semibold' 
+                  : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'
+              }`}
+              title="Struktur Urutan Blok"
+            >
+              <LayoutTemplate className="w-5 h-5 transition-transform group-hover:scale-110" />
+              <span className="text-[9px] font-bold tracking-wider uppercase mt-1">Navigasi</span>
+            </button>
+            
+            <button 
+              onClick={() => setLeftPanel('settings')}
+              className={`relative p-3 rounded-xl transition-all duration-200 flex flex-col items-center gap-1 group ${
+                leftPanel === 'settings' 
+                  ? 'text-indigo-600 bg-indigo-50/80 border border-indigo-100 shadow-sm font-semibold' 
+                  : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'
+              }`}
+              title="Desain & Tema Global"
+            >
+              <Palette className="w-5 h-5 transition-transform group-hover:scale-110" />
+              <span className="text-[9px] font-bold tracking-wider uppercase mt-1">Desain</span>
+            </button>
+          </nav>
+        )}
+
+        {/* Secondary Sliding Drawer Sidebar */}
+        {!isPreviewMode && (
+          <aside className="w-[280px] shrink-0 bg-white border-r border-gray-200 flex flex-col overflow-hidden relative z-10 shadow-sm">
+            <div className="flex-1 overflow-y-auto">
+              
+              {leftPanel === 'elements' && <ElementsPanel />}
+              
+              {leftPanel === 'layers' && (
+                <div className="p-4 h-full">
+                  <div className="flex items-center justify-between border-b border-gray-100 pb-3 mb-3">
+                    <h3 className="font-bold text-xs uppercase tracking-wider text-slate-800">Navigasi Blok</h3>
+                  </div>
+                  <BlockNavigator
+                    websiteId={websiteId}
+                    initialBlocks={blocks}
+                    selectedId={useEditorStore.getState().selectedId}
+                    onSelect={useEditorStore.getState().selectBlock}
+                    onBlocksChange={setBlocks}
+                  />
+                </div>
+              )}
+              
+              {leftPanel === 'settings' && (
+                <div className="flex flex-col h-full bg-white">
+                  {/* Header title */}
+                  <div className="flex items-center justify-between border-b border-gray-100 p-4 shrink-0">
+                    <h3 className="font-bold text-xs uppercase tracking-wider text-slate-800">Desain & Identitas</h3>
+                  </div>
+                  
+                  {/* Sub-tab switcher */}
+                  <div className="flex border-b border-gray-100 p-2 gap-1 bg-gray-50/50 shrink-0">
+                    <button 
+                      onClick={() => setActiveSettingsTab('theme')}
+                      className={`flex-1 py-1.5 px-2 rounded-md text-[10px] font-extrabold uppercase tracking-wide transition-all ${
+                        activeSettingsTab === 'theme' 
+                          ? 'bg-white shadow-sm border border-gray-200 text-indigo-600' 
+                          : 'text-gray-500 hover:text-gray-700'
+                      }`}
+                    >
+                      Tema Global
+                    </button>
+                    <button 
+                      onClick={() => setActiveSettingsTab('identity')}
+                      className={`flex-1 py-1.5 px-2 rounded-md text-[10px] font-extrabold uppercase tracking-wide transition-all ${
+                        activeSettingsTab === 'identity' 
+                          ? 'bg-white shadow-sm border border-gray-200 text-indigo-600' 
+                          : 'text-gray-500 hover:text-gray-700'
+                      }`}
+                    >
+                      Identitas Situs
+                    </button>
+                  </div>
+                  
+                  {/* Tab Body container */}
+                  <div className="flex-1 overflow-y-auto p-4.5">
+                    {activeSettingsTab === 'theme' ? (
+                      <ThemeSettings
+                        pageId={websiteId}
+                        userId={userId}
+                        theme={theme}
+                        onChange={setTheme}
+                        onSaveStatus={setSaveStatus}
+                      />
+                    ) : (
+                      <div className="space-y-4">
+                        {/* Site identity configs */}
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider">Judul Katalog</label>
+                          <input
+                            type="text"
+                            className="w-full px-3 py-2 text-xs border border-gray-300 rounded focus:border-indigo-500 focus:outline-none font-medium text-slate-800 shadow-sm"
+                            value={siteTitle}
+                            onChange={(e) => setSiteTitle(e.target.value)}
+                            placeholder="Katalog Saya"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider">URL Slug</label>
+                          <div className="flex items-center bg-gray-50 border border-gray-300 rounded px-3 shadow-sm focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500">
+                            <span className="text-[11px] text-gray-400 select-none font-black mr-1">/</span>
+                            <input
+                              type="text"
+                              className="bg-transparent border-none text-[11px] text-slate-800 font-bold p-2 w-full focus:outline-none"
+                              value={siteSlug}
+                              onChange={(e) => setSiteSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
+                              placeholder="toko-saya"
+                            />
+                          </div>
+                        </div>
+                        <button
+                          onClick={handleSaveIdentity}
+                          disabled={isSavingIdentity}
+                          className="w-full mt-4 flex items-center justify-center gap-1.5 bg-indigo-600 text-white font-bold py-2.5 rounded-lg text-xs hover:bg-indigo-700 transition-colors shadow-sm disabled:opacity-50"
+                        >
+                          {isSavingIdentity ? (
+                            <>
+                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                              Memperbarui...
+                            </>
+                          ) : (
+                            <>
+                              <Check className="w-3.5 h-3.5" />
+                              Simpan Perubahan
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+            </div>
+          </aside>
+        )}
+
+        {/* Central Canvas Frame preview wrapper */}
+        <main className="flex-1 overflow-hidden relative bg-slate-100/60 flex flex-col">
+          {/* Dynamic Floating Back button in Fullscreen Preview mode */}
+          {isPreviewMode && (
+            <button
+              onClick={() => setIsPreviewMode(false)}
+              className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] flex items-center gap-2 px-5 py-2.5 bg-white text-slate-800 rounded-full font-bold text-xs border border-gray-200 hover:bg-slate-50 transition-all shadow-xl active:scale-95 animate-in slide-in-from-top-4 duration-300 select-none"
+            >
+              <span>Keluar Pratinjau (Kembali ke Editor)</span>
+            </button>
+          )}
+
+          <div className="flex-1 overflow-y-auto">
+            <CanvasPreview />
           </div>
         </main>
 
-        {/* Right Panel: Settings (280px) */}
-        <aside className="w-70 shrink-0 bg-gray-50 border-l border-gray-200 flex flex-col overflow-hidden">
-          <div className="flex-1 overflow-y-auto p-4">
-            <BlockSettingsPanel
-              selectedBlock={selectedBlock}
-              websiteId={websiteId}
-              userId={userId}
-              theme={theme}
-              onBlockContentChange={handleBlockContentChange}
-              onBlockPositionChange={handleBlockPositionChange}
-              onThemeChange={setTheme}
-              onSaveStatusChange={handleSaveStatusChange}
-            />
-          </div>
-        </aside>
+        {/* Right Element-Style Property Panel Inspector */}
+        {!isPreviewMode && (
+          <aside className="w-72 shrink-0 bg-gray-50 flex flex-col overflow-hidden relative z-10 shadow-sm border-l border-gray-200">
+            <BlockSettingsPanel />
+          </aside>
+        )}
       </div>
+
+      {/* ──────────────── Wix Confetti Success Publication Modal ──────────────── */}
+      {isPublishModalOpen && (
+        <div className="fixed inset-0 z-[999] flex items-center justify-center p-6 bg-slate-950/60 backdrop-blur-md animate-in fade-in duration-300">
+          <div className="bg-white border border-gray-100 w-full max-w-lg rounded-[2rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 p-8 text-center relative">
+            
+            {/* Absolute close button */}
+            <button 
+              onClick={() => setIsPublishModalOpen(false)}
+              className="absolute top-6 right-6 p-2 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            {/* Sleek checkmark circle header */}
+            <div className="w-12 h-12 mx-auto mb-4 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center border border-emerald-100">
+              <Check className="w-6 h-6" />
+            </div>
+
+            <h2 className="text-xl font-bold text-slate-900 leading-tight">
+              Katalog Toko Anda Berhasil Diterbitkan
+            </h2>
+            <p className="text-xs text-slate-500 font-medium leading-relaxed max-w-sm mx-auto mt-2">
+              Katalog online Anda sekarang aktif sepenuhnya dan dapat diakses oleh siapa saja di seluruh dunia.
+            </p>
+
+            {/* Links and Actions Container */}
+            <div className="mt-6 bg-slate-50 border border-slate-200 rounded-xl p-4">
+              <div className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-2 text-center">
+                Alamat Web Katalog
+              </div>
+              <div className="bg-white border border-slate-200 rounded-lg px-3 py-2 flex items-center justify-between gap-3 shadow-inner">
+                <span className="text-xs font-semibold text-slate-800 truncate select-all">
+                  {window.location.protocol}//{window.location.host}/{siteSlug}
+                </span>
+                <button
+                  onClick={handleCopyLink}
+                  className={`px-3 py-1 rounded-md font-semibold text-[10px] transition-all flex items-center gap-1 shrink-0 ${
+                    showCopySuccess 
+                      ? 'bg-emerald-500 text-white' 
+                      : 'bg-indigo-50 hover:bg-indigo-100 text-indigo-600'
+                  }`}
+                >
+                  {showCopySuccess ? (
+                    <>
+                      <Check className="w-3 h-3" />
+                      Tersalin
+                    </>
+                  ) : (
+                    'Salin'
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* CTA actions */}
+            <div className="mt-6 flex flex-col sm:flex-row gap-2.5">
+              <button
+                onClick={() => setIsPublishModalOpen(false)}
+                className="flex-1 py-2.5 px-4 border border-slate-200 text-slate-600 hover:text-slate-800 rounded-xl text-xs font-semibold transition-all hover:bg-slate-50"
+              >
+                Tetap di Editor
+              </button>
+              <a
+                href={`/${siteSlug}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 flex items-center justify-center py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold transition-all shadow-sm"
+              >
+                Buka Situs Live
+              </a>
+            </div>
+
+          </div>
+        </div>
+      )}
+
     </div>
   )
 }

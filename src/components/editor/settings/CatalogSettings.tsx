@@ -5,7 +5,7 @@ import { updatePageBlock } from '@/lib/actions/blocks'
 import type { SaveStatus } from '../SaveStatusIndicator'
 import { Field, ImageField } from './SharedComponents'
 
-type CatalogItem = { id: string; name: string; price: number; image: string; desc: string }
+type CatalogItem = { id: string; name: string; price: number; image: string; desc: string; actionLink?: string }
 
 export function CatalogSettings({
   blockId,
@@ -159,6 +159,13 @@ export function CatalogSettings({
                 const updated = updateItem(item.id, 'image', val)
                 saveAll(updated)
               }}
+            />
+            <input
+              className="settings-input text-xs"
+              value={item.actionLink || ''}
+              placeholder="Tautan (contoh: https://wa.me/...)"
+              onChange={(e) => updateItem(item.id, 'actionLink', e.target.value)}
+              onBlur={() => saveAll(items)}
             />
           </div>
         ))}

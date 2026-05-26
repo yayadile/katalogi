@@ -93,7 +93,10 @@ export default async function PublishedPage({
   const website = await prisma.website.findUnique({
     where: { slug },
     include: {
-      blocks: { orderBy: { sortOrder: 'asc' } },
+      pages: {
+        orderBy: { sortOrder: 'asc' },
+        include: { blocks: { orderBy: { sortOrder: 'asc' } } }
+      }
     },
   })
 
@@ -107,8 +110,11 @@ export default async function PublishedPage({
   const fontFamily = theme.fontFamily ?? 'Inter'
   const headingFont = theme.headingFont ?? fontFamily
 
+  const currentPage = website.pages[0]
+  const allBlocks = currentPage?.blocks || []
+
   // Find a CONTACT block for JSON-LD
-  const contactBlock = website.blocks.find((b) => b.type === 'CONTACT')
+  const contactBlock = allBlocks.find((b) => b.type === 'CONTACT')
   const jsonLd = buildJsonLd(
     website,
     contactBlock ? (contactBlock.content as { email?: string; address?: string; whatsapp?: string }) : undefined
@@ -148,7 +154,24 @@ export default async function PublishedPage({
           } as React.CSSProperties
         }
       >
-        {website.blocks.map((block) => {
+        {website.pages.length > 1 && (
+          <nav className="flex items-center justify-center gap-4 py-4 px-6 border-b border-slate-200/50 bg-white/80 sticky top-0 z-50 backdrop-blur-sm">
+            {website.pages.map((page) => {
+              const isActive = website.pages[0]?.id === page.id
+              return (
+                <Link
+                  key={page.id}
+                  href={`/${website.slug}/${page.slug}`}
+                  className={`text-sm font-semibold transition-colors uppercase tracking-wider ${isActive ? 'text-indigo-600' : 'text-slate-500 hover:text-indigo-600'}`}
+                >
+                  {page.title}
+                </Link>
+              )
+            })}
+          </nav>
+        )}
+
+        {allBlocks.map((block) => {
           const content = block.content as Record<string, unknown>
 
           switch (block.type as BlockType) {

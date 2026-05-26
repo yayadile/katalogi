@@ -24,7 +24,12 @@ export default async function EditPage({ params }: Props) {
 
   const website = await prisma.website.findUnique({
     where: { id },
-    include: { blocks: { orderBy: { sortOrder: 'asc' } } },
+    include: {
+      pages: {
+        orderBy: { sortOrder: 'asc' },
+        include: { blocks: { orderBy: { sortOrder: 'asc' } } }
+      }
+    },
   })
   
   console.log("Website found:", !!website)
@@ -35,20 +40,35 @@ export default async function EditPage({ params }: Props) {
   type ThemeConfig = {
     primaryColor: string
     secondaryColor: string
+    backgroundColor?: string
+    buttonStyle?: 'sharp' | 'rounded' | 'pill'
     fontFamily: string
+    headingFont?: string
   }
 
   const theme = (website.themeConfig as ThemeConfig) ?? {
     primaryColor: '#8b5cf6',
     secondaryColor: '#1e293b',
+    backgroundColor: '#ffffff',
+    buttonStyle: 'rounded',
     fontFamily: 'Inter',
+    headingFont: 'Inter',
   }
 
-  const initialBlocks = website.blocks.map((b) => ({
+  const firstPage = website.pages[0]
+  const initialBlocks = firstPage ? firstPage.blocks.map((b) => ({
     id: b.id,
     type: b.type as BlockType,
     content: b.content as Record<string, unknown>,
     sortOrder: b.sortOrder,
+    parentId: b.parentId,
+  })) : []
+
+  const initialPages = website.pages.map(p => ({
+    id: p.id,
+    slug: p.slug,
+    title: p.title,
+    sortOrder: p.sortOrder,
   }))
 
   return (
@@ -60,6 +80,8 @@ export default async function EditPage({ params }: Props) {
       isPublished={website.isPublished}
       initialBlocks={initialBlocks}
       initialTheme={theme}
+      initialPages={initialPages}
+      initialPageId={firstPage?.id}
     />
   )
 }

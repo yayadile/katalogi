@@ -18,6 +18,7 @@ const defaultContent: Record<string, Record<string, unknown>> = {
   CMS: { collectionId: '' },
   COLUMN: { columns: 2, gap: 4 },
   GRID: { columns: 3, gap: 4 },
+  CONTAINER: { style: { padding: '20px', backgroundColor: '#ffffff' }, label: 'Container' },
   LINK_BLOCK: { url: '#', target: '_self' },
   LIST: { items: ['Item 1', 'Item 2', 'Item 3'] },
   // Typography
@@ -33,16 +34,25 @@ export async function addPageBlock(
   websiteId: string,
   type: BlockType,
   sortOrder: number,
-  initialContent?: Record<string, unknown>
+  initialContent?: Record<string, unknown>,
+  pageId?: string,
+  id?: string
 ): Promise<ActionResult<PageBlock>> {
   try {
+    const targetPageId = pageId || websiteId
+    const data: Prisma.PageBlockCreateInput = {
+      websiteId,
+      pageId: targetPageId,
+      type,
+      content: (initialContent || defaultContent[type]) as Prisma.InputJsonObject,
+      sortOrder,
+    }
+    if (id) {
+      data.id = id
+    }
+    
     const block = await prisma.pageBlock.create({
-      data: {
-        websiteId,
-        type,
-        content: (initialContent || defaultContent[type]) as Prisma.InputJsonObject,
-        sortOrder,
-      },
+      data,
     })
     revalidatePath(`/dashboard/websites/${websiteId}/edit`)
     return { success: true, data: block }

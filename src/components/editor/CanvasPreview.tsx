@@ -1,286 +1,499 @@
 'use client'
 
+import React, { useState } from 'react'
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core'
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
+import { useEditorStore } from './store'
+import { BlockRenderer } from './renderers/BlockRenderer'
+import { IFrameWrapper } from './IFrameWrapper'
 
-
-import type { BlockType } from '@prisma/client'
-import type { EditorBlock, BlockPosition } from './BlockNavigator'
-import HeroBlock from '@/components/blocks/HeroBlock'
-import CatalogBlock from '@/components/blocks/CatalogBlock'
-import ContactBlock from '@/components/blocks/ContactBlock'
-import TextBlock from '@/components/blocks/TextBlock'
-import { HeadingBlock, ParagraphBlock, QuoteBlock } from '@/components/blocks/TypographyBlocks'
-import { VideoBlock, GalleryBlock } from '@/components/blocks/MediaBlocks'
-import { DivBlock, ColumnBlock, GridBlock, ListBlock, LinkBlock, CMSBlock, ButtonBlock } from '@/components/blocks/StructureBlocks'
-import DraggableWrapper from './DraggableWrapper'
-
-const BLOCK_TYPE_LABELS: Record<string, string> = {
-  HERO: 'Hero',
-  CATALOG: 'Katalog',
-  CONTACT: 'Kontak',
-  TEXT: 'Teks',
-  GALLERY: 'Galeri',
-  DIV: 'Div Block',
-  CMS: 'CMS',
-  COLUMN: 'Kolom',
-  GRID: 'Grid',
-  LINK_BLOCK: 'Link Block',
-  LIST: 'List',
-  HEADING: 'Heading',
-  PARAGRAPH: 'Paragraph',
-  QUOTE: 'Quote',
-  BUTTON: 'Tombol',
-  VIDEO: 'Video',
-}
-
-const BLOCK_TYPE_COLORS: Record<string, string> = {
-  HERO: 'bg-violet-500',
-  CATALOG: 'bg-blue-500',
-  CONTACT: 'bg-green-500',
-  TEXT: 'bg-slate-500',
-  GALLERY: 'bg-orange-500',
-  DIV: 'bg-gray-500',
-  CMS: 'bg-indigo-500',
-  COLUMN: 'bg-sky-500',
-  GRID: 'bg-cyan-500',
-  LINK_BLOCK: 'bg-pink-500',
-  LIST: 'bg-teal-500',
-  HEADING: 'bg-amber-500',
-  PARAGRAPH: 'bg-orange-400',
-  QUOTE: 'bg-yellow-500',
-  VIDEO: 'bg-red-500',
-}
-
-function BlockWrapper({
-  block,
-  isSelected,
-  onClick,
-  theme,
-}: {
-  block: EditorBlock
-  isSelected: boolean
-  onClick: () => void
-  theme: {
-    primaryColor: string
-    secondaryColor: string
-    backgroundColor?: string
-    buttonStyle?: 'sharp' | 'rounded' | 'pill'
-    fontFamily: string
-    headingFont?: string
-  }
+function NestedSortableBlock({ 
+  id,
+  depth = 0
+}: { 
+  id: string 
+  depth?: number
 }) {
-  const content = block.content
+  const block = useEditorStore((state) => state.blocks.find(b => b.id === id))
+  const allBlocks = useEditorStore((state) => state.blocks)
+  const selectedId = useEditorStore((state) => state.selectedId)
+  const selectBlock = useEditorStore((state) => state.selectBlock)
+  const duplicateBlock = useEditorStore((state) => state.duplicateBlock)
+  const setBlocks = useEditorStore((state) => state.setBlocks)
 
-  const renderBlock = () => {
-    switch (block.type as string) {
-      case 'HERO':
-        return (
-          <HeroBlock
-            content={content as Parameters<typeof HeroBlock>[0]['content']}
-            theme={theme}
-            isEditing
-          />
-        )
-      case 'CATALOG':
-        return (
-          <CatalogBlock
-            content={content as Parameters<typeof CatalogBlock>[0]['content']}
-            theme={theme}
-          />
-        )
-      case 'CONTACT':
-        return (
-          <ContactBlock
-            content={content as Parameters<typeof ContactBlock>[0]['content']}
-            theme={theme}
-          />
-        )
-      case 'TEXT':
-        return (
-          <TextBlock
-            content={content as Parameters<typeof TextBlock>[0]['content']}
-            theme={theme}
-          />
-        )
-      case 'HEADING':
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return <HeadingBlock content={content as any} theme={theme} />
-      case 'PARAGRAPH':
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return <ParagraphBlock content={content as any} theme={theme} />
-      case 'QUOTE':
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return <QuoteBlock content={content as any} theme={theme} />
-      case 'VIDEO':
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return <VideoBlock content={content as any} theme={theme} />
-      case 'GALLERY':
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return <GalleryBlock content={content as any} />
-      case 'DIV':
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return <DivBlock content={content as any} />
-      case 'COLUMN':
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return <ColumnBlock content={content as any} />
-      case 'GRID':
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return <GridBlock content={content as any} />
-      case 'LIST':
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return <ListBlock content={content as any} theme={theme} />
-      case 'LINK_BLOCK':
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return <LinkBlock content={content as any} />
-      case 'BUTTON':
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return <ButtonBlock content={content as any} theme={theme} />
-      case 'CMS':
-        return <CMSBlock />
-      default:
-        return (
-          <div className="p-8 text-center text-slate-400 bg-slate-100">
-            Block type: {block.type}
-          </div>
-        )
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+  } = useSortable({ id })
+
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }))
+
+  const childBlocks = allBlocks
+    .filter(b => b.parentId === id)
+    .sort((a, b) => a.sortOrder - b.sortOrder)
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  }
+
+  const [blockToDelete, setBlockToDelete] = useState<{ id: string; type: string } | null>(null)
+
+  const handleDragEnd = (event: any) => {
+    const { active, over } = event
+    if (over && active.id !== over.id) {
+      const currentBlocks = useEditorStore.getState().blocks
+      const children = currentBlocks.filter(b => b.parentId === id)
+      const oldIndex = children.findIndex(b => b.id === active.id)
+      const newIndex = children.findIndex(b => b.id === over.id)
+      
+      if (oldIndex === -1 || newIndex === -1) return
+      
+      const reordered = [...children]
+      const [removed] = reordered.splice(oldIndex, 1)
+      reordered.splice(newIndex, 0, removed!)
+      reordered.forEach((b, i) => { b.sortOrder = i + 1 })
+      
+      const otherBlocks = currentBlocks.filter(b => b.parentId !== id)
+      setBlocks([...otherBlocks, ...reordered].sort((a, b) => a.sortOrder - b.sortOrder))
     }
   }
 
-  const styles = (block.content?.styles || {}) as React.CSSProperties
+  if (!block) return null
+
+  const isSelected = selectedId === id
 
   return (
     <div
-      id={block.content?.htmlId ? String(block.content.htmlId) : undefined}
-      className={`relative group cursor-pointer transition-all duration-200 overflow-hidden w-full ${
-        isSelected
-          ? 'ring-2 ring-indigo-600'
-          : 'ring-1 ring-transparent hover:ring-gray-300'
-      }`}
-      style={styles}
-      onClick={onClick}
+      ref={setNodeRef}
+      style={style}
+      onClick={(e) => {
+        e.stopPropagation()
+        selectBlock(id)
+      }}
+      onContextMenu={(e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        useEditorStore.getState().selectBlock(id)
+      }}
+      className={`relative group cursor-pointer transition-all duration-200 w-full ${
+        isSelected ? 'ring-2 ring-indigo-600 ring-inset' : 'hover:ring-1 hover:ring-indigo-300 ring-inset ring-transparent'
+      } ${depth > 0 ? 'ml-4 border-l-2 border-indigo-200' : ''}`}
     >
-      {/* Type badge */}
+      <div className="w-full">
+        <BlockRenderer block={block} isPreview={false} />
+      </div>
+      
+      {/* Children List (for CONTAINER blocks) */}
+      {childBlocks.length > 0 && (
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext
+            items={childBlocks.map(b => b.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            <div className="flex flex-col w-full border-t border-dashed border-indigo-200 bg-indigo-50/30">
+              {childBlocks.map(child => (
+                <NestedSortableBlock key={child.id} id={child.id} depth={depth + 1} />
+              ))}
+              {isSelected && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    const newId = `temp-child-${Date.now()}`
+                    useEditorStore.getState().addChildBlock({
+                      id: newId,
+                      type: 'TEXT',
+                      content: { text: 'Elemen baru' },
+                      sortOrder: childBlocks.length + 1,
+                    }, id)
+                  }}
+                  className="flex items-center gap-1.5 px-3 py-2 text-[10px] font-bold text-indigo-600 hover:bg-indigo-100 transition-colors uppercase tracking-wider"
+                >
+                  + Tambah Elemen
+                </button>
+              )}
+            </div>
+          </SortableContext>
+        </DndContext>
+      )}
+      
+      {/* Controls Overlay */}
       <div
-        className={`absolute top-2 right-2 z-20 flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-semibold text-white ${BLOCK_TYPE_COLORS[block.type as BlockType]} ${
+        className={`absolute top-2 right-2 z-20 flex items-center gap-1.5 p-1 rounded-lg bg-white border border-gray-200 shadow-sm transition-opacity ${
           isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-        } transition-opacity`}
+        }`}
+        onClick={(e) => e.stopPropagation()}
       >
-        {BLOCK_TYPE_LABELS[block.type as BlockType]}
+        <div
+          className="flex items-center gap-1.5 px-2 py-1 rounded text-[10px] font-bold text-white bg-indigo-600 cursor-grab active:cursor-grabbing hover:bg-indigo-700 select-none"
+          {...attributes}
+          {...listeners}
+        >
+          <svg className="w-3 h-3 text-white/90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+          <span>{block.type}</span>
+        </div>
+        
+        {childBlocks.length === 0 && block.type !== 'CONTAINER' && (
+          <>
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                duplicateBlock(block.id)
+              }}
+              className="p-1 rounded text-slate-500 hover:bg-slate-100 hover:text-indigo-600 transition-colors"
+              title="Duplikat Blok"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
+              </svg>
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                setBlockToDelete({ id: block.id, type: block.type })
+              }}
+              className="p-1 rounded text-red-500 hover:bg-red-50 hover:text-red-600 transition-colors"
+              title="Hapus Block"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+          </>
+        )}
       </div>
 
-      {/* Click overlay */}
-      {!isSelected && (
-        <div className="absolute inset-0 z-10 opacity-0 group-hover:opacity-100 bg-indigo-500/5 transition-opacity" />
+      {blockToDelete && (
+        <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-slate-950/40 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl p-6 text-center max-w-sm">
+            <h3 className="text-sm font-extrabold text-slate-900">Hapus Blok {blockToDelete.type}?</h3>
+            <p className="text-xs text-slate-500 font-semibold mt-2">Tindakan ini tidak dapat dibatalkan.</p>
+            <div className="mt-4 flex gap-3">
+              <button onClick={() => setBlockToDelete(null)} className="flex-1 py-2.5 px-4 border border-slate-200 rounded-xl text-xs font-bold">Batal</button>
+              <button onClick={() => { useEditorStore.getState().deleteBlock(blockToDelete.id); setBlockToDelete(null) }} className="flex-1 py-2.5 px-4 bg-red-600 text-white rounded-xl text-xs font-bold">Hapus</button>
+            </div>
+          </div>
+        </div>
       )}
-
-      {/* Block content — pointer-events-none so click goes to wrapper */}
-      <div className="pointer-events-none select-none w-full">{renderBlock()}</div>
     </div>
   )
 }
 
-type CanvasPreviewProps = {
-  blocks: EditorBlock[]
-  selectedId: string | null
-  onSelect: (id: string | null) => void
-  onPositionChange?: (id: string, position: Partial<BlockPosition>) => void
-  theme: {
-    primaryColor: string
-    secondaryColor: string
-    backgroundColor?: string
-    buttonStyle?: 'sharp' | 'rounded' | 'pill'
-    fontFamily: string
-    headingFont?: string
-  }
-  previewMode?: 'desktop' | 'mobile'
-}
+export default function CanvasPreview() {
+  const blocks = useEditorStore((state) => state.blocks)
+  const pages = useEditorStore((state) => state.pages)
+  const currentPageId = useEditorStore((state) => state.currentPageId)
+  const selectedId = useEditorStore((state) => state.selectedId)
+  const selectBlock = useEditorStore((state) => state.selectBlock)
+  const deleteBlock = useEditorStore((state) => state.deleteBlock)
+  const duplicateBlock = useEditorStore((state) => state.duplicateBlock)
+  const setBlocks = useEditorStore((state) => state.setBlocks)
+  const theme = useEditorStore((state) => state.theme)
+  const previewMode = useEditorStore((state) => state.previewMode)
+  
+  // Only render root blocks (no parentId) at the top level
+  const rootBlocks = blocks.filter(b => !b.parentId).sort((a, b) => a.sortOrder - b.sortOrder)
 
-export default function CanvasPreview({
-  blocks,
-  selectedId,
-  onSelect,
-  onPositionChange,
-  theme,
-  previewMode = 'desktop',
-}: CanvasPreviewProps) {
+  // Custom delete modal state
+  const [blockToDelete, setBlockToDelete] = useState<{ id: string; type: string } | null>(null)
+
+  // Custom context menu state
+  const [contextMenu, setContextMenu] = useState<{
+    x: number
+    y: number
+    blockId: string
+    blockType: string
+  } | null>(null)
+
+  React.useEffect(() => {
+    const handleClose = () => setContextMenu(null)
+    window.addEventListener('click', handleClose)
+    return () => window.removeEventListener('click', handleClose)
+  }, [])
+
+  const handleContextMenu = (e: React.MouseEvent, id: string, type: string) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setContextMenu({
+      x: e.clientX,
+      y: e.clientY,
+      blockId: id,
+      blockType: type
+    })
+  }
+
+  const moveBlockUp = (id: string) => {
+    const rootBlockIds = blocks.filter(b => !b.parentId).map(b => b.id)
+    const index = rootBlockIds.indexOf(id)
+    if (index > 0) {
+      const targetId = rootBlockIds[index - 1]
+      if (!targetId) return
+      const oldIndex = blocks.findIndex((b) => b.id === id)
+      const newIndex = blocks.findIndex((b) => b.id === targetId)
+      const newBlocks = [...blocks]
+      const [removed] = newBlocks.splice(oldIndex, 1)
+      newBlocks.splice(newIndex, 0, removed!)
+      newBlocks.forEach((b, idx) => { b.sortOrder = idx + 1 })
+      setBlocks(newBlocks)
+    }
+  }
+
+  const moveBlockDown = (id: string) => {
+    const rootBlockIds = blocks.filter(b => !b.parentId).map(b => b.id)
+    const index = rootBlockIds.indexOf(id)
+    if (index < rootBlockIds.length - 1) {
+      const targetId = rootBlockIds[index + 1]
+      if (!targetId) return
+      const oldIndex = blocks.findIndex((b) => b.id === id)
+      const newIndex = blocks.findIndex((b) => b.id === targetId)
+      const newBlocks = [...blocks]
+      const [removed] = newBlocks.splice(oldIndex, 1)
+      newBlocks.splice(newIndex, 0, removed!)
+      newBlocks.forEach((b, idx) => { b.sortOrder = idx + 1 })
+      setBlocks(newBlocks)
+    }
+  }
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 5,
+      },
+    })
+  )
+
+  const handleDragEnd = (event: any) => {
+    const { active, over } = event
+    if (over && active.id !== over.id) {
+      const current = useEditorStore.getState().blocks
+      const rootIds = current.filter(b => !b.parentId).map(b => b.id)
+      const oldIndex = rootIds.indexOf(active.id as string)
+      const newIndex = rootIds.indexOf(over.id as string)
+      
+      if (oldIndex === -1 || newIndex === -1) return
+      
+      const rootBlocks = current.filter(b => !b.parentId)
+      rootBlocks.sort((a, b) => a.sortOrder - b.sortOrder)
+      const [removed] = rootBlocks.splice(oldIndex, 1)
+      rootBlocks.splice(newIndex, 0, removed!)
+      rootBlocks.forEach((b, i) => { b.sortOrder = i + 1 })
+      
+      const childBlocks = current.filter(b => b.parentId)
+      setBlocks([...rootBlocks, ...childBlocks].sort((a, b) => a.sortOrder - b.sortOrder))
+    }
+  }
+
+  const handleTriggerDelete = (id: string, type: string) => {
+    setBlockToDelete({ id, type })
+  }
 
   return (
     <div className="h-full w-full overflow-y-auto overflow-x-hidden flex flex-col items-center py-8 px-4 relative">
-
-      {/* Dynamic Font Style Injection for the preview */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=${theme.fontFamily.replace(/\s+/g, '+')}:wght@300;400;500;600;700&display=swap');
         ${theme.headingFont && theme.headingFont !== theme.fontFamily ? `@import url('https://fonts.googleapis.com/css2?family=${theme.headingFont.replace(/\s+/g, '+')}:wght@500;600;700;800&display=swap');` : ''}
-        
+
         .preview-content h1, .preview-content h2, .preview-content h3, .preview-content h4 {
           font-family: "${theme.headingFont || theme.fontFamily}", sans-serif !important;
         }
       `}</style>
 
-      {/* Mockup Frame / Canvas Area */}
       <div 
         className={`bg-white relative shrink-0 overflow-hidden transition-all duration-500 ease-in-out shadow-xl ring-1 ring-black/5 ${
           previewMode === 'mobile' 
             ? 'w-[375px] min-h-[812px] border-[14px] border-gray-900 rounded-[3rem] mt-4 mb-16 mx-auto'
             : 'w-full max-w-[1280px] min-h-[800px] rounded-lg mt-0 mb-16'
         } preview-content`}
-        style={{ fontFamily: `"${theme.fontFamily}", sans-serif` }}
-        onClick={(e) => {
-          e.stopPropagation()
-          onSelect(null)
-        }}
       >
-        {/* Device specific UI (Notch for mobile, Browser Bar for desktop) */}
-        {previewMode === 'mobile' ? (
-          <div className="absolute top-0 inset-x-0 h-7 flex justify-center z-50">
-            <div className="w-32 h-7 bg-gray-900 rounded-b-3xl"></div>
+        <IFrameWrapper theme={theme}>
+          <div onClick={() => selectBlock(null)} className="min-h-screen flex flex-col w-full font-sans" style={{ fontFamily: `"${theme.fontFamily}", sans-serif` }}>
+            {pages.length > 1 && (
+              <nav className="flex items-center justify-center gap-4 py-4 px-6 border-b border-slate-200/50 bg-white/80 sticky top-0 z-50 backdrop-blur-sm pointer-events-none">
+                {pages.map((page) => {
+                  const isActive = currentPageId === page.id
+                  return (
+                    <div
+                      key={page.id}
+                      className={`text-sm font-semibold transition-colors uppercase tracking-wider ${isActive ? 'text-indigo-600' : 'text-slate-500'}`}
+                    >
+                      {page.title}
+                    </div>
+                  )
+                })}
+              </nav>
+            )}
+            <DndContext 
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+            >
+              <SortableContext 
+                items={rootBlocks.map(b => b.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                <div className="flex flex-col w-full min-h-full" style={{ backgroundColor: theme.backgroundColor || '#ffffff' }}>
+                  {rootBlocks.length === 0 ? (
+                    <div className="flex-1 flex flex-col items-center justify-center py-32 text-gray-400">
+                       <p className="text-sm font-bold uppercase tracking-widest">Area Kanvas Kosong</p>
+                    </div>
+                  ) : (
+                    rootBlocks.map((block) => (
+                      <NestedSortableBlock 
+                        key={block.id} 
+                        id={block.id}
+                      />
+                    ))
+                  )}
+                </div>
+              </SortableContext>
+            </DndContext>
+            
+            <footer 
+              className="py-6 text-center border-t border-slate-200/50 pointer-events-none mt-auto"
+              style={{ backgroundColor: theme.backgroundColor || '#F8FAFC' }}
+            >
+              <div className="inline-flex items-center gap-1.5 text-slate-400 text-xs transition-colors">
+                <span className="w-4 h-4 rounded flex items-center justify-center text-[9px] text-white font-bold" style={{ backgroundColor: theme.primaryColor }}>K</span>
+                Dibuat dengan <strong className="text-slate-600">Katalogi</strong>
+              </div>
+            </footer>
           </div>
-        ) : null}
-
-        {/* Content Area */}
-        <div 
-          className="flex flex-col w-full min-h-full relative transition-colors duration-300"
-          style={{ backgroundColor: theme.backgroundColor || '#FFFFFF' }}
-        >
-
-          {blocks.length === 0 ? (
-            <div className="absolute inset-0 flex flex-col items-center justify-center py-32 text-gray-400">
-              <svg className="w-16 h-16 mb-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              <p className="text-sm font-bold uppercase tracking-widest text-gray-500">Area Kanvas Kosong</p>
-            </div>
-          ) : (
-            blocks.map((block, index) => {
-              const pos = block.position as Record<string, unknown> | null
-              const position = {
-                x: (pos?.x as number) ?? 0,
-                y: (pos?.y as number) ?? 0,
-                width: (pos?.width as string | number) ?? '100%',
-                height: (pos?.height as string | number) ?? 'auto',
-                zIndex: (pos?.zIndex as number) ?? index + 1
-              }
-              return (
-                <DraggableWrapper
-                  key={block.id}
-                  id={block.id}
-                  position={position as BlockPosition}
-                  isSelected={selectedId === block.id}
-                  onSelect={onSelect}
-                  onDragStop={() => {}} // Disabled
-                  onResizeStop={() => {}} // Disabled
-                >
-                  <BlockWrapper
-                    block={block}
-                    isSelected={selectedId === block.id}
-                    onClick={() => onSelect(block.id)}
-                    theme={theme}
-                  />
-                </DraggableWrapper>
-              )
-            })
-          )}
-        </div>
+        </IFrameWrapper>
       </div>
+
+      {/* ──────────────── Custom Delete Confirmation Modal ──────────────── */}
+      {blockToDelete && (
+        <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-slate-950/40 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white border border-gray-100 w-full max-w-sm rounded-[2rem] shadow-2xl p-6 text-center animate-in zoom-in-95 duration-200 relative">
+            
+            {/* Red Warning Trash Icon */}
+            <div className="w-12 h-12 mx-auto mb-4 bg-red-50 text-red-500 border border-red-100 rounded-full flex items-center justify-center">
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </div>
+
+            <h3 className="text-sm font-extrabold text-slate-900 leading-tight">
+              Hapus Blok {blockToDelete.type}?
+            </h3>
+            <p className="text-xs text-slate-500 font-semibold leading-relaxed max-w-xs mx-auto mt-2">
+              Tindakan ini tidak dapat dibatalkan. Blok beserta konten di dalamnya akan dihapus secara permanen.
+            </p>
+
+            {/* Actions */}
+            <div className="mt-6 flex gap-3">
+              <button
+                onClick={() => setBlockToDelete(null)}
+                className="flex-1 py-2.5 px-4 border border-slate-200 hover:bg-slate-50 text-slate-500 hover:text-slate-700 rounded-xl text-xs font-bold transition-all"
+              >
+                Batal
+              </button>
+              <button
+                onClick={() => {
+                  deleteBlock(blockToDelete.id)
+                  setBlockToDelete(null)
+                }}
+                className="flex-1 py-2.5 px-4 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold transition-all shadow-sm shadow-red-600/10"
+              >
+                Hapus
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
+      {/* ──────────────── Custom Context Menu ──────────────── */}
+      {contextMenu && (
+        <div
+          className="fixed z-[999] min-w-[180px] bg-white/95 backdrop-blur-md border border-slate-200/80 rounded-xl shadow-xl py-1.5 px-1 animate-in fade-in zoom-in-95 duration-100 ease-out"
+          style={{
+            top: `${contextMenu.y}px`,
+            left: `${contextMenu.x}px`,
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Duplikat */}
+          <button
+            onClick={() => {
+              duplicateBlock(contextMenu.blockId)
+              setContextMenu(null)
+            }}
+            className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 hover:text-indigo-600 hover:bg-slate-50 rounded-lg transition-colors text-left"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
+            </svg>
+            <span>Duplikat Blok</span>
+          </button>
+
+          {/* Pindahkan Ke Atas */}
+          <button
+            onClick={() => {
+              moveBlockUp(contextMenu.blockId)
+              setContextMenu(null)
+            }}
+            disabled={blocks.filter(b => !b.parentId).findIndex(b => b.id === contextMenu.blockId) === 0}
+            className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 hover:text-indigo-600 hover:bg-slate-50 rounded-lg transition-colors text-left disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-700"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+            </svg>
+            <span>Pindahkan ke Atas</span>
+          </button>
+
+          {/* Pindahkan Ke Bawah */}
+          <button
+            onClick={() => {
+              moveBlockDown(contextMenu.blockId)
+              setContextMenu(null)
+            }}
+            disabled={blocks.filter(b => !b.parentId).findIndex(b => b.id === contextMenu.blockId) === blocks.filter(b => !b.parentId).length - 1}
+            className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 hover:text-indigo-600 hover:bg-slate-50 rounded-lg transition-colors text-left disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-700"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+            <span>Pindahkan ke Bawah</span>
+          </button>
+
+          {/* Divider */}
+          <div className="my-1 border-t border-slate-100" />
+
+          {/* Hapus */}
+          <button
+            onClick={() => {
+              handleTriggerDelete(contextMenu.blockId, contextMenu.blockType)
+              setContextMenu(null)
+            }}
+            className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 rounded-lg transition-colors text-left"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+            <span>Hapus Blok</span>
+          </button>
+        </div>
+      )}
     </div>
   )
 }

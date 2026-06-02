@@ -299,7 +299,7 @@ export default function EditorClient({
               <button
                 onClick={() => undo()}
                 disabled={!isMounted || past.length === 0}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-purple-800 hover:bg-white hover:shadow-sm disabled:opacity-20 disabled:hover:bg-transparent disabled:hover:text-slate-400 transition-all duration-200"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-white hover:shadow-sm disabled:opacity-20 disabled:hover:bg-transparent disabled:hover:text-slate-400 transition-all duration-200"
                 title="Undo (Ctrl+Z)"
               >
                 <Undo className="w-4 h-4" />
@@ -307,7 +307,7 @@ export default function EditorClient({
               <button
                 onClick={() => redo()}
                 disabled={!isMounted || future.length === 0}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-purple-800 hover:bg-white hover:shadow-sm disabled:opacity-20 disabled:hover:bg-transparent disabled:hover:text-slate-400 transition-all duration-200"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-white hover:shadow-sm disabled:opacity-20 disabled:hover:bg-transparent disabled:hover:text-slate-400 transition-all duration-200"
                 title="Redo (Ctrl+Y)"
               >
                 <Redo className="w-4 h-4" />
@@ -347,7 +347,7 @@ export default function EditorClient({
               onClick={() => setPreviewMode('desktop')}
               className={`p-2.5 rounded-full transition-all duration-500 ${
                 previewMode === 'desktop' 
-                  ? 'bg-white text-purple-800 shadow-md border border-slate-200/50 scale-110' 
+                  ? 'bg-white text-indigo-600 shadow-md border border-slate-200/50 scale-110' 
                   : 'text-slate-400 hover:text-slate-600 hover:bg-white/50'
               }`}
               title="Desktop Layout"
@@ -360,7 +360,7 @@ export default function EditorClient({
               onClick={() => setPreviewMode('mobile')}
               className={`p-2.5 rounded-full transition-all duration-500 ${
                 previewMode === 'mobile' 
-                  ? 'bg-white text-purple-800 shadow-md border border-slate-200/50 scale-110' 
+                  ? 'bg-white text-indigo-600 shadow-md border border-slate-200/50 scale-110' 
                   : 'text-slate-400 hover:text-slate-600 hover:bg-white/50'
               }`}
               title="Mobile Layout"
@@ -394,7 +394,7 @@ export default function EditorClient({
             <button
               onClick={handlePublish}
               disabled={isPublishing}
-              className="px-4 py-1.5 rounded-lg bg-purple-800 hover:bg-purple-900 text-white font-semibold text-xs transition-all disabled:opacity-50 shadow-sm"
+              className="px-4 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs transition-all disabled:opacity-50 shadow-sm"
             >
               {isPublishing ? (
                 <div className="flex items-center gap-1.5">
@@ -419,7 +419,7 @@ export default function EditorClient({
               onClick={() => setLeftPanel('elements')}
               className={`relative p-3 rounded-xl transition-all duration-200 flex flex-col items-center gap-1 group ${
                 leftPanel === 'elements' 
-                  ? 'text-purple-800 bg-purple-100/80 border border-purple-200 shadow-sm font-semibold' 
+                  ? 'text-indigo-600 bg-indigo-50/80 border border-indigo-100 shadow-sm font-semibold' 
                   : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'
               }`}
               title="Tambah Elemen & Blok"
@@ -432,7 +432,7 @@ export default function EditorClient({
               onClick={() => setLeftPanel('layers')}
               className={`relative p-3 rounded-xl transition-all duration-200 flex flex-col items-center gap-1 group ${
                 leftPanel === 'layers' 
-                  ? 'text-purple-800 bg-purple-100/80 border border-purple-200 shadow-sm font-semibold' 
+                  ? 'text-indigo-600 bg-indigo-50/80 border border-indigo-100 shadow-sm font-semibold' 
                   : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'
               }`}
               title="Struktur Urutan Blok"
@@ -445,7 +445,7 @@ export default function EditorClient({
               onClick={() => setLeftPanel('settings')}
               className={`relative p-3 rounded-xl transition-all duration-200 flex flex-col items-center gap-1 group ${
                 leftPanel === 'settings' 
-                  ? 'text-purple-800 bg-purple-100/80 border border-purple-200 shadow-sm font-semibold' 
+                  ? 'text-indigo-600 bg-indigo-50/80 border border-indigo-100 shadow-sm font-semibold' 
                   : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'
               }`}
               title="Desain & Tema Global"
@@ -491,7 +491,7 @@ export default function EditorClient({
                       onClick={() => setActiveSettingsTab('theme')}
                       className={`flex-1 py-1.5 px-2 rounded-md text-[10px] font-extrabold uppercase tracking-wide transition-all ${
                         activeSettingsTab === 'theme' 
-                          ? 'bg-white shadow-sm border border-gray-200 text-purple-800' 
+                          ? 'bg-white shadow-sm border border-gray-200 text-indigo-600' 
                           : 'text-gray-500 hover:text-gray-700'
                       }`}
                     >
@@ -501,7 +501,7 @@ export default function EditorClient({
                       onClick={() => setActiveSettingsTab('identity')}
                       className={`flex-1 py-1.5 px-2 rounded-md text-[10px] font-extrabold uppercase tracking-wide transition-all ${
                         activeSettingsTab === 'identity' 
-                          ? 'bg-white shadow-sm border border-gray-200 text-purple-800' 
+                          ? 'bg-white shadow-sm border border-gray-200 text-indigo-600' 
                           : 'text-gray-500 hover:text-gray-700'
                       }`}
                     >
@@ -526,7 +526,7 @@ export default function EditorClient({
                           <label className="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider">Judul Katalog</label>
                           <input
                             type="text"
-                            className="w-full px-3 py-2 text-xs border border-gray-300 rounded focus:border-purple-700 focus:outline-none font-medium text-slate-800 shadow-sm"
+                            className="w-full px-3 py-2 text-xs border border-gray-300 rounded focus:border-indigo-600 focus:outline-none font-medium text-slate-800 shadow-sm"
                             value={siteTitle}
                             onChange={(e) => setSiteTitle(e.target.value)}
                             placeholder="Katalog Saya"
@@ -534,7 +534,7 @@ export default function EditorClient({
                         </div>
                         <div className="space-y-2">
                           <label className="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider">URL Slug</label>
-                          <div className="flex items-center bg-gray-50 border border-gray-300 rounded px-3 shadow-sm focus-within:border-purple-700 focus-within:ring-1 focus-within:ring-purple-700">
+                          <div className="flex items-center bg-gray-50 border border-gray-300 rounded px-3 shadow-sm focus-within:border-indigo-600 focus-within:ring-1 focus-within:ring-indigo-600">
                             <span className="text-[11px] text-gray-400 select-none font-black mr-1">/</span>
                             <input
                               type="text"
@@ -548,7 +548,7 @@ export default function EditorClient({
                         <button
                           onClick={handleSaveIdentity}
                           disabled={isSavingIdentity}
-                          className="w-full mt-4 flex items-center justify-center gap-1.5 bg-purple-800 text-white font-bold py-2.5 rounded-lg text-xs hover:bg-purple-900 transition-colors shadow-sm disabled:opacity-50"
+                          className="w-full mt-4 flex items-center justify-center gap-1.5 bg-indigo-600 text-white font-bold py-2.5 rounded-lg text-xs hover:bg-indigo-700 transition-colors shadow-sm disabled:opacity-50"
                         >
                           {isSavingIdentity ? (
                             <>
@@ -636,7 +636,7 @@ export default function EditorClient({
                   className={`px-3 py-1 rounded-md font-semibold text-[10px] transition-all flex items-center gap-1 shrink-0 ${
                     showCopySuccess 
                       ? 'bg-emerald-500 text-white' 
-                      : 'bg-purple-100 hover:bg-purple-200 text-purple-800'
+                      : 'bg-indigo-50 hover:bg-indigo-100 text-indigo-600'
                   }`}
                 >
                   {showCopySuccess ? (
@@ -663,7 +663,7 @@ export default function EditorClient({
                 href={`/${siteSlug}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 flex items-center justify-center py-2.5 px-4 bg-purple-800 hover:bg-purple-900 text-white rounded-xl text-xs font-semibold transition-all shadow-sm"
+                className="flex-1 flex items-center justify-center py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold transition-all shadow-sm"
               >
                 Buka Situs Live
               </a>

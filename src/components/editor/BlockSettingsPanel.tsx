@@ -96,25 +96,25 @@ export default function BlockSettingsPanel() {
            <div className="flex gap-1">
              <button 
                onClick={() => setEditingBreakpoint('base')}
-               className={`px-3 py-1 rounded text-xs font-medium ${editingBreakpoint === 'base' ? 'bg-purple-100 text-purple-800' : 'text-gray-500 hover:bg-gray-50'}`}
+               className={`px-3 py-1 rounded text-xs font-medium ${editingBreakpoint === 'base' ? 'bg-indigo-50 text-indigo-600' : 'text-gray-500 hover:bg-gray-50'}`}
              >
                Base
              </button>
              <button 
                onClick={() => setEditingBreakpoint('desktop')}
-               className={`px-3 py-1 rounded text-xs font-medium ${editingBreakpoint === 'desktop' ? 'bg-purple-100 text-purple-800' : 'text-gray-500 hover:bg-gray-50'}`}
+               className={`px-3 py-1 rounded text-xs font-medium ${editingBreakpoint === 'desktop' ? 'bg-indigo-50 text-indigo-600' : 'text-gray-500 hover:bg-gray-50'}`}
              >
                Desktop
              </button>
              <button 
                onClick={() => setEditingBreakpoint('tablet')}
-               className={`px-3 py-1 rounded text-xs font-medium ${editingBreakpoint === 'tablet' ? 'bg-purple-100 text-purple-800' : 'text-gray-500 hover:bg-gray-50'}`}
+               className={`px-3 py-1 rounded text-xs font-medium ${editingBreakpoint === 'tablet' ? 'bg-indigo-50 text-indigo-600' : 'text-gray-500 hover:bg-gray-50'}`}
              >
                Tablet
              </button>
              <button 
                onClick={() => setEditingBreakpoint('mobile')}
-               className={`px-3 py-1 rounded text-xs font-medium ${editingBreakpoint === 'mobile' ? 'bg-purple-100 text-purple-800' : 'text-gray-500 hover:bg-gray-50'}`}
+               className={`px-3 py-1 rounded text-xs font-medium ${editingBreakpoint === 'mobile' ? 'bg-indigo-50 text-indigo-600' : 'text-gray-500 hover:bg-gray-50'}`}
              >
                Mobile
              </button>
@@ -126,7 +126,7 @@ export default function BlockSettingsPanel() {
         {activeBlockTab === 'style' && (
           <div className="flex flex-col p-2 space-y-4">
             {selectedSubId && (
-              <div className="bg-purple-100 text-purple-900 text-[10px] font-medium px-3 py-2 rounded mb-2">
+              <div className="bg-indigo-50 text-indigo-700 text-[10px] font-medium px-3 py-2 rounded mb-2">
                 Mengedit gaya khusus elemen: <b>{selectedSubId}</b>
               </div>
             )}

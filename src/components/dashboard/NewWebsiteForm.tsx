@@ -125,7 +125,7 @@ export default function NewWebsiteForm({ userId }: { userId: string }) {
             type="submit"
             form="create-website-form"
             disabled={pending}
-            className="w-full bg-purple-800 hover:bg-purple-900 text-white font-black uppercase tracking-[0.15em] px-6 py-4 rounded-xl transition-all hover:shadow-xl hover:shadow-purple-800/20 hover:-translate-y-0.5 disabled:opacity-60 disabled:hover:translate-y-0 text-[11px] flex items-center justify-center gap-2 active:scale-[0.98]"
+            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black uppercase tracking-[0.15em] px-6 py-4 rounded-xl transition-all hover:shadow-xl hover:shadow-indigo-600/20 hover:-translate-y-0.5 disabled:opacity-60 disabled:hover:translate-y-0 text-[11px] flex items-center justify-center gap-2 active:scale-[0.98]"
           >
             {pending ? (
               <>
@@ -148,14 +148,14 @@ export default function NewWebsiteForm({ userId }: { userId: string }) {
             <div className="flex flex-col gap-3">
               <Link 
                 href="/dashboard" 
-                className="group inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-purple-800 transition-colors w-fit bg-slate-50 hover:bg-purple-100 px-3 py-1.5 rounded-full border border-slate-200"
+                className="group inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-indigo-600 transition-colors w-fit bg-slate-50 hover:bg-indigo-50 px-3 py-1.5 rounded-full border border-slate-200"
               >
                 <ArrowLeft className="w-3 h-3 group-hover:-translate-x-1 transition-transform" /> 
                 Kembali
               </Link>
               <div>
                 <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tighter uppercase flex items-center gap-2.5">
-                  <div className="bg-purple-800 p-1.5 rounded-lg shadow-md shadow-purple-800/20 text-white">
+                  <div className="bg-indigo-600 p-1.5 rounded-lg shadow-md shadow-indigo-600/20 text-white">
                     <Sparkles className="w-4 h-4" />
                   </div>
                   Mulai Proyek
@@ -183,14 +183,14 @@ export default function NewWebsiteForm({ userId }: { userId: string }) {
                   name="title"
                   required
                   placeholder="Toko Keren Saya"
-                  className="w-full bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 rounded-lg px-3 py-2.5 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-purple-800/20 focus:border-purple-800 focus:bg-white transition-all shadow-sm"
+                  className="w-full bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 rounded-lg px-3 py-2.5 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-600/20 focus:border-indigo-600 focus:bg-white transition-all shadow-sm"
                 />
               </div>
               <div className="space-y-1.5">
                 <label htmlFor="slug" className="block text-slate-800 text-[9px] font-black uppercase tracking-widest">
                   Slug URL
                 </label>
-                <div className="flex items-center bg-slate-50 border border-slate-200 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-purple-800/20 focus-within:border-purple-800 focus-within:bg-white transition-all shadow-sm">
+                <div className="flex items-center bg-slate-50 border border-slate-200 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-indigo-600/20 focus-within:border-indigo-600 focus-within:bg-white transition-all shadow-sm">
                   <span className="pl-3 pr-1 text-slate-400 text-[11px] font-black shrink-0">katalogi.id/</span>
                   <input
                     id="slug"
@@ -210,7 +210,7 @@ export default function NewWebsiteForm({ userId }: { userId: string }) {
                   name="description"
                   rows={2}
                   placeholder="Jelaskan sedikit tentang website..."
-                  className="w-full bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 rounded-lg px-3 py-2.5 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-purple-800/20 focus:border-purple-800 focus:bg-white transition-all shadow-sm resize-none"
+                  className="w-full bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 rounded-lg px-3 py-2.5 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-600/20 focus:border-indigo-600 focus:bg-white transition-all shadow-sm resize-none"
                 />
               </div>
             </div>
@@ -234,8 +234,8 @@ export default function NewWebsiteForm({ userId }: { userId: string }) {
                       key={tpl.id}
                       className={`group relative flex flex-col md:flex-row items-center gap-3 p-2.5 md:p-3 cursor-pointer rounded-xl transition-all duration-300 border-2 ${
                         isSelected
-                          ? 'border-purple-800 bg-purple-100/50 shadow-sm shadow-purple-800/10'
-                          : 'border-slate-200 bg-white hover:border-purple-500 hover:bg-slate-50'
+                          ? 'border-indigo-600 bg-indigo-50/50 shadow-sm shadow-indigo-600/10'
+                          : 'border-slate-200 bg-white hover:border-indigo-500 hover:bg-slate-50'
                       }`}
                       onClick={() => {
                         setSelectedTemplate(tpl.id)
@@ -254,8 +254,8 @@ export default function NewWebsiteForm({ userId }: { userId: string }) {
                       />
                       
                       {/* Mobile Thumbnail / Desktop Icon */}
-                      <div className={`w-full md:w-12 md:h-12 aspect-video md:aspect-square rounded-lg flex items-center justify-center shrink-0 border ${isSelected ? 'border-purple-400 bg-purple-200/50' : 'border-slate-100 bg-slate-50'} overflow-hidden relative`}>
-                        {tpl.id === 'blank' && <LayoutTemplate className={`w-5 h-5 md:w-6 md:h-6 ${isSelected ? 'text-purple-800' : 'text-slate-400'}`} />}
+                      <div className={`w-full md:w-12 md:h-12 aspect-video md:aspect-square rounded-lg flex items-center justify-center shrink-0 border ${isSelected ? 'border-indigo-400 bg-indigo-100/50' : 'border-slate-100 bg-slate-50'} overflow-hidden relative`}>
+                        {tpl.id === 'blank' && <LayoutTemplate className={`w-5 h-5 md:w-6 md:h-6 ${isSelected ? 'text-indigo-600' : 'text-slate-400'}`} />}
                         {tpl.id === 'portfolio' && <div className="w-full h-full bg-slate-800 p-1.5 flex flex-col gap-0.5 justify-center items-center"><div className="w-1/2 h-1 bg-slate-600 rounded"></div><div className="w-3/4 h-1 bg-slate-600 rounded"></div></div>}
                         {tpl.id === 'store' && <div className="w-full h-full bg-emerald-50 p-1.5 grid grid-cols-2 gap-0.5"><div className="bg-emerald-200 rounded"></div><div className="bg-emerald-200 rounded"></div></div>}
                         
@@ -265,7 +265,7 @@ export default function NewWebsiteForm({ userId }: { userId: string }) {
                       </div>
 
                       <div className="flex-1 min-w-0 text-center md:text-left w-full">
-                        <span className={`block text-[11px] font-black uppercase tracking-wider mb-0.5 transition-colors truncate ${isSelected ? 'text-purple-900' : 'text-slate-900'}`}>
+                        <span className={`block text-[11px] font-black uppercase tracking-wider mb-0.5 transition-colors truncate ${isSelected ? 'text-indigo-700' : 'text-slate-900'}`}>
                           {tpl.name}
                         </span>
                         <span className="text-[9px] text-slate-500 font-medium leading-relaxed line-clamp-2 md:line-clamp-1">
@@ -274,7 +274,7 @@ export default function NewWebsiteForm({ userId }: { userId: string }) {
                       </div>
                       
                       {isSelected && (
-                        <div className="hidden md:flex shrink-0 w-5 h-5 bg-purple-800 rounded-full items-center justify-center shadow-sm">
+                        <div className="hidden md:flex shrink-0 w-5 h-5 bg-indigo-600 rounded-full items-center justify-center shadow-sm">
                           <Check className="w-3 h-3 text-white" />
                         </div>
                       )}
@@ -289,7 +289,7 @@ export default function NewWebsiteForm({ userId }: { userId: string }) {
               <button
                 type="submit"
                 disabled={pending}
-                className="w-full bg-purple-800 hover:bg-purple-900 text-white font-black uppercase tracking-[0.15em] px-6 py-3.5 rounded-xl transition-all shadow-lg shadow-purple-800/20 disabled:opacity-60 text-[11px] flex items-center justify-center gap-2"
+                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black uppercase tracking-[0.15em] px-6 py-3.5 rounded-xl transition-all shadow-lg shadow-indigo-600/20 disabled:opacity-60 text-[11px] flex items-center justify-center gap-2"
               >
                 {pending ? 'Mempersiapkan...' : 'Buat Website Sekarang'}
               </button>
@@ -355,7 +355,7 @@ export default function NewWebsiteForm({ userId }: { userId: string }) {
               form="create-website-form"
               onClick={() => setIsMobilePreviewOpen(false)} // Close sheet visually while submitting
               disabled={pending}
-              className="w-full bg-purple-800 text-white font-black uppercase tracking-widest px-6 py-4 rounded-xl shadow-lg shadow-purple-800/20 active:scale-95 transition-transform text-xs"
+              className="w-full bg-indigo-600 text-white font-black uppercase tracking-widest px-6 py-4 rounded-xl shadow-lg shadow-indigo-600/20 active:scale-95 transition-transform text-xs"
             >
               Gunakan Template Ini
             </button>

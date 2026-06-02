@@ -254,7 +254,7 @@ function ColorPickerPopover({
         />
         
         <input 
-          className="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:border-purple-700 focus:outline-none font-bold text-slate-800 shadow-sm" 
+          className="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:border-indigo-600 focus:outline-none font-bold text-slate-800 shadow-sm" 
           value={value || ''}
           onChange={(e) => handleHexInputChange(e.target.value)}
           placeholder="#ffffff"
@@ -311,7 +311,7 @@ function ColorPickerPopover({
                 }}
                 style={{ backgroundColor: color }}
                 className={`w-9 h-9 rounded-md border border-slate-200/60 cursor-pointer hover:scale-105 active:scale-95 transition-transform ${
-                  value.toLowerCase() === color.toLowerCase() ? 'ring-2 ring-purple-700 ring-offset-1' : ''
+                  value.toLowerCase() === color.toLowerCase() ? 'ring-2 ring-indigo-600 ring-offset-1' : ''
                 }`}
                 title={color}
               />
@@ -425,7 +425,7 @@ export function ThemeSettings({
               onClick={() => handleThemeChange('buttonStyle', style)}
               className={`flex-1 py-2 px-3 text-xs font-semibold border rounded-lg transition-colors ${
                 (theme.buttonStyle || 'rounded') === style
-                  ? 'bg-purple-800 border-purple-800 text-white'
+                  ? 'bg-indigo-600 border-indigo-600 text-white'
                   : 'bg-transparent border-gray-300 text-gray-500 hover:border-gray-400 hover:text-gray-700'
               }`}
             >

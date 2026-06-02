@@ -59,7 +59,7 @@ export function AnimationSettings({ animation, onChange }: AnimationSettingsProp
         <select
           value={animation.preset}
           onChange={(e) => update({ preset: e.target.value as AnimationPreset })}
-          className="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none font-medium text-slate-800 bg-white"
+          className="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:border-purple-700 focus:outline-none font-medium text-slate-800 bg-white"
         >
           {ANIMATION_PRESETS.map((p) => (
             <option key={p.value} value={p.value}>{p.label}</option>
@@ -81,7 +81,7 @@ export function AnimationSettings({ animation, onChange }: AnimationSettingsProp
                 step={100}
                 value={animation.duration}
                 onChange={(e) => update({ duration: Number(e.target.value) })}
-                className="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none font-medium text-slate-800 bg-white"
+                className="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:border-purple-700 focus:outline-none font-medium text-slate-800 bg-white"
               />
             </div>
             <div>
@@ -95,7 +95,7 @@ export function AnimationSettings({ animation, onChange }: AnimationSettingsProp
                 step={100}
                 value={animation.delay}
                 onChange={(e) => update({ delay: Number(e.target.value) })}
-                className="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none font-medium text-slate-800 bg-white"
+                className="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:border-purple-700 focus:outline-none font-medium text-slate-800 bg-white"
               />
             </div>
           </div>
@@ -107,7 +107,7 @@ export function AnimationSettings({ animation, onChange }: AnimationSettingsProp
             <select
               value={animation.easing}
               onChange={(e) => update({ easing: e.target.value as BlockAnimation['easing'] })}
-              className="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none font-medium text-slate-800 bg-white"
+              className="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:border-purple-700 focus:outline-none font-medium text-slate-800 bg-white"
             >
               {EASING_OPTIONS.map((e) => (
                 <option key={e.value} value={e.value}>{e.label}</option>
@@ -120,7 +120,7 @@ export function AnimationSettings({ animation, onChange }: AnimationSettingsProp
               type="checkbox"
               checked={animation.triggerOnce}
               onChange={(e) => update({ triggerOnce: e.target.checked })}
-              className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+              className="rounded border-gray-300 text-purple-800 focus:ring-purple-700"
             />
             <span className="text-[11px] font-semibold text-slate-600">
               Animation hanya sekali (triggerOnce)
@@ -136,7 +136,7 @@ export function AnimationSettings({ animation, onChange }: AnimationSettingsProp
         <select
           value={animation.hover}
           onChange={(e) => update({ hover: e.target.value as HoverEffect })}
-          className="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none font-medium text-slate-800 bg-white"
+          className="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:border-purple-700 focus:outline-none font-medium text-slate-800 bg-white"
         >
           {HOVER_EFFECTS.map((h) => (
             <option key={h.value} value={h.value}>{h.label}</option>

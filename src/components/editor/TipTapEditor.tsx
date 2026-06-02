@@ -58,7 +58,7 @@ export function TipTapEditor({
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
-          class: 'text-indigo-600 underline cursor-pointer',
+          class: 'text-purple-800 underline cursor-pointer',
         },
       }),
       Placeholder.configure({

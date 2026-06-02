@@ -250,7 +250,7 @@ function ColorPickerPopover({
         />
         
         <input 
-          className="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none font-bold text-slate-800 shadow-sm" 
+          className="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:border-purple-700 focus:outline-none font-bold text-slate-800 shadow-sm" 
           value={value || ''}
           onChange={(e) => handleHexInputChange(e.target.value)}
           placeholder="#ffffff"
@@ -307,7 +307,7 @@ function ColorPickerPopover({
                 }}
                 style={{ backgroundColor: color }}
                 className={`w-9 h-9 rounded-md border border-slate-200/60 cursor-pointer hover:scale-105 active:scale-95 transition-transform ${
-                  value.toLowerCase() === color.toLowerCase() ? 'ring-2 ring-indigo-500 ring-offset-1' : ''
+                  value.toLowerCase() === color.toLowerCase() ? 'ring-2 ring-purple-700 ring-offset-1' : ''
                 }`}
                 title={color}
               />

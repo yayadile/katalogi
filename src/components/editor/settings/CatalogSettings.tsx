@@ -104,7 +104,7 @@ export function CatalogSettings({
           <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Produk</span>
           <button
             onClick={addItem}
-            className="text-xs px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition-colors"
+            className="text-xs px-2.5 py-1 rounded-lg bg-purple-100 text-purple-800 hover:bg-purple-200 transition-colors"
           >
             + Tambah
           </button>

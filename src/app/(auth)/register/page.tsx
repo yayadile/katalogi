@@ -3,7 +3,8 @@
 import { useActionState } from 'react'
 import { register } from '@/lib/actions/auth'
 import Link from 'next/link'
-import { Sparkles, User, Mail, Lock, ArrowRight, Loader2 } from 'lucide-react'
+import Image from 'next/image'
+import { User, Mail, Lock, ArrowRight, Loader2 } from 'lucide-react'
 
 export default function RegisterPage() {
   const [state, action, pending] = useActionState(register, undefined)
@@ -24,11 +25,15 @@ export default function RegisterPage() {
 
       {/* Logo */}
       <div className="text-center mb-10 relative z-10 animate-fade-up delay-100">
-        <Link href="/" className="inline-flex items-center gap-3 mb-6 group">
-          <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:bg-indigo-700 transition-colors">
-            <Sparkles className="w-7 h-7 text-white" />
-          </div>
-          <span className="text-gray-900 font-bold text-3xl tracking-tight">Katalogi<span className="text-indigo-600">.</span></span>
+        <Link href="/" className="inline-flex items-center mb-6 group">
+          <Image 
+            src="/logo1.svg" 
+            alt="Katalogi Logo" 
+            width={160} 
+            height={48} 
+            className="h-10 sm:h-12 w-auto" 
+            priority
+          />
         </Link>
         <p className="text-gray-500 text-lg font-medium">Buat akun gratis Anda</p>
       </div>

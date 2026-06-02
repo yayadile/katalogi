@@ -53,7 +53,6 @@ export default function EditorClient({
   const setBlocks = useEditorStore((state) => state.setBlocks)
   const setTheme = useEditorStore((state) => state.setTheme)
   const setPages = useEditorStore((state) => state.setPages)
-  const setCurrentPage = useEditorStore((state) => state.setCurrentPage)
   const theme = useEditorStore((state) => state.theme)
   const leftPanel = useEditorStore((state) => state.leftPanel)
   const setLeftPanel = useEditorStore((state) => state.setLeftPanel)
@@ -296,22 +295,22 @@ export default function EditorClient({
             <div className="w-px h-5 bg-slate-200" />
             
             {/* Undo / Redo Actions */}
-            <div className="flex items-center bg-slate-100 rounded-lg p-0.5 border border-slate-200/60 shadow-sm shrink-0">
+            <div className="flex items-center bg-slate-50 rounded-xl p-1 border border-slate-200 shrink-0 shadow-[inset_0_1px_2px_rgba(0,0,0,0.05)]">
               <button
                 onClick={() => undo()}
                 disabled={!isMounted || past.length === 0}
-                className="p-1 rounded text-slate-500 hover:text-indigo-600 hover:bg-white disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-slate-500 transition-all duration-150"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-purple-800 hover:bg-white hover:shadow-sm disabled:opacity-20 disabled:hover:bg-transparent disabled:hover:text-slate-400 transition-all duration-200"
                 title="Undo (Ctrl+Z)"
               >
-                <Undo className="w-3.5 h-3.5" />
+                <Undo className="w-4 h-4" />
               </button>
               <button
                 onClick={() => redo()}
                 disabled={!isMounted || future.length === 0}
-                className="p-1 rounded text-slate-500 hover:text-indigo-600 hover:bg-white disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-slate-500 transition-all duration-150"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-purple-800 hover:bg-white hover:shadow-sm disabled:opacity-20 disabled:hover:bg-transparent disabled:hover:text-slate-400 transition-all duration-200"
                 title="Redo (Ctrl+Y)"
               >
-                <Redo className="w-3.5 h-3.5" />
+                <Redo className="w-4 h-4" />
               </button>
             </div>
             
@@ -343,30 +342,30 @@ export default function EditorClient({
           </div>
 
           {/* Device Toggles (Centered, Icons only for absolute clean look) */}
-          <div className="absolute left-1/2 -translate-x-1/2 flex items-center bg-slate-100 rounded-full p-1 border border-slate-200/80 shadow-inner gap-0.5">
+          <div className="absolute left-1/2 -translate-x-1/2 flex items-center bg-slate-50 rounded-full p-1.5 border border-slate-200 shadow-[inset_0_1px_2px_rgba(0,0,0,0.05)] gap-1">
             <button
               onClick={() => setPreviewMode('desktop')}
-              className={`p-2 rounded-full transition-all duration-300 ${
+              className={`p-2.5 rounded-full transition-all duration-500 ${
                 previewMode === 'desktop' 
-                  ? 'bg-white text-indigo-600 shadow-sm border border-slate-200/30' 
-                  : 'text-slate-500 hover:text-slate-800'
+                  ? 'bg-white text-purple-800 shadow-md border border-slate-200/50 scale-110' 
+                  : 'text-slate-400 hover:text-slate-600 hover:bg-white/50'
               }`}
               title="Desktop Layout"
             >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z" />
               </svg>
             </button>
             <button
               onClick={() => setPreviewMode('mobile')}
-              className={`p-2 rounded-full transition-all duration-300 ${
+              className={`p-2.5 rounded-full transition-all duration-500 ${
                 previewMode === 'mobile' 
-                  ? 'bg-white text-indigo-600 shadow-sm border border-slate-200/30' 
-                  : 'text-slate-500 hover:text-slate-800'
+                  ? 'bg-white text-purple-800 shadow-md border border-slate-200/50 scale-110' 
+                  : 'text-slate-400 hover:text-slate-600 hover:bg-white/50'
               }`}
               title="Mobile Layout"
             >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
               </svg>
             </button>
@@ -395,7 +394,7 @@ export default function EditorClient({
             <button
               onClick={handlePublish}
               disabled={isPublishing}
-              className="px-4 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs transition-all disabled:opacity-50 shadow-sm"
+              className="px-4 py-1.5 rounded-lg bg-purple-800 hover:bg-purple-900 text-white font-semibold text-xs transition-all disabled:opacity-50 shadow-sm"
             >
               {isPublishing ? (
                 <div className="flex items-center gap-1.5">
@@ -413,14 +412,14 @@ export default function EditorClient({
       {/* ──────────────── Central Workspace ──────────────── */}
       <div className="flex flex-1 overflow-hidden relative bg-slate-50">
         
-        {/* Left Side toolbox bar (Vertical Light Panel) */}
         {!isPreviewMode && (
+          /* Left Side toolbox bar (Vertical Light Panel) */
           <nav className="w-16 shrink-0 bg-white border-r border-slate-200 flex flex-col items-center py-4 gap-4.5 z-20 shadow-sm">
             <button 
               onClick={() => setLeftPanel('elements')}
               className={`relative p-3 rounded-xl transition-all duration-200 flex flex-col items-center gap-1 group ${
                 leftPanel === 'elements' 
-                  ? 'text-indigo-600 bg-indigo-50/80 border border-indigo-100 shadow-sm font-semibold' 
+                  ? 'text-purple-800 bg-purple-100/80 border border-purple-200 shadow-sm font-semibold' 
                   : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'
               }`}
               title="Tambah Elemen & Blok"
@@ -433,7 +432,7 @@ export default function EditorClient({
               onClick={() => setLeftPanel('layers')}
               className={`relative p-3 rounded-xl transition-all duration-200 flex flex-col items-center gap-1 group ${
                 leftPanel === 'layers' 
-                  ? 'text-indigo-600 bg-indigo-50/80 border border-indigo-100 shadow-sm font-semibold' 
+                  ? 'text-purple-800 bg-purple-100/80 border border-purple-200 shadow-sm font-semibold' 
                   : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'
               }`}
               title="Struktur Urutan Blok"
@@ -446,7 +445,7 @@ export default function EditorClient({
               onClick={() => setLeftPanel('settings')}
               className={`relative p-3 rounded-xl transition-all duration-200 flex flex-col items-center gap-1 group ${
                 leftPanel === 'settings' 
-                  ? 'text-indigo-600 bg-indigo-50/80 border border-indigo-100 shadow-sm font-semibold' 
+                  ? 'text-purple-800 bg-purple-100/80 border border-purple-200 shadow-sm font-semibold' 
                   : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'
               }`}
               title="Desain & Tema Global"
@@ -492,7 +491,7 @@ export default function EditorClient({
                       onClick={() => setActiveSettingsTab('theme')}
                       className={`flex-1 py-1.5 px-2 rounded-md text-[10px] font-extrabold uppercase tracking-wide transition-all ${
                         activeSettingsTab === 'theme' 
-                          ? 'bg-white shadow-sm border border-gray-200 text-indigo-600' 
+                          ? 'bg-white shadow-sm border border-gray-200 text-purple-800' 
                           : 'text-gray-500 hover:text-gray-700'
                       }`}
                     >
@@ -502,7 +501,7 @@ export default function EditorClient({
                       onClick={() => setActiveSettingsTab('identity')}
                       className={`flex-1 py-1.5 px-2 rounded-md text-[10px] font-extrabold uppercase tracking-wide transition-all ${
                         activeSettingsTab === 'identity' 
-                          ? 'bg-white shadow-sm border border-gray-200 text-indigo-600' 
+                          ? 'bg-white shadow-sm border border-gray-200 text-purple-800' 
                           : 'text-gray-500 hover:text-gray-700'
                       }`}
                     >
@@ -527,7 +526,7 @@ export default function EditorClient({
                           <label className="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider">Judul Katalog</label>
                           <input
                             type="text"
-                            className="w-full px-3 py-2 text-xs border border-gray-300 rounded focus:border-indigo-500 focus:outline-none font-medium text-slate-800 shadow-sm"
+                            className="w-full px-3 py-2 text-xs border border-gray-300 rounded focus:border-purple-700 focus:outline-none font-medium text-slate-800 shadow-sm"
                             value={siteTitle}
                             onChange={(e) => setSiteTitle(e.target.value)}
                             placeholder="Katalog Saya"
@@ -535,7 +534,7 @@ export default function EditorClient({
                         </div>
                         <div className="space-y-2">
                           <label className="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider">URL Slug</label>
-                          <div className="flex items-center bg-gray-50 border border-gray-300 rounded px-3 shadow-sm focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500">
+                          <div className="flex items-center bg-gray-50 border border-gray-300 rounded px-3 shadow-sm focus-within:border-purple-700 focus-within:ring-1 focus-within:ring-purple-700">
                             <span className="text-[11px] text-gray-400 select-none font-black mr-1">/</span>
                             <input
                               type="text"
@@ -549,7 +548,7 @@ export default function EditorClient({
                         <button
                           onClick={handleSaveIdentity}
                           disabled={isSavingIdentity}
-                          className="w-full mt-4 flex items-center justify-center gap-1.5 bg-indigo-600 text-white font-bold py-2.5 rounded-lg text-xs hover:bg-indigo-700 transition-colors shadow-sm disabled:opacity-50"
+                          className="w-full mt-4 flex items-center justify-center gap-1.5 bg-purple-800 text-white font-bold py-2.5 rounded-lg text-xs hover:bg-purple-900 transition-colors shadow-sm disabled:opacity-50"
                         >
                           {isSavingIdentity ? (
                             <>
@@ -630,14 +629,14 @@ export default function EditorClient({
               </div>
               <div className="bg-white border border-slate-200 rounded-lg px-3 py-2 flex items-center justify-between gap-3 shadow-inner">
                 <span className="text-xs font-semibold text-slate-800 truncate select-all">
-                  {window.location.protocol}//{window.location.host}/{siteSlug}
+                  {window.location.protocol}{'//'}{window.location.host}/{siteSlug}
                 </span>
                 <button
                   onClick={handleCopyLink}
                   className={`px-3 py-1 rounded-md font-semibold text-[10px] transition-all flex items-center gap-1 shrink-0 ${
                     showCopySuccess 
                       ? 'bg-emerald-500 text-white' 
-                      : 'bg-indigo-50 hover:bg-indigo-100 text-indigo-600'
+                      : 'bg-purple-100 hover:bg-purple-200 text-purple-800'
                   }`}
                 >
                   {showCopySuccess ? (
@@ -664,7 +663,7 @@ export default function EditorClient({
                 href={`/${siteSlug}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 flex items-center justify-center py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold transition-all shadow-sm"
+                className="flex-1 flex items-center justify-center py-2.5 px-4 bg-purple-800 hover:bg-purple-900 text-white rounded-xl text-xs font-semibold transition-all shadow-sm"
               >
                 Buka Situs Live
               </a>

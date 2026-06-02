@@ -64,13 +64,13 @@ export function ImageField({
         <div className="flex bg-gray-100 rounded-lg p-0.5">
           <button 
             onClick={() => setMode('url')}
-            className={`px-2 py-0.5 rounded-md text-[10px] transition-all ${mode === 'url' ? 'bg-indigo-600 text-white shadow-sm' : 'text-gray-500'}`}
+            className={`px-2 py-0.5 rounded-md text-[10px] transition-all ${mode === 'url' ? 'bg-purple-800 text-white shadow-sm' : 'text-gray-500'}`}
           >
             URL
           </button>
           <button 
             onClick={() => setMode('upload')}
-            className={`px-2 py-0.5 rounded-md text-[10px] transition-all ${mode === 'upload' ? 'bg-indigo-600 text-white shadow-sm' : 'text-gray-500'}`}
+            className={`px-2 py-0.5 rounded-md text-[10px] transition-all ${mode === 'upload' ? 'bg-purple-800 text-white shadow-sm' : 'text-gray-500'}`}
           >
             Upload
           </button>
@@ -88,12 +88,12 @@ export function ImageField({
               onChange(e.target.value)
             }}
           />
-          <LinkIcon className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 group-focus-within:text-indigo-500 transition-colors" />
+          <LinkIcon className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 group-focus-within:text-purple-700 transition-colors" />
         </div>
       ) : (
         <div 
           onClick={() => !isUploading && fileInputRef.current?.click()}
-          className="relative aspect-video bg-gray-50 border border-dashed border-gray-200 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:bg-gray-100 hover:border-indigo-300 transition-all group overflow-hidden"
+          className="relative aspect-video bg-gray-50 border border-dashed border-gray-200 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:bg-gray-100 hover:border-purple-500 transition-all group overflow-hidden"
         >
           {value ? (
             <>
@@ -106,10 +106,10 @@ export function ImageField({
           ) : (
             <>
               {isUploading ? (
-                <Loader2 className="w-6 h-6 text-indigo-600 animate-spin" />
+                <Loader2 className="w-6 h-6 text-purple-800 animate-spin" />
               ) : (
                 <>
-                  <ImageIcon className="w-6 h-6 text-gray-400 mb-1 group-hover:text-indigo-500 transition-colors" />
+                  <ImageIcon className="w-6 h-6 text-gray-400 mb-1 group-hover:text-purple-700 transition-colors" />
                   <span className="text-[10px] font-bold text-gray-400 group-hover:text-gray-600 transition-colors uppercase">Klik untuk Upload</span>
                 </>
               )}

@@ -10,7 +10,7 @@ export default function EditorGuide() {
     return (
       <button 
         onClick={() => setIsOpen(true)}
-        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 transition-all text-xs font-medium border border-indigo-200"
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-purple-800 hover:text-purple-900 hover:bg-purple-100 transition-all text-xs font-medium border border-purple-400"
       >
         <HelpCircle className="w-3.5 h-3.5" />
         Bantuan
@@ -23,7 +23,7 @@ export default function EditorGuide() {
       <div className="bg-white border border-gray-200 w-full max-w-md rounded-[2rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
         <div className="p-8 pb-4 flex items-center justify-between">
           <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-            <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-purple-800 rounded-lg flex items-center justify-center">
               <HelpCircle className="w-5 h-5 text-white" />
             </div>
             Panduan Katalogi
@@ -70,7 +70,7 @@ export default function EditorGuide() {
 
           <button 
             onClick={() => setIsOpen(false)}
-            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-indigo-500/20 active:scale-95 mt-4"
+            className="w-full bg-purple-800 hover:bg-purple-900 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-purple-700/20 active:scale-95 mt-4"
           >
             Mengerti, Lanjutkan!
           </button>

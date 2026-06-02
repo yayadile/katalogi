@@ -1,6 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
-import { Sparkles, Phone, Camera, Music } from 'lucide-react'
+import Image from 'next/image'
+import { Phone, Camera, Music } from 'lucide-react'
 
 export default function LandingFooter() {
   return (
@@ -8,13 +9,14 @@ export default function LandingFooter() {
       <div className="max-w-7xl mx-auto px-6 py-12 md:py-16">
         <div className="grid md:grid-cols-4 gap-8 md:gap-12">
           <div className="space-y-4">
-            <Link href="/" className="flex items-center gap-2 group">
-              <div className="w-8 h-8 bg-indigo-600 rounded-xl flex items-center justify-center group-hover:bg-indigo-700 transition-colors">
-                <Sparkles className="w-4 h-4 text-white" />
-              </div>
-              <span className="text-lg font-bold text-gray-900 tracking-tight">
-                Katalogi<span className="text-indigo-600">.</span>
-              </span>
+            <Link href="/" className="flex items-center group">
+              <Image 
+                src="/logo1.svg" 
+                alt="Katalogi Logo" 
+                width={120} 
+                height={32} 
+                className="h-8 w-auto" 
+              />
             </Link>
             <p className="text-gray-500 text-sm leading-relaxed max-w-xs">
               Bangun katalog online profesional dalam 5 menit. Tanpa coding, tanpa ribet.

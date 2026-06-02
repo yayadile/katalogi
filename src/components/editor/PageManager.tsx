@@ -67,7 +67,7 @@ export function PageManager({ websiteId, userId, onPagesChange }: PageManagerPro
           }}
           className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded cursor-pointer text-[10px] font-bold uppercase tracking-wider transition-all ${
             currentPageId === page.id
-              ? 'bg-white text-indigo-600 shadow-sm border border-slate-200/30'
+              ? 'bg-white text-purple-800 shadow-sm border border-slate-200/30'
               : 'text-slate-500 hover:text-slate-700 hover:bg-white/50'
           }`}
         >
@@ -112,7 +112,7 @@ export function PageManager({ websiteId, userId, onPagesChange }: PageManagerPro
       ) : (
         <button
           onClick={() => setIsAdding(true)}
-          className="p-1.5 rounded text-slate-400 hover:text-indigo-600 hover:bg-white transition-all"
+          className="p-1.5 rounded text-slate-400 hover:text-purple-800 hover:bg-white transition-all"
           title="Tambah Halaman"
         >
           <Plus className="w-3.5 h-3.5" />

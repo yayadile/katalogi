@@ -71,23 +71,24 @@ export default function ElementsPanel() {
               placeholder="Cari elemen..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-8 pr-3 py-1.5 bg-white border border-gray-200 rounded text-[11px] text-gray-900 placeholder-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors"
+              className="w-full pl-8 pr-3 py-1.5 bg-white border border-gray-200 rounded text-[11px] text-gray-900 placeholder-gray-400 focus:outline-none focus:border-purple-700 focus:ring-1 focus:ring-purple-700 transition-colors"
             />
           </div>
 
           <div>
-            <h3 className="text-[10px] font-semibold text-indigo-500 uppercase tracking-wider mb-2">Komponen Utama</h3>
-            <div className="grid grid-cols-2 gap-1.5 mb-4">
+            <h3 className="text-[10px] font-bold text-purple-800 uppercase tracking-[0.15em] mb-3 ml-1">Komponen Utama</h3>
+            <div className="grid grid-cols-2 gap-2 mb-6">
               {MAIN_BLOCKS.filter(b => b.label.toLowerCase().includes(searchQuery.toLowerCase())).map((block) => (
                 <button
                   key={block.type}
                   onClick={() => handleAddElement(block.type)}
-                  className="flex flex-col items-center justify-center gap-1.5 p-3 bg-white border border-gray-200 rounded-lg hover:border-indigo-300 hover:ring-1 hover:ring-indigo-100 hover:bg-gray-50 transition-all group shadow-sm"
+                  className="flex flex-col items-center justify-center gap-2 p-4 bg-white border border-gray-100 rounded-2xl hover:border-purple-700 hover:shadow-lg hover:shadow-purple-700/10 transition-all duration-300 group relative overflow-hidden active:scale-95"
                 >
-                  <div className="text-gray-400 group-hover:text-indigo-500 transition-colors">
+                  <div className="absolute inset-0 bg-purple-100 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="text-gray-400 group-hover:text-purple-800 transition-all duration-300 group-hover:scale-110 relative z-10">
                     {block.icon}
                   </div>
-                  <span className="text-[10px] font-semibold text-gray-600 group-hover:text-indigo-700 text-center leading-tight">
+                  <span className="text-[10px] font-bold text-gray-500 group-hover:text-purple-950 text-center leading-tight relative z-10 uppercase tracking-wider">
                     {block.label}
                   </span>
                 </button>
@@ -96,18 +97,19 @@ export default function ElementsPanel() {
           </div>
 
           <div>
-            <h3 className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Tipografi</h3>
-            <div className="grid grid-cols-2 gap-1.5">
+            <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.15em] mb-3 ml-1">Tipografi</h3>
+            <div className="grid grid-cols-2 gap-2">
               {TYPOGRAPHY_BLOCKS.filter(b => b.label.toLowerCase().includes(searchQuery.toLowerCase())).map((block) => (
                 <button
                   key={block.type}
                   onClick={() => handleAddElement(block.type)}
-                  className="flex flex-col items-center justify-center gap-1.5 p-3 bg-white border border-gray-200 rounded-lg hover:border-indigo-300 hover:ring-1 hover:ring-indigo-100 hover:bg-gray-50 transition-all group shadow-sm"
+                  className="flex flex-col items-center justify-center gap-2 p-4 bg-white border border-gray-100 rounded-2xl hover:border-purple-700 hover:shadow-lg hover:shadow-purple-700/10 transition-all duration-300 group relative overflow-hidden active:scale-95"
                 >
-                  <div className="text-gray-400 group-hover:text-indigo-500 transition-colors">
+                  <div className="absolute inset-0 bg-purple-100 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="text-gray-400 group-hover:text-purple-800 transition-all duration-300 group-hover:scale-110 relative z-10">
                     {block.icon}
                   </div>
-                  <span className="text-[10px] font-semibold text-gray-600 group-hover:text-indigo-700 text-center leading-tight">
+                  <span className="text-[10px] font-bold text-gray-500 group-hover:text-purple-950 text-center leading-tight relative z-10 uppercase tracking-wider">
                     {block.label}
                   </span>
                 </button>

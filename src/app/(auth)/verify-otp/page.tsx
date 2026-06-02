@@ -4,7 +4,8 @@ import { useActionState, useEffect, useRef, useState, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { verifyOTP, sendOTP } from '@/lib/actions/otp'
 import Link from 'next/link'
-import { Sparkles, ArrowRight, Loader2, Mail, RotateCw, CheckCircle2, XCircle } from 'lucide-react'
+import Image from 'next/image'
+import { ArrowRight, Loader2, Mail, RotateCw, CheckCircle2, XCircle } from 'lucide-react'
 
 type OTPState = { error?: string; success?: boolean } | undefined
 
@@ -90,11 +91,15 @@ function VerifyOTPForm() {
       />
 
       <div className="text-center mb-10 relative z-10 animate-fade-up delay-100">
-        <Link href="/" className="inline-flex items-center gap-3 mb-6 group">
-          <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:bg-indigo-700 transition-colors">
-            <Sparkles className="w-7 h-7 text-white" />
-          </div>
-          <span className="text-gray-900 font-bold text-3xl tracking-tight">Katalogi<span className="text-indigo-600">.</span></span>
+        <Link href="/" className="inline-flex items-center mb-6 group">
+          <Image 
+            src="/logo1.svg" 
+            alt="Katalogi Logo" 
+            width={160} 
+            height={48} 
+            className="h-10 sm:h-12 w-auto" 
+            priority
+          />
         </Link>
         <div className="w-16 h-16 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-4">
           <Mail className="w-8 h-8 text-indigo-600" />

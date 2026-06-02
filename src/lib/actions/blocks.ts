@@ -40,7 +40,7 @@ export async function addPageBlock(
 ): Promise<ActionResult<PageBlock>> {
   try {
     const targetPageId = pageId || websiteId
-    const data: Prisma.PageBlockCreateInput = {
+    const data: Prisma.PageBlockUncheckedCreateInput = {
       websiteId,
       pageId: targetPageId,
       type,

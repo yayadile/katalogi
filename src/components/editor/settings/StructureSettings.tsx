@@ -204,7 +204,7 @@ export function ListSettings({ content, onChange }: BaseSettingsProps) {
         ))}
         <button 
           onClick={() => updateItems([...items, 'Item baru'])}
-          className="w-full py-2 border-2 border-dashed border-gray-200 rounded text-xs text-gray-500 hover:border-indigo-300 hover:text-indigo-600"
+          className="w-full py-2 border-2 border-dashed border-gray-200 rounded text-xs text-gray-500 hover:border-purple-500 hover:text-purple-800"
         >
           + Tambah Item
         </button>

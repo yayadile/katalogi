@@ -27,14 +27,14 @@ export default function DraggableWrapper({
         onSelect(id)
       }}
       className={`relative w-full transition-all group ${
-        isSelected ? 'ring-2 ring-indigo-500 z-50' : 'hover:ring-1 hover:ring-indigo-300 z-10'
+        isSelected ? 'ring-2 ring-purple-700 z-50' : 'hover:ring-1 hover:ring-purple-500 z-10'
       }`}
       style={{
         zIndex: position.zIndex,
       }}
     >
       {isSelected && (
-        <div className="absolute -top-6 left-0 bg-indigo-500 text-white text-[10px] px-2 py-0.5 rounded-t-md font-bold uppercase tracking-wider z-50">
+        <div className="absolute -top-6 left-0 bg-purple-700 text-white text-[10px] px-2 py-0.5 rounded-t-md font-bold uppercase tracking-wider z-50">
           Selected
         </div>
       )}

@@ -38,7 +38,7 @@ export function EditableText({
         placeholder={placeholder}
         tagName={tagName}
         minimal={isInline}
-        className={`focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-500/40 focus-within:bg-indigo-50/5 rounded px-1.5 py-0.5 transition-all w-full text-inherit ${className} ${!disabled ? 'hover:bg-slate-100/50 cursor-text' : ''}`}
+        className={`focus-within:outline-none focus-within:ring-2 focus-within:ring-purple-700/40 focus-within:bg-purple-100/5 rounded px-1.5 py-0.5 transition-all w-full text-inherit ${className} ${!disabled ? 'hover:bg-slate-100/50 cursor-text' : ''}`}
         style={{
           minWidth: '40px',
           ...style

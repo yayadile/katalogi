@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Sparkles, Menu, X } from 'lucide-react'
+import Image from 'next/image'
+import { Menu, X } from 'lucide-react'
 
 export default function LandingNavbar() {
   const [scrolled, setScrolled] = useState(false)
@@ -23,13 +24,15 @@ export default function LandingNavbar() {
       }`}
     >
       <div className="mx-auto flex h-16 md:h-18 max-w-7xl items-center justify-between px-6">
-        <Link href="/" className="flex items-center gap-2 group">
-          <div className="w-9 h-9 bg-indigo-600 rounded-xl flex items-center justify-center group-hover:bg-indigo-700 transition-colors">
-            <Sparkles className="w-5 h-5 text-white" />
-          </div>
-          <span className="text-lg font-bold text-gray-900 tracking-tight">
-            Katalogi<span className="text-indigo-600">.</span>
-          </span>
+        <Link href="/" className="flex items-center group">
+          <Image 
+            src="/logo1.svg" 
+            alt="Katalogi Logo" 
+            width={120} 
+            height={32} 
+            className="h-8 w-auto" 
+            priority
+          />
         </Link>
 
         <nav className="hidden md:flex items-center gap-1">

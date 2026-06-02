@@ -8,6 +8,7 @@ export type WebsiteTemplate = {
   id: string
   name: string
   description: string
+  image?: string
   themeConfig: {
     primaryColor: string
     secondaryColor: string
@@ -26,8 +27,9 @@ export type SectionLayout = {
 export const FULL_TEMPLATES: WebsiteTemplate[] = [
   {
     id: 'blank',
-    name: 'Blank Canvas',
-    description: 'Mulai dari nol dengan kanvas kosong sepenuhnya.',
+    name: 'Kanvas Kosong',
+    description: 'Awali kreativitas Anda dari awal dengan kanvas bersih.',
+    image: 'https://images.unsplash.com/photo-1586075010633-2442dc3d6307?q=80&w=600&auto=format&fit=crop',
     themeConfig: {
       primaryColor: '#4f46e5', // indigo-600
       secondaryColor: '#1e293b',
@@ -37,8 +39,9 @@ export const FULL_TEMPLATES: WebsiteTemplate[] = [
   },
   {
     id: 'portfolio',
-    name: 'Portofolio Kreatif',
-    description: 'Sangat cocok untuk desainer, fotografer, atau freelancer.',
+    name: 'Profil & Portofolio',
+    description: 'Pilihan tepat untuk desainer, fotografer, dan tenaga profesional.',
+    image: 'https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?q=80&w=600&auto=format&fit=crop',
     themeConfig: {
       primaryColor: '#000000',
       secondaryColor: '#333333',
@@ -100,8 +103,9 @@ export const FULL_TEMPLATES: WebsiteTemplate[] = [
   },
   {
     id: 'store',
-    name: 'Toko Online Minimalis',
-    description: 'Layout rapi untuk menampilkan katalog produk Anda.',
+    name: 'Katalog & Toko',
+    description: 'Etalase modern untuk menampilkan produk dan layanan bisnis Anda.',
+    image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=600&auto=format&fit=crop',
     themeConfig: {
       primaryColor: '#059669', // emerald-600
       secondaryColor: '#0f172a',

@@ -4,7 +4,10 @@ import React, { useState } from 'react'
 import {
   DndContext,
   closestCenter,
+  DragOverlay,
+  DragStartEvent,
   PointerSensor,
+  KeyboardSensor,
   useSensor,
   useSensors,
 } from '@dnd-kit/core'
@@ -12,6 +15,7 @@ import {
   SortableContext,
   useSortable,
   verticalListSortingStrategy,
+  sortableKeyboardCoordinates,
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { useEditorStore } from './store'
@@ -91,8 +95,8 @@ function NestedSortableBlock({
         useEditorStore.getState().selectBlock(id)
       }}
       className={`relative group cursor-pointer transition-all duration-200 w-full ${
-        isSelected ? 'ring-2 ring-indigo-600 ring-inset' : 'hover:ring-1 hover:ring-indigo-300 ring-inset ring-transparent'
-      } ${depth > 0 ? 'ml-4 border-l-2 border-indigo-200' : ''}`}
+        isSelected ? 'ring-2 ring-purple-800 ring-inset' : 'hover:ring-1 hover:ring-purple-500 ring-inset ring-transparent'
+      } ${depth > 0 ? 'ml-4 border-l-2 border-purple-400' : ''}`}
     >
       <div className="w-full">
         <BlockRenderer block={block} isPreview={false} />
@@ -109,7 +113,7 @@ function NestedSortableBlock({
             items={childBlocks.map(b => b.id)}
             strategy={verticalListSortingStrategy}
           >
-            <div className="flex flex-col w-full border-t border-dashed border-indigo-200 bg-indigo-50/30">
+            <div className="flex flex-col w-full border-t border-dashed border-purple-400 bg-purple-100/30">
               {childBlocks.map(child => (
                 <NestedSortableBlock key={child.id} id={child.id} depth={depth + 1} />
               ))}
@@ -125,7 +129,7 @@ function NestedSortableBlock({
                       sortOrder: childBlocks.length + 1,
                     }, id)
                   }}
-                  className="flex items-center gap-1.5 px-3 py-2 text-[10px] font-bold text-indigo-600 hover:bg-indigo-100 transition-colors uppercase tracking-wider"
+                  className="flex items-center gap-1.5 px-3 py-2 text-[10px] font-bold text-purple-800 hover:bg-purple-200 transition-colors uppercase tracking-wider"
                 >
                   + Tambah Elemen
                 </button>
@@ -143,7 +147,7 @@ function NestedSortableBlock({
         onClick={(e) => e.stopPropagation()}
       >
         <div
-          className="flex items-center gap-1.5 px-2 py-1 rounded text-[10px] font-bold text-white bg-indigo-600 cursor-grab active:cursor-grabbing hover:bg-indigo-700 select-none"
+          className="flex items-center gap-1.5 px-2 py-1 rounded text-[10px] font-bold text-white bg-purple-800 cursor-grab active:cursor-grabbing hover:bg-purple-900 select-none"
           {...attributes}
           {...listeners}
         >
@@ -160,7 +164,7 @@ function NestedSortableBlock({
                 e.stopPropagation()
                 duplicateBlock(block.id)
               }}
-              className="p-1 rounded text-slate-500 hover:bg-slate-100 hover:text-indigo-600 transition-colors"
+              className="p-1 rounded text-slate-500 hover:bg-slate-100 hover:text-purple-800 transition-colors"
               title="Duplikat Blok"
             >
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -274,14 +278,23 @@ export default function CanvasPreview() {
     }
   }
 
+  // Canvas drag state for DragOverlay
+  const [canvasActiveId, setCanvasActiveId] = useState<string | null>(null)
+
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
         distance: 5,
       },
-    })
+    }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   )
 
+  const handleCanvasDragStart = (event: DragStartEvent) => {
+    setCanvasActiveId(event.active.id as string)
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleDragEnd = (event: any) => {
     const { active, over } = event
     if (over && active.id !== over.id) {
@@ -334,7 +347,7 @@ export default function CanvasPreview() {
                   return (
                     <div
                       key={page.id}
-                      className={`text-sm font-semibold transition-colors uppercase tracking-wider ${isActive ? 'text-indigo-600' : 'text-slate-500'}`}
+                      className={`text-sm font-semibold transition-colors uppercase tracking-wider ${isActive ? 'text-purple-800' : 'text-slate-500'}`}
                     >
                       {page.title}
                     </div>
@@ -345,13 +358,15 @@ export default function CanvasPreview() {
             <DndContext 
               sensors={sensors}
               collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}
+              onDragStart={handleCanvasDragStart}
+              onDragEnd={(e) => { handleDragEnd(e); setCanvasActiveId(null); }}
+              onDragCancel={() => setCanvasActiveId(null)}
             >
               <SortableContext 
                 items={rootBlocks.map(b => b.id)}
                 strategy={verticalListSortingStrategy}
               >
-                <div className="flex flex-col w-full min-h-full" style={{ backgroundColor: theme.backgroundColor || '#ffffff' }}>
+                <div className="flex flex-col w-full min-h-full" role="list" aria-label="Daftar blok kanvas" style={{ backgroundColor: theme.backgroundColor || '#ffffff' }}>
                   {rootBlocks.length === 0 ? (
                     <div className="flex-1 flex flex-col items-center justify-center py-32 text-gray-400">
                        <p className="text-sm font-bold uppercase tracking-widest">Area Kanvas Kosong</p>
@@ -366,6 +381,24 @@ export default function CanvasPreview() {
                   )}
                 </div>
               </SortableContext>
+              
+              {/* Canvas DragOverlay for visual feedback */}
+              <DragOverlay>
+                {canvasActiveId ? (() => {
+                  const dragBlock = rootBlocks.find(b => b.id === canvasActiveId)
+                  if (!dragBlock) return null
+                  return (
+                    <div className="bg-purple-100 border-2 border-purple-600 rounded-lg p-4 shadow-2xl opacity-80 max-w-[300px]">
+                      <div className="flex items-center gap-2 text-purple-900 font-bold text-xs uppercase tracking-wider">
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                        {dragBlock.type}
+                      </div>
+                    </div>
+                  )
+                })() : null}
+              </DragOverlay>
             </DndContext>
             
             <footer 
@@ -438,7 +471,7 @@ export default function CanvasPreview() {
               duplicateBlock(contextMenu.blockId)
               setContextMenu(null)
             }}
-            className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 hover:text-indigo-600 hover:bg-slate-50 rounded-lg transition-colors text-left"
+            className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 hover:text-purple-800 hover:bg-slate-50 rounded-lg transition-colors text-left"
           >
             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
@@ -453,7 +486,7 @@ export default function CanvasPreview() {
               setContextMenu(null)
             }}
             disabled={blocks.filter(b => !b.parentId).findIndex(b => b.id === contextMenu.blockId) === 0}
-            className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 hover:text-indigo-600 hover:bg-slate-50 rounded-lg transition-colors text-left disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-700"
+            className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 hover:text-purple-800 hover:bg-slate-50 rounded-lg transition-colors text-left disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-700"
           >
             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
@@ -468,7 +501,7 @@ export default function CanvasPreview() {
               setContextMenu(null)
             }}
             disabled={blocks.filter(b => !b.parentId).findIndex(b => b.id === contextMenu.blockId) === blocks.filter(b => !b.parentId).length - 1}
-            className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 hover:text-indigo-600 hover:bg-slate-50 rounded-lg transition-colors text-left disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-700"
+            className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 hover:text-purple-800 hover:bg-slate-50 rounded-lg transition-colors text-left disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-700"
           >
             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />

@@ -251,12 +251,12 @@ export function TipTapBubbleToolbar({ editor, minimal = false }: TipTapBubbleMen
                   onChange={(e) => setLinkUrl(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && setLink()}
                   placeholder="https://..."
-                  className="bg-slate-700 text-white text-xs rounded px-2 py-1 w-40 outline-none focus:ring-1 focus:ring-indigo-500"
+                  className="bg-slate-700 text-white text-xs rounded px-2 py-1 w-40 outline-none focus:ring-1 focus:ring-purple-700"
                 />
                 <button
                   type="button"
                   onMouseDown={(e) => { e.preventDefault(); setLink() }}
-                  className="text-xs bg-indigo-600 text-white px-2 py-1 rounded hover:bg-indigo-500 cursor-pointer"
+                  className="text-xs bg-purple-800 text-white px-2 py-1 rounded hover:bg-purple-700 cursor-pointer"
                 >
                   OK
                 </button>

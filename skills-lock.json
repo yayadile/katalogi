@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "tailwind-ui": {
+      "source": "omer-metin/skills-for-antigravity",
+      "sourceType": "github",
+      "skillPath": "skills/tailwind-ui/SKILL.md",
+      "computedHash": "8638bd32e270d9bde325c1c982c8b6e464fbe9d4118f98548afbd6b72e602c8a"
+    }
+  }
+}

@@ -188,7 +188,7 @@ function NestedSortableBlock({
       </div>
 
       {blockToDelete && (
-        <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-slate-950/40 backdrop-blur-sm">
+        <div className="fixed inset-0 z-999 flex items-center justify-center p-4 bg-slate-950/40 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl p-6 text-center max-w-sm">
             <h3 className="text-sm font-extrabold text-slate-900">Hapus Blok {blockToDelete.type}?</h3>
             <p className="text-xs text-slate-500 font-semibold mt-2">Tindakan ini tidak dapat dibatalkan.</p>
@@ -334,7 +334,7 @@ export default function CanvasPreview() {
       <div 
         className={`bg-white relative shrink-0 overflow-hidden transition-all duration-500 ease-in-out shadow-xl ring-1 ring-black/5 ${
           previewMode === 'mobile' 
-            ? 'w-[375px] min-h-[812px] border-[14px] border-gray-900 rounded-[3rem] mt-4 mb-16 mx-auto'
+            ? 'w-[375px] min-h-[812px] border-14 border-gray-900 rounded-[3rem] mt-4 mb-16 mx-auto'
             : 'w-full max-w-[1280px] min-h-[800px] rounded-lg mt-0 mb-16'
         } preview-content`}
       >
@@ -416,8 +416,8 @@ export default function CanvasPreview() {
 
       {/* ──────────────── Custom Delete Confirmation Modal ──────────────── */}
       {blockToDelete && (
-        <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-slate-950/40 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white border border-gray-100 w-full max-w-sm rounded-[2rem] shadow-2xl p-6 text-center animate-in zoom-in-95 duration-200 relative">
+        <div className="fixed inset-0 z-999 flex items-center justify-center p-4 bg-slate-950/40 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white border border-gray-100 w-full max-w-sm rounded-4xl shadow-2xl p-6 text-center animate-in zoom-in-95 duration-200 relative">
             
             {/* Red Warning Trash Icon */}
             <div className="w-12 h-12 mx-auto mb-4 bg-red-50 text-red-500 border border-red-100 rounded-full flex items-center justify-center">
@@ -458,7 +458,7 @@ export default function CanvasPreview() {
       {/* ──────────────── Custom Context Menu ──────────────── */}
       {contextMenu && (
         <div
-          className="fixed z-[999] min-w-[180px] bg-white/95 backdrop-blur-md border border-slate-200/80 rounded-xl shadow-xl py-1.5 px-1 animate-in fade-in zoom-in-95 duration-100 ease-out"
+          className="fixed z-999 min-w-[180px] bg-white/95 backdrop-blur-md border border-slate-200/80 rounded-xl shadow-xl py-1.5 px-1 animate-in fade-in zoom-in-95 duration-100 ease-out"
           style={{
             top: `${contextMenu.y}px`,
             left: `${contextMenu.x}px`,

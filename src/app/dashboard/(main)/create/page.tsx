@@ -11,7 +11,7 @@ export default async function CreateWebsitePage() {
   const session = await requireAuth()
 
   return (
-    <div className="w-[100vw] relative left-1/2 -translate-x-1/2 -mt-12 -mb-12 min-h-[calc(100vh-73px)] bg-slate-50 flex animate-in fade-in duration-700">
+    <div className="w-screen relative left-1/2 -translate-x-1/2 -mt-12 -mb-12 min-h-[calc(100vh-73px)] bg-slate-50 flex animate-in fade-in duration-700">
       <NewWebsiteForm userId={session.userId} />
     </div>
   )

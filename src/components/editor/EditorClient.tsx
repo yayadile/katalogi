@@ -578,7 +578,7 @@ export default function EditorClient({
           {isPreviewMode && (
             <button
               onClick={() => setIsPreviewMode(false)}
-              className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] flex items-center gap-2 px-5 py-2.5 bg-white text-slate-800 rounded-full font-bold text-xs border border-gray-200 hover:bg-slate-50 transition-all shadow-xl active:scale-95 animate-in slide-in-from-top-4 duration-300 select-none"
+              className="fixed top-4 left-1/2 -translate-x-1/2 z-100 flex items-center gap-2 px-5 py-2.5 bg-white text-slate-800 rounded-full font-bold text-xs border border-gray-200 hover:bg-slate-50 transition-all shadow-xl active:scale-95 animate-in slide-in-from-top-4 duration-300 select-none"
             >
               <span>Keluar Pratinjau (Kembali ke Editor)</span>
             </button>
@@ -599,8 +599,8 @@ export default function EditorClient({
 
       {/* ──────────────── Wix Confetti Success Publication Modal ──────────────── */}
       {isPublishModalOpen && (
-        <div className="fixed inset-0 z-[999] flex items-center justify-center p-6 bg-slate-950/60 backdrop-blur-md animate-in fade-in duration-300">
-          <div className="bg-white border border-gray-100 w-full max-w-lg rounded-[2rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 p-8 text-center relative">
+        <div className="fixed inset-0 z-999 flex items-center justify-center p-6 bg-slate-950/60 backdrop-blur-md animate-in fade-in duration-300">
+          <div className="bg-white border border-gray-100 w-full max-w-lg rounded-4xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 p-8 text-center relative">
             
             {/* Absolute close button */}
             <button 

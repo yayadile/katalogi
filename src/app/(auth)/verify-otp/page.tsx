@@ -113,7 +113,7 @@ function VerifyOTPForm() {
       <form action={action} className="space-y-6 relative z-10">
         {state?.error && (
           <div className="bg-red-50 border border-red-200 text-red-600 text-sm px-5 py-4 rounded-2xl animate-fade-in flex items-center gap-2">
-            <XCircle className="w-4 h-4 flex-shrink-0" />
+            <XCircle className="w-4 h-4 shrink-0" />
             {state.error}
           </div>
         )}
@@ -122,7 +122,7 @@ function VerifyOTPForm() {
           <div className={`text-sm px-5 py-4 rounded-2xl flex items-center gap-2 animate-fade-in ${
             resendMsg.includes('dikirim') ? 'bg-green-50 border border-green-200 text-green-600' : 'bg-red-50 border border-red-200 text-red-600'
           }`}>
-            {resendMsg.includes('dikirim') ? <CheckCircle2 className="w-4 h-4 flex-shrink-0" /> : <XCircle className="w-4 h-4 flex-shrink-0" />}
+            {resendMsg.includes('dikirim') ? <CheckCircle2 className="w-4 h-4 shrink-0" /> : <XCircle className="w-4 h-4 shrink-0" />}
             {resendMsg}
           </div>
         )}

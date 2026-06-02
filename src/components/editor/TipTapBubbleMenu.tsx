@@ -72,7 +72,7 @@ export function TipTapBubbleToolbar({ editor, minimal = false }: TipTapBubbleMen
 
   return (
     <div
-      className="absolute z-[9999] flex items-center bg-slate-900 text-white rounded-lg px-1.5 py-1 shadow-xl gap-0.5 border border-slate-700"
+      className="absolute z-9999 flex items-center bg-slate-900 text-white rounded-lg px-1.5 py-1 shadow-xl gap-0.5 border border-slate-700"
       style={{
         top: `${Math.max(0, toolbarTop)}px`,
         left: `${toolbarLeft}px`,
@@ -138,7 +138,7 @@ export function TipTapBubbleToolbar({ editor, minimal = false }: TipTapBubbleMen
             </button>
             {showColorPicker && (
               <div
-                className="absolute top-full left-1/2 -translate-x-1/2 mt-1 bg-slate-800 rounded-lg p-2 shadow-xl border border-slate-600 grid grid-cols-6 gap-1 z-[10000]"
+                className="absolute top-full left-1/2 -translate-x-1/2 mt-1 bg-slate-800 rounded-lg p-2 shadow-xl border border-slate-600 grid grid-cols-6 gap-1 z-10000"
                 onMouseDown={(e) => e.preventDefault()}
               >
                 {colors.map((color) => (
@@ -242,7 +242,7 @@ export function TipTapBubbleToolbar({ editor, minimal = false }: TipTapBubbleMen
             </button>
             {showLinkInput && (
               <div
-                className="absolute top-full left-1/2 -translate-x-1/2 mt-1 bg-slate-800 rounded-lg p-2 shadow-xl border border-slate-600 flex items-center gap-1 z-[10000]"
+                className="absolute top-full left-1/2 -translate-x-1/2 mt-1 bg-slate-800 rounded-lg p-2 shadow-xl border border-slate-600 flex items-center gap-1 z-10000"
                 onMouseDown={(e) => e.preventDefault()}
               >
                 <input

@@ -2,7 +2,7 @@ import { requireAuth } from '@/lib/session'
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import type { Metadata } from 'next'
-import { Plus, Globe, Clock, Layout, ExternalLink, Eye } from 'lucide-react'
+import { Plus, Globe, Layout, ExternalLink } from 'lucide-react'
 import { ScrollReveal } from '@/components/dashboard/ScrollReveal'
 
 export const metadata: Metadata = {
@@ -32,15 +32,15 @@ export default async function DashboardPage() {
     <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-0">
       
       {/* Background Glow Effect */}
-      <div className="fixed top-0 left-0 w-[500px] h-[500px] bg-purple-600/[0.04] rounded-full blur-[120px] -z-10 pointer-events-none" />
-      <div className="fixed bottom-0 right-0 w-[600px] h-[600px] bg-purple-800/[0.04] rounded-full blur-[150px] -z-10 pointer-events-none" />
+      <div className="fixed top-0 left-0 w-[500px] h-[500px] bg-purple-600/4 rounded-full blur-[120px] -z-10 pointer-events-none" />
+      <div className="fixed bottom-0 right-0 w-[600px] h-[600px] bg-purple-800/4 rounded-full blur-[150px] -z-10 pointer-events-none" />
       {/* Header / Hero Section */}
       <ScrollReveal>
       <div className="pt-16 pb-12 flex flex-col xl:flex-row xl:items-end justify-between gap-10 border-b border-gray-200/50">
         <div className="space-y-6 flex-1">
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-br from-gray-900 via-gray-800 to-purple-900 tracking-tighter uppercase leading-[1.1]">
+          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-transparent bg-clip-text bg-linear-to-br from-gray-900 via-gray-800 to-purple-900 tracking-tighter uppercase leading-[1.1]">
             Selamat datang,<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-800 to-purple-500 relative inline-block pb-2">
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-purple-800 to-purple-500 relative inline-block pb-2">
               {session.name ?? 'Pengguna'}
             </span>
           </h1>
@@ -68,7 +68,7 @@ export default async function DashboardPage() {
           
           <Link
             href="/dashboard/create"
-            className="flex-shrink-0 inline-flex items-center justify-center gap-2 px-8 py-5 bg-purple-800 hover:bg-purple-900 text-white rounded-3xl font-bold text-lg transition-all hover:scale-[1.02] active:scale-[0.98] shadow-xl shadow-purple-800/25 group"
+            className="shrink-0 inline-flex items-center justify-center gap-2 px-8 py-5 bg-purple-800 hover:bg-purple-900 text-white rounded-3xl font-bold text-lg transition-all hover:scale-[1.02] active:scale-[0.98] shadow-xl shadow-purple-800/25 group"
           >
             <Plus className="w-6 h-6 group-hover:rotate-90 transition-transform duration-300" />
             Buat Baru
@@ -101,7 +101,7 @@ export default async function DashboardPage() {
             href="/dashboard/create"
             className="group relative bg-gray-50 border-2 border-dashed border-gray-200 hover:border-purple-600 hover:bg-purple-100/30 rounded-[2.5rem] p-8 transition-all duration-500 hover:shadow-2xl hover:shadow-purple-800/5 flex flex-col items-center justify-center h-full min-h-[340px] text-center overflow-hidden"
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-700/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="absolute inset-0 bg-linear-to-br from-purple-700/2 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
             <div className="w-20 h-20 bg-white border border-gray-100 rounded-3xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 shadow-sm relative z-10">
               <Plus className="w-10 h-10 text-purple-800" />
             </div>
@@ -116,7 +116,7 @@ export default async function DashboardPage() {
             <div
               className="group relative bg-white/40 backdrop-blur-xl border border-gray-200/60 hover:border-purple-500/50 rounded-[2.5rem] p-8 flex flex-col min-h-[340px] transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-purple-800/15 hover:bg-white/80 focus-within:ring-2 focus-within:ring-purple-700 focus-within:ring-offset-2 overflow-hidden"
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-purple-800/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="absolute inset-0 bg-linear-to-br from-purple-800/3 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               
               <div className="relative z-10 flex items-center justify-between mb-8">
                 <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 border border-gray-100 rounded-xl">
@@ -169,7 +169,7 @@ export default async function DashboardPage() {
               <div className="relative z-10 flex items-center gap-3">
                 <Link
                   href={`/dashboard/websites/${website.id}/edit`}
-                  className="flex-2 text-center text-sm font-bold py-4 px-6 bg-purple-800 text-white hover:bg-purple-900 rounded-2xl transition-all shadow-lg shadow-purple-800/10 active:scale-95 flex-1"
+                  className="flex-1 text-center text-sm font-bold py-4 px-6 bg-purple-800 text-white hover:bg-purple-900 rounded-2xl transition-all shadow-lg shadow-purple-800/10 active:scale-95"
                 >
                   Edit Desain
                 </Link>

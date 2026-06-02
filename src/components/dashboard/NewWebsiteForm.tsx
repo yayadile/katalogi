@@ -33,6 +33,7 @@ function RenderBlocks({ template }: { template: WebsiteTemplate }) {
   return (
     <div className="min-h-full flex flex-col bg-white" style={{ fontFamily: template.themeConfig.fontFamily }}>
       {template.blocks.map((block, idx) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const content = block.content as any
         switch (block.type) {
           case 'HERO': return <HeroBlock key={idx} content={content} theme={theme} />
@@ -299,7 +300,7 @@ export default function NewWebsiteForm({ userId }: { userId: string }) {
       </div>
 
       {/* === RIGHT COLUMN: DESKTOP GIANT PREVIEW === */}
-      <div className="hidden md:block flex-1 bg-slate-100/50 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:16px_16px]">
+      <div className="hidden md:block flex-1 bg-slate-100/50 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] bg-size-[16px_16px]">
         <DesktopGiantPreview template={currentTemplate} />
       </div>
 

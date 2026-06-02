@@ -83,7 +83,7 @@ export default function EditorGuide() {
 function GuideStep({ icon, title, desc }: { icon: React.ReactNode, title: string, desc: string }) {
   return (
     <div className="flex gap-4">
-      <div className="flex-shrink-0 w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center text-gray-500">
+      <div className="shrink-0 w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center text-gray-500">
         {icon}
       </div>
       <div>

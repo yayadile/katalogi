@@ -4,10 +4,14 @@ import { useActionState } from 'react'
 import { login } from '@/lib/actions/auth'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Mail, Lock, ArrowRight, Loader2 } from 'lucide-react'
+import { Mail, Lock, ArrowRight, Loader2, CheckCircle2 } from 'lucide-react'
+import { useSearchParams } from 'next/navigation'
+import { Suspense } from 'react'
 
-export default function LoginPage() {
+function LoginForm() {
   const [state, action, pending] = useActionState(login, undefined)
+  const searchParams = useSearchParams()
+  const isResetSuccess = searchParams.get('reset') === 'success'
 
   return (
     <div className="relative bg-white border border-gray-200 rounded-[2.5rem] p-10 md:p-12 shadow-lg animate-fade-up overflow-hidden">
@@ -39,12 +43,18 @@ export default function LoginPage() {
       </div>
 
       <form action={action} className="space-y-5 relative z-10">
+        {isResetSuccess && !state?.message && (
+          <div className="bg-green-50 border border-green-200 text-green-700 text-sm px-5 py-4 rounded-2xl animate-fade-in flex items-start gap-3">
+            <CheckCircle2 className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
+            <p>Kata sandi berhasil diperbarui! Silakan masuk dengan kata sandi baru Anda.</p>
+          </div>
+        )}
         {state?.message && (
           <div className="bg-red-50 border border-red-200 text-red-600 text-sm px-5 py-4 rounded-2xl animate-fade-in">
             {state.message}
           </div>
         )}
-
+        
         <div className="space-y-1.5 animate-fade-up delay-200">
           <label htmlFor="email" className="block text-gray-700 text-xs font-bold uppercase tracking-widest ml-1">
             Email
@@ -71,6 +81,9 @@ export default function LoginPage() {
             <label htmlFor="password" className="block text-gray-700 text-xs font-bold uppercase tracking-widest">
               Password
             </label>
+            <Link href="/forgot-password" className="text-xs font-bold text-indigo-600 hover:text-indigo-700 transition-colors">
+              Lupa Password?
+            </Link>
           </div>
           <div className="relative group">
             <input
@@ -109,5 +122,13 @@ export default function LoginPage() {
         </Link>
       </p>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-[400px] flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-indigo-600" /></div>}>
+      <LoginForm />
+    </Suspense>
   )
 }

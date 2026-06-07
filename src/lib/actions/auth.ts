@@ -113,3 +113,58 @@ export async function logout(_formData: FormData) {
   await deleteSession()
   redirect('/login')
 }
+
+// ─── Reset Password ───────────────────────────────────────────────────────────
+
+export async function resetPassword(state: AuthFormState, formData: FormData): Promise<AuthFormState> {
+  const email = formData.get('email') as string
+  const otp = formData.get('otp') as string
+  const password = formData.get('password') as string
+  const confirmPassword = formData.get('confirmPassword') as string
+
+  if (!email || !otp || !password || !confirmPassword) {
+    return { message: 'Semua kolom wajib diisi.' }
+  }
+
+  if (password.length < 6) {
+    return { errors: { password: ['Password minimal 6 karakter.'] } }
+  }
+
+  if (password !== confirmPassword) {
+    return { message: 'Konfirmasi password tidak cocok.' }
+  }
+
+  try {
+    const token = await prisma.verificationToken.findFirst({
+      where: {
+        email,
+        token: otp,
+        type: 'PASSWORD_RESET',
+        usedAt: null,
+        expiresAt: { gte: new Date() },
+      },
+      orderBy: { createdAt: 'desc' },
+    })
+
+    if (!token) {
+      return { message: 'Sesi reset password tidak valid atau sudah kedaluwarsa. Silakan ulangi.' }
+    }
+
+    const passwordHash = await bcrypt.hash(password, 10)
+
+    await prisma.user.update({
+      where: { email },
+      data: { passwordHash },
+    })
+
+    await prisma.verificationToken.update({
+      where: { id: token.id },
+      data: { usedAt: new Date() },
+    })
+  } catch (error) {
+    console.error('resetPassword error:', error)
+    return { message: 'Terjadi kesalahan sistem.' }
+  }
+
+  redirect('/login?reset=success')
+}

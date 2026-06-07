@@ -32,15 +32,17 @@ export default function BlockSettingsPanel() {
 
   if (!selectedBlock) {
     return (
-      <div className="flex flex-col h-full bg-gray-50 border-l border-gray-200">
-        <div className="flex items-center justify-between mb-2 border-b border-gray-200 px-3 py-2 bg-white">
-          <h2 className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Pengaturan Blok</h2>
+      <div className="flex flex-col h-full bg-white/50 backdrop-blur-xl border-l border-white shadow-[-4px_0_30px_rgb(0,0,0,0.02)]">
+        <div className="flex items-center justify-between mb-4 border-b border-slate-100 px-5 py-4">
+          <h2 className="text-xs font-extrabold text-slate-800 uppercase tracking-widest">Pengaturan Blok</h2>
         </div>
-        <div className="text-center py-16 text-gray-400 text-sm">
-          <svg className="w-10 h-10 mx-auto mb-3 opacity-30" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5" />
-          </svg>
-          Klik blok di kanvas untuk mulai mengedit
+        <div className="text-center py-20 px-6 text-slate-400 text-sm flex flex-col items-center justify-center flex-1">
+          <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+            <svg className="w-8 h-8 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5" />
+            </svg>
+          </div>
+          <p className="font-bold text-slate-500 max-w-[200px] leading-relaxed">Klik blok di kanvas untuk mulai mengedit detailnya.</p>
         </div>
       </div>
     )
@@ -60,30 +62,30 @@ export default function BlockSettingsPanel() {
       : (breakpointStyles[editingBreakpoint] || {}))
 
   return (
-    <div className="flex flex-col h-full bg-gray-50 border-l border-gray-200">
-      <div className="flex items-center justify-between mb-2 border-b border-gray-200 px-3 py-2 bg-white">
-        <h2 className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+    <div className="flex flex-col h-full bg-white/50 backdrop-blur-xl border-l border-white shadow-[-4px_0_30px_rgb(0,0,0,0.02)]">
+      <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4 bg-white/40">
+        <h2 className="text-xs font-extrabold text-slate-800 uppercase tracking-widest truncate">
           {selectedBlock.type} {selectedSubId ? `> ${selectedSubId}` : ''}
         </h2>
       </div>
 
        {/* Panel Tabs */}
-       <div className="flex items-center gap-3 px-3 py-1.5 border-b border-gray-200 bg-gray-50/30">
+       <div className="flex items-center p-2 border-b border-slate-100 bg-slate-50/50 gap-1">
          <button 
            onClick={() => setActiveBlockTab('style')}
-           className={`text-[10px] font-semibold tracking-wider uppercase ${activeBlockTab === 'style' ? 'text-gray-900' : 'text-gray-400 hover:text-gray-600'}`}
+           className={`flex-1 py-2 px-2 text-[10px] font-extrabold tracking-widest uppercase rounded-xl transition-all ${activeBlockTab === 'style' ? 'bg-white shadow-[0_2px_10px_rgb(0,0,0,0.04)] text-indigo-600 border border-slate-100' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-100'}`}
          >
            Gaya
          </button>
          <button 
            onClick={() => setActiveBlockTab('settings')}
-           className={`text-[10px] font-semibold tracking-wider uppercase ${activeBlockTab === 'settings' ? 'text-gray-900' : 'text-gray-400 hover:text-gray-600'}`}
+           className={`flex-1 py-2 px-2 text-[10px] font-extrabold tracking-widest uppercase rounded-xl transition-all ${activeBlockTab === 'settings' ? 'bg-white shadow-[0_2px_10px_rgb(0,0,0,0.04)] text-indigo-600 border border-slate-100' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-100'}`}
          >
            Properti
          </button>
          <button 
            onClick={() => setActiveBlockTab('animation')}
-           className={`text-[10px] font-semibold tracking-wider uppercase ${activeBlockTab === 'animation' ? 'text-gray-900' : 'text-gray-400 hover:text-gray-600'}`}
+           className={`flex-1 py-2 px-2 text-[10px] font-extrabold tracking-widest uppercase rounded-xl transition-all ${activeBlockTab === 'animation' ? 'bg-white shadow-[0_2px_10px_rgb(0,0,0,0.04)] text-indigo-600 border border-slate-100' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-100'}`}
          >
            Animasi
          </button>
@@ -91,30 +93,30 @@ export default function BlockSettingsPanel() {
        
        {/* Breakpoint Selector (inside Style tab) */}
        {activeBlockTab === 'style' && (
-         <div className="flex items-center gap-3 px-3 py-1.5 border-b border-gray-200 bg-gray-50/20">
-           <span className="text-[10px] font-semibold tracking-wider uppercase text-gray-600">Edit Breakpoint:</span>
-           <div className="flex gap-1">
+         <div className="flex flex-col gap-2 px-4 py-3 border-b border-slate-100 bg-slate-50/30">
+           <span className="text-[9px] font-extrabold tracking-widest uppercase text-slate-400">Edit Breakpoint</span>
+           <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
              <button 
                onClick={() => setEditingBreakpoint('base')}
-               className={`px-3 py-1 rounded text-xs font-medium ${editingBreakpoint === 'base' ? 'bg-indigo-50 text-indigo-600' : 'text-gray-500 hover:bg-gray-50'}`}
+               className={`px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all ${editingBreakpoint === 'base' ? 'bg-indigo-100 text-indigo-700 shadow-sm' : 'text-slate-500 hover:bg-slate-200/50 hover:text-slate-700'}`}
              >
                Base
              </button>
              <button 
                onClick={() => setEditingBreakpoint('desktop')}
-               className={`px-3 py-1 rounded text-xs font-medium ${editingBreakpoint === 'desktop' ? 'bg-indigo-50 text-indigo-600' : 'text-gray-500 hover:bg-gray-50'}`}
+               className={`px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all ${editingBreakpoint === 'desktop' ? 'bg-indigo-100 text-indigo-700 shadow-sm' : 'text-slate-500 hover:bg-slate-200/50 hover:text-slate-700'}`}
              >
                Desktop
              </button>
              <button 
                onClick={() => setEditingBreakpoint('tablet')}
-               className={`px-3 py-1 rounded text-xs font-medium ${editingBreakpoint === 'tablet' ? 'bg-indigo-50 text-indigo-600' : 'text-gray-500 hover:bg-gray-50'}`}
+               className={`px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all ${editingBreakpoint === 'tablet' ? 'bg-indigo-100 text-indigo-700 shadow-sm' : 'text-slate-500 hover:bg-slate-200/50 hover:text-slate-700'}`}
              >
                Tablet
              </button>
              <button 
                onClick={() => setEditingBreakpoint('mobile')}
-               className={`px-3 py-1 rounded text-xs font-medium ${editingBreakpoint === 'mobile' ? 'bg-indigo-50 text-indigo-600' : 'text-gray-500 hover:bg-gray-50'}`}
+               className={`px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all ${editingBreakpoint === 'mobile' ? 'bg-indigo-100 text-indigo-700 shadow-sm' : 'text-slate-500 hover:bg-slate-200/50 hover:text-slate-700'}`}
              >
                Mobile
              </button>
@@ -122,12 +124,13 @@ export default function BlockSettingsPanel() {
          </div>
        )}
 
-      <div className="flex-1 overflow-y-auto bg-gray-50">
+      <div className="flex-1 overflow-y-auto bg-transparent">
         {activeBlockTab === 'style' && (
-          <div className="flex flex-col p-2 space-y-4">
+          <div className="flex flex-col p-4 space-y-6">
             {selectedSubId && (
-              <div className="bg-indigo-50 text-indigo-700 text-[10px] font-medium px-3 py-2 rounded mb-2">
-                Mengedit gaya khusus elemen: <b>{selectedSubId}</b>
+              <div className="bg-indigo-50/50 border border-indigo-100 text-indigo-700 text-[10px] font-bold px-4 py-3 rounded-xl mb-2 flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
+                Mengedit gaya khusus: <span className="font-extrabold uppercase tracking-widest">{selectedSubId}</span>
               </div>
             )}
              <UniversalSettings 

@@ -278,11 +278,11 @@ export default function EditorClient({
   }
 
   return (
-    <div className="flex flex-col h-screen bg-slate-50 font-sans overflow-hidden select-none relative text-slate-800">
+    <div className="flex flex-col h-screen bg-slate-100 font-sans overflow-hidden select-none relative text-slate-800">
       
-      {/* ──────────────── Top Bar (Wix/Canva Premium Light Theme) ──────────────── */}
+      {/* ──────────────── Top Bar ──────────────── */}
       {!isPreviewMode && (
-        <header className="flex items-center justify-between px-6 py-3.5 bg-white border-b border-slate-200 shrink-0 z-30 shadow-sm text-slate-800">
+        <header className="flex items-center justify-between px-6 py-3.5 bg-white/60 backdrop-blur-xl border-b border-white shadow-[0_4px_20px_rgb(0,0,0,0.02)] shrink-0 z-30 text-slate-800">
           {/* Brand Info & Back Action */}
           <div className="flex items-center gap-4">
             <button
@@ -292,14 +292,14 @@ export default function EditorClient({
             >
               <ArrowLeft className="w-4 h-4" />
             </button>
-            <div className="w-px h-5 bg-slate-200" />
+            <div className="w-px h-6 bg-slate-200/60 mx-1" />
             
             {/* Undo / Redo Actions */}
-            <div className="flex items-center bg-slate-50 rounded-xl p-1 border border-slate-200 shrink-0 shadow-[inset_0_1px_2px_rgba(0,0,0,0.05)]">
+            <div className="flex items-center bg-white/50 backdrop-blur-sm rounded-xl p-1 shadow-[0_2px_10px_rgb(0,0,0,0.02),inset_0_1px_0_rgba(255,255,255,0.8)] shrink-0 border border-slate-100">
               <button
                 onClick={() => undo()}
                 disabled={!isMounted || past.length === 0}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-white hover:shadow-sm disabled:opacity-20 disabled:hover:bg-transparent disabled:hover:text-slate-400 transition-all duration-200"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-white hover:shadow-sm disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-slate-400 transition-all duration-200"
                 title="Undo (Ctrl+Z)"
               >
                 <Undo className="w-4 h-4" />
@@ -341,13 +341,13 @@ export default function EditorClient({
             />
           </div>
 
-          {/* Device Toggles (Centered, Icons only for absolute clean look) */}
-          <div className="absolute left-1/2 -translate-x-1/2 flex items-center bg-slate-50 rounded-full p-1.5 border border-slate-200 shadow-[inset_0_1px_2px_rgba(0,0,0,0.05)] gap-1">
+          {/* Device Toggles */}
+          <div className="absolute left-1/2 -translate-x-1/2 flex items-center bg-white/50 backdrop-blur-sm rounded-full p-1 border border-white shadow-[0_4px_15px_rgb(0,0,0,0.03),inset_0_1px_0_rgba(255,255,255,0.8)] gap-1">
             <button
               onClick={() => setPreviewMode('desktop')}
               className={`p-2.5 rounded-full transition-all duration-500 ${
                 previewMode === 'desktop' 
-                  ? 'bg-white text-indigo-600 shadow-md border border-slate-200/50 scale-110' 
+                  ? 'bg-white text-indigo-600 shadow-[0_2px_10px_rgb(99,102,241,0.1)] border border-slate-100 scale-105' 
                   : 'text-slate-400 hover:text-slate-600 hover:bg-white/50'
               }`}
               title="Desktop Layout"
@@ -382,10 +382,9 @@ export default function EditorClient({
             {/* Guide Button */}
             <EditorGuide />
             
-            {/* Full Preview Toggle */}
             <button
               onClick={() => setIsPreviewMode(true)}
-              className="px-3.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-600 hover:text-slate-900 transition-all text-xs font-semibold"
+              className="px-4 py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-900 transition-all text-xs font-bold shadow-[0_2px_10px_rgb(0,0,0,0.02)] border border-slate-100"
             >
               Pratinjau
             </button>
@@ -394,7 +393,7 @@ export default function EditorClient({
             <button
               onClick={handlePublish}
               disabled={isPublishing}
-              className="px-4 py-1.5 rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-900 hover:from-indigo-600 hover:to-indigo-950 text-white font-semibold text-xs transition-all disabled:opacity-50 shadow-sm"
+              className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs transition-all disabled:opacity-50 shadow-[0_4px_15px_rgb(99,102,241,0.3)] hover:shadow-[0_6px_20px_rgb(99,102,241,0.4)] active:scale-95"
             >
               {isPublishing ? (
                 <div className="flex items-center gap-1.5">
@@ -410,55 +409,55 @@ export default function EditorClient({
       )}
 
       {/* ──────────────── Central Workspace ──────────────── */}
-      <div className="flex flex-1 overflow-hidden relative bg-slate-50">
+      <div className="flex flex-1 overflow-hidden relative bg-slate-100">
         
         {!isPreviewMode && (
           /* Left Side toolbox bar (Vertical Light Panel) */
-          <nav className="w-16 shrink-0 bg-white border-r border-slate-200 flex flex-col items-center py-4 gap-4.5 z-20 shadow-sm">
+          <nav className="w-[72px] shrink-0 bg-white/60 backdrop-blur-xl border-r border-white flex flex-col items-center py-5 gap-5 z-20 shadow-[4px_0_20px_rgb(0,0,0,0.02)]">
             <button 
               onClick={() => setLeftPanel('elements')}
-              className={`relative p-3 rounded-xl transition-all duration-200 flex flex-col items-center gap-1 group ${
+              className={`relative p-3.5 rounded-2xl transition-all duration-300 flex flex-col items-center gap-1.5 group ${
                 leftPanel === 'elements' 
-                  ? 'text-indigo-600 bg-indigo-50/80 border border-indigo-100 shadow-sm font-semibold' 
-                  : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'
+                  ? 'text-indigo-600 bg-white shadow-[0_4px_15px_rgb(99,102,241,0.1)] border border-white' 
+                  : 'text-slate-400 hover:text-indigo-500 hover:bg-white/50'
               }`}
               title="Tambah Elemen & Blok"
             >
               <Plus className="w-5 h-5 transition-transform group-hover:scale-110" />
-              <span className="text-[9px] font-bold tracking-wider uppercase mt-1">Tambah</span>
+              <span className="text-[9px] font-extrabold tracking-widest uppercase">Tambah</span>
             </button>
             
             <button 
               onClick={() => setLeftPanel('layers')}
-              className={`relative p-3 rounded-xl transition-all duration-200 flex flex-col items-center gap-1 group ${
+              className={`relative p-3.5 rounded-2xl transition-all duration-300 flex flex-col items-center gap-1.5 group ${
                 leftPanel === 'layers' 
-                  ? 'text-indigo-600 bg-indigo-50/80 border border-indigo-100 shadow-sm font-semibold' 
-                  : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'
+                  ? 'text-indigo-600 bg-white shadow-[0_4px_15px_rgb(99,102,241,0.1)] border border-white' 
+                  : 'text-slate-400 hover:text-indigo-500 hover:bg-white/50'
               }`}
               title="Struktur Urutan Blok"
             >
               <LayoutTemplate className="w-5 h-5 transition-transform group-hover:scale-110" />
-              <span className="text-[9px] font-bold tracking-wider uppercase mt-1">Navigasi</span>
+              <span className="text-[9px] font-extrabold tracking-widest uppercase">Navigasi</span>
             </button>
             
             <button 
               onClick={() => setLeftPanel('settings')}
-              className={`relative p-3 rounded-xl transition-all duration-200 flex flex-col items-center gap-1 group ${
+              className={`relative p-3.5 rounded-2xl transition-all duration-300 flex flex-col items-center gap-1.5 group ${
                 leftPanel === 'settings' 
-                  ? 'text-indigo-600 bg-indigo-50/80 border border-indigo-100 shadow-sm font-semibold' 
-                  : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'
+                  ? 'text-indigo-600 bg-white shadow-[0_4px_15px_rgb(99,102,241,0.1)] border border-white' 
+                  : 'text-slate-400 hover:text-indigo-500 hover:bg-white/50'
               }`}
               title="Desain & Tema Global"
             >
               <Palette className="w-5 h-5 transition-transform group-hover:scale-110" />
-              <span className="text-[9px] font-bold tracking-wider uppercase mt-1">Desain</span>
+              <span className="text-[9px] font-extrabold tracking-widest uppercase">Desain</span>
             </button>
           </nav>
         )}
 
         {/* Secondary Sliding Drawer Sidebar */}
         {!isPreviewMode && (
-          <aside className="w-[280px] shrink-0 bg-white border-r border-gray-200 flex flex-col overflow-hidden relative z-10 shadow-sm">
+          <aside className="w-[300px] shrink-0 bg-white/70 backdrop-blur-xl border-r border-white flex flex-col overflow-hidden relative z-10 shadow-[4px_0_30px_rgb(0,0,0,0.02)]">
             <div className="flex-1 overflow-y-auto">
               
               {leftPanel === 'elements' && <ElementsPanel />}
@@ -573,12 +572,12 @@ export default function EditorClient({
         )}
 
         {/* Central Canvas Frame preview wrapper */}
-        <main className="flex-1 overflow-hidden relative bg-slate-100/60 flex flex-col">
+        <main className="flex-1 overflow-hidden relative bg-slate-100 flex flex-col">
           {/* Dynamic Floating Back button in Fullscreen Preview mode */}
           {isPreviewMode && (
             <button
               onClick={() => setIsPreviewMode(false)}
-              className="fixed top-4 left-1/2 -translate-x-1/2 z-100 flex items-center gap-2 px-5 py-2.5 bg-white text-slate-800 rounded-full font-bold text-xs border border-gray-200 hover:bg-slate-50 transition-all shadow-xl active:scale-95 animate-in slide-in-from-top-4 duration-300 select-none"
+              className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] flex items-center gap-2 px-6 py-3 bg-white/80 backdrop-blur-xl text-slate-800 rounded-full font-extrabold text-xs border border-white hover:bg-white transition-all shadow-[0_8px_30px_rgb(0,0,0,0.08)] active:scale-95 animate-in slide-in-from-top-4 duration-300 select-none"
             >
               <span>Keluar Pratinjau (Kembali ke Editor)</span>
             </button>
@@ -591,7 +590,7 @@ export default function EditorClient({
 
         {/* Right Element-Style Property Panel Inspector */}
         {!isPreviewMode && (
-          <aside className="w-72 shrink-0 bg-gray-50 flex flex-col overflow-hidden relative z-10 shadow-sm border-l border-gray-200">
+          <aside className="w-80 shrink-0 bg-white/70 backdrop-blur-xl flex flex-col overflow-hidden relative z-10 shadow-[-4px_0_30px_rgb(0,0,0,0.02)] border-l border-white">
             <BlockSettingsPanel />
           </aside>
         )}

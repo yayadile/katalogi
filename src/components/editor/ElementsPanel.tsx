@@ -56,39 +56,39 @@ export default function ElementsPanel() {
   }
 
   return (
-    <div className="flex flex-col h-full bg-white">
-      <div className="flex items-center justify-between mb-2 border-b border-gray-200 px-3 py-2 bg-white">
-        <h2 className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Tambah Blok</h2>
+    <div className="flex flex-col h-full bg-white/50 backdrop-blur-xl">
+      <div className="flex items-center justify-between mb-4 border-b border-slate-100 px-5 py-4">
+        <h2 className="text-xs font-extrabold text-slate-800 uppercase tracking-widest">Tambah Blok</h2>
       </div>
 
       {/* Panel Content */}
-      <div className="flex-1 overflow-y-auto p-3 space-y-5 bg-white">
+      <div className="flex-1 overflow-y-auto px-5 pb-5 space-y-8">
           {/* Search */}
-          <div className="relative">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+          <div className="relative group">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-indigo-500 transition-colors" />
             <input
               type="text"
               placeholder="Cari elemen..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-8 pr-3 py-1.5 bg-white border border-gray-200 rounded text-[11px] text-gray-900 placeholder-gray-400 focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 transition-colors"
+              className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200/60 rounded-xl text-xs font-bold text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all shadow-sm"
             />
           </div>
 
           <div>
-            <h3 className="text-[10px] font-bold text-indigo-600 uppercase tracking-[0.15em] mb-3 ml-1">Komponen Utama</h3>
-            <div className="grid grid-cols-2 gap-2 mb-6">
+            <h3 className="text-[10px] font-extrabold text-indigo-500 uppercase tracking-widest mb-4 ml-1">Komponen Utama</h3>
+            <div className="grid grid-cols-2 gap-3 mb-6">
               {MAIN_BLOCKS.filter(b => b.label.toLowerCase().includes(searchQuery.toLowerCase())).map((block) => (
                 <button
                   key={block.type}
                   onClick={() => handleAddElement(block.type)}
-                  className="flex flex-col items-center justify-center gap-2 p-4 bg-white border border-gray-100 rounded-2xl hover:border-indigo-600 hover:shadow-lg hover:shadow-indigo-600/10 transition-all duration-300 group relative overflow-hidden active:scale-95"
+                  className="flex flex-col items-center justify-center gap-2.5 p-4 bg-white border border-slate-100 rounded-2xl hover:border-indigo-200 hover:shadow-[0_8px_20px_rgb(99,102,241,0.08)] transition-all duration-300 group relative overflow-hidden active:scale-95"
                 >
-                  <div className="absolute inset-0 bg-indigo-50 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <div className="text-gray-400 group-hover:text-indigo-600 transition-all duration-300 group-hover:scale-110 relative z-10">
+                  <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="text-slate-400 group-hover:text-indigo-600 transition-all duration-300 group-hover:scale-110 relative z-10">
                     {block.icon}
                   </div>
-                  <span className="text-[10px] font-bold text-gray-500 group-hover:text-purple-950 text-center leading-tight relative z-10 uppercase tracking-wider">
+                  <span className="text-[10px] font-bold text-slate-600 group-hover:text-indigo-900 text-center leading-tight relative z-10 uppercase tracking-widest">
                     {block.label}
                   </span>
                 </button>
@@ -97,19 +97,19 @@ export default function ElementsPanel() {
           </div>
 
           <div>
-            <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.15em] mb-3 ml-1">Tipografi</h3>
-            <div className="grid grid-cols-2 gap-2">
+            <h3 className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-4 ml-1">Tipografi</h3>
+            <div className="grid grid-cols-2 gap-3">
               {TYPOGRAPHY_BLOCKS.filter(b => b.label.toLowerCase().includes(searchQuery.toLowerCase())).map((block) => (
                 <button
                   key={block.type}
                   onClick={() => handleAddElement(block.type)}
-                  className="flex flex-col items-center justify-center gap-2 p-4 bg-white border border-gray-100 rounded-2xl hover:border-indigo-600 hover:shadow-lg hover:shadow-indigo-600/10 transition-all duration-300 group relative overflow-hidden active:scale-95"
+                  className="flex flex-col items-center justify-center gap-2.5 p-4 bg-white border border-slate-100 rounded-2xl hover:border-indigo-200 hover:shadow-[0_8px_20px_rgb(99,102,241,0.08)] transition-all duration-300 group relative overflow-hidden active:scale-95"
                 >
-                  <div className="absolute inset-0 bg-indigo-50 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <div className="text-gray-400 group-hover:text-indigo-600 transition-all duration-300 group-hover:scale-110 relative z-10">
+                  <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="text-slate-400 group-hover:text-indigo-600 transition-all duration-300 group-hover:scale-110 relative z-10">
                     {block.icon}
                   </div>
-                  <span className="text-[10px] font-bold text-gray-500 group-hover:text-purple-950 text-center leading-tight relative z-10 uppercase tracking-wider">
+                  <span className="text-[10px] font-bold text-slate-600 group-hover:text-indigo-900 text-center leading-tight relative z-10 uppercase tracking-widest">
                     {block.label}
                   </span>
                 </button>
@@ -120,4 +120,4 @@ export default function ElementsPanel() {
       </div>
     </div>
   )
-}
+}

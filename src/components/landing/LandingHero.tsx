@@ -50,7 +50,7 @@ export default function LandingHero() {
           <div className="mt-8 md:mt-10 animate-fade-up delay-300">
             <Link
               href="/login?signup=true"
-              className="inline-flex bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-8 py-4 rounded-xl transition-colors duration-200 items-center justify-center gap-2 text-base group"
+              className="inline-flex bg-gradient-to-br from-indigo-500 to-indigo-900 hover:from-indigo-600 hover:to-indigo-950 text-white font-bold px-8 py-4 rounded-xl transition-colors duration-200 items-center justify-center gap-2 text-base group"
             >
               Mulai Gratis Sekarang
               <Rocket className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />

@@ -7,6 +7,9 @@ import LandingFeatures from '@/components/landing/LandingFeatures'
 import LandingFAQ from '@/components/landing/LandingFAQ'
 import LandingCTA from '@/components/landing/LandingCTA'
 import LandingFooter from '@/components/landing/LandingFooter'
+import LandingShowcase from '@/components/landing/LandingShowcase'
+import LandingTestimonials from '@/components/landing/LandingTestimonials'
+import LandingPricing from '@/components/landing/LandingPricing'
 import { getSession } from '@/lib/session'
 import { redirect } from 'next/navigation'
 
@@ -17,7 +20,7 @@ export default async function HomePage() {
   }
 
   return (
-    <div className="bg-white min-h-screen text-gray-900 selection:bg-indigo-600 selection:text-white">
+    <div className="bg-white min-h-screen text-gray-900 selection:bg-linear-to-br from-indigo-500 to-indigo-900 selection:text-white">
       <ScrollProgress />
       <LandingNavbar />
       <main>
@@ -25,6 +28,9 @@ export default async function HomePage() {
         <LandingTentang />
         <LandingCaraKerja />
         <LandingFeatures />
+        <LandingShowcase />
+        <LandingTestimonials />
+        <LandingPricing />
         <LandingFAQ />
         <LandingCTA />
       </main>

@@ -181,7 +181,7 @@ function ColorPickerPopover({
 
   const presets = [
     '#ffffff', '#f8fafc', '#f1f5f9', '#e2e8f0', 
-    '#4f46e5', '#6366f1', '#8b5cf6', '#a78bfa',
+    '#4f46e5', '#6366f1', '#9819ff', '#a78bfa',
     '#10b981', '#34d399', '#f43f5e', '#fb7185',
     '#0ea5e9', '#38bdf8', '#0f172a', '#1e293b'
   ]

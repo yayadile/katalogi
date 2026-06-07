@@ -63,7 +63,7 @@ export default function LandingCTA() {
           ref={cardRef}
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
-          className="bg-indigo-600 rounded-[2rem] p-10 md:p-16 lg:p-20 text-center relative overflow-hidden cursor-default"
+          className="bg-gradient-to-br from-indigo-500 to-indigo-900 rounded-[2rem] p-10 md:p-16 lg:p-20 text-center relative overflow-hidden cursor-default"
           style={{
             transform: `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(${isHovered ? 1.02 : 1})`,
             transition: isHovered

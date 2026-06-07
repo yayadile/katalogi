@@ -394,7 +394,7 @@ export default function EditorClient({
             <button
               onClick={handlePublish}
               disabled={isPublishing}
-              className="px-4 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs transition-all disabled:opacity-50 shadow-sm"
+              className="px-4 py-1.5 rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-900 hover:from-indigo-600 hover:to-indigo-950 text-white font-semibold text-xs transition-all disabled:opacity-50 shadow-sm"
             >
               {isPublishing ? (
                 <div className="flex items-center gap-1.5">
@@ -548,7 +548,7 @@ export default function EditorClient({
                         <button
                           onClick={handleSaveIdentity}
                           disabled={isSavingIdentity}
-                          className="w-full mt-4 flex items-center justify-center gap-1.5 bg-indigo-600 text-white font-bold py-2.5 rounded-lg text-xs hover:bg-indigo-700 transition-colors shadow-sm disabled:opacity-50"
+                          className="w-full mt-4 flex items-center justify-center gap-1.5 bg-gradient-to-br from-indigo-500 to-indigo-900 text-white font-bold py-2.5 rounded-lg text-xs hover:bg-indigo-700 transition-colors shadow-sm disabled:opacity-50"
                         >
                           {isSavingIdentity ? (
                             <>
@@ -663,7 +663,7 @@ export default function EditorClient({
                 href={`/${siteSlug}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 flex items-center justify-center py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold transition-all shadow-sm"
+                className="flex-1 flex items-center justify-center py-2.5 px-4 bg-gradient-to-br from-indigo-500 to-indigo-900 hover:from-indigo-600 hover:to-indigo-950 text-white rounded-xl text-xs font-semibold transition-all shadow-sm"
               >
                 Buka Situs Live
               </a>

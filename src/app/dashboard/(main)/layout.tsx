@@ -11,11 +11,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
       <nav className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between sticky top-0 z-50">
         <div className="flex items-center">
           <Image 
-            src="/logo1.svg" 
+            src="/logo.png" 
             alt="Katalogi Logo" 
             width={120} 
             height={32} 
-            className="h-8 w-auto" 
+            className="h-10 w-auto rounded-xl" 
             priority
           />
         </div>

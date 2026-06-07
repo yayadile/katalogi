@@ -26,8 +26,8 @@ export default function LandingTentang() {
 
   return (
     <section id="tentang" ref={sectionRef} className="py-24 md:py-32 bg-white relative overflow-hidden">
-      <div className="absolute top-1/2 -left-40 w-[500px] h-[500px] bg-indigo-500/[0.03] rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-10 -right-40 w-[400px] h-[400px] bg-purple-600/[0.03] rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute top-1/2 -left-40 w-[500px] h-[500px] bg-indigo-500/3 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-10 -right-40 w-[400px] h-[400px] bg-purple-600/3 rounded-full blur-[100px] pointer-events-none" />
 
       <div className="absolute pointer-events-none text-indigo-600/10" style={{ left: '5%', top: '30%' }}>
         <Target className="w-7 h-7 animate-float-icon" />

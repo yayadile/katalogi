@@ -104,3 +104,13 @@ model PageBlock {
   parent    PageBlock?  @relation("BlockChildren", fields: [parentId], references: [id])
   children  PageBlock[] @relation("BlockChildren")
 }
+
+model Testimonial {
+  id        String   @id @default(cuid())
+  name      String
+  role      String
+  content   String
+  rating    Int      @default(5)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+}

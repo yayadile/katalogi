@@ -67,7 +67,7 @@ export default async function DashboardPage() {
           
           <Link
             href="/dashboard/create"
-            className="shrink-0 inline-flex items-center justify-center gap-2 px-8 py-5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-3xl font-bold text-lg transition-all hover:scale-[1.02] active:scale-[0.98] shadow-xl shadow-indigo-600/25 group"
+            className="shrink-0 inline-flex items-center justify-center gap-2 px-8 py-5 bg-gradient-to-br from-indigo-500 to-indigo-900 hover:from-indigo-600 hover:to-indigo-950 text-white rounded-3xl font-bold text-lg transition-all hover:scale-[1.02] active:scale-[0.98] shadow-xl shadow-indigo-600/25 group"
           >
             <Plus className="w-6 h-6 group-hover:rotate-90 transition-transform duration-300" />
             Buat Baru
@@ -167,7 +167,7 @@ export default async function DashboardPage() {
               <div className="relative z-10 flex items-center gap-3">
                 <Link
                   href={`/dashboard/websites/${website.id}/edit`}
-                  className="flex-1 text-center text-sm font-bold py-4 px-6 bg-indigo-600 text-white hover:bg-indigo-700 rounded-2xl transition-all shadow-lg shadow-indigo-600/10 active:scale-95"
+                  className="flex-1 text-center text-sm font-bold py-4 px-6 bg-gradient-to-br from-indigo-500 to-indigo-900 text-white hover:bg-indigo-700 rounded-2xl transition-all shadow-lg shadow-indigo-600/10 active:scale-95"
                 >
                   Edit Desain
                 </Link>

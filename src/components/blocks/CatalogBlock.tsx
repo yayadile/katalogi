@@ -35,7 +35,7 @@ function formatPrice(price: number) {
 
 export default function CatalogBlock({ content, theme }: CatalogBlockProps) {
   const [searchQuery, setSearchQuery] = useState('')
-  const primaryColor = theme?.primaryColor || '#8b5cf6'
+  const primaryColor = theme?.primaryColor || '#9819ff'
   const buttonStyle = theme?.buttonStyle || 'rounded'
   const buttonRadius = buttonStyle === 'sharp' ? 'rounded-none' : buttonStyle === 'pill' ? 'rounded-full' : 'rounded-xl'
   const { title, items, layout = 'grid', imageRatio = '4:3' } = content

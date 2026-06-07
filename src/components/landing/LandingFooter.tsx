@@ -11,11 +11,11 @@ export default function LandingFooter() {
           <div className="space-y-4">
             <Link href="/" className="flex items-center group">
               <Image 
-                src="/logo1.svg" 
+                src="/logo.png" 
                 alt="Katalogi Logo" 
                 width={120} 
                 height={32} 
-                className="h-8 w-auto" 
+                className="h-10 w-auto rounded-xl" 
               />
             </Link>
             <p className="text-gray-500 text-sm leading-relaxed max-w-xs">
@@ -29,6 +29,8 @@ export default function LandingFooter() {
               <Link href="#tentang" className="text-sm text-gray-500 hover:text-indigo-600 transition-colors">Tentang</Link>
               <Link href="#cara-kerja" className="text-sm text-gray-500 hover:text-indigo-600 transition-colors">Cara Kerja</Link>
               <Link href="#features" className="text-sm text-gray-500 hover:text-indigo-600 transition-colors">Fitur</Link>
+              <Link href="#showcase" className="text-sm text-gray-500 hover:text-indigo-600 transition-colors">Template</Link>
+              <Link href="#harga" className="text-sm text-gray-500 hover:text-indigo-600 transition-colors">Harga</Link>
               <Link href="#faq" className="text-sm text-gray-500 hover:text-indigo-600 transition-colors">FAQ</Link>
             </div>
           </div>
@@ -80,5 +82,5 @@ export default function LandingFooter() {
         </div>
       </div>
     </footer>
-  )
+  ) 
 }

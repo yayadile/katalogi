@@ -48,7 +48,7 @@ export default async function PublishedPage({ params }: Props) {
   if (!page) notFound()
 
   const theme = (website.themeConfig as Record<string, string>) ?? {}
-  const primaryColor = theme.primaryColor ?? '#8b5cf6'
+  const primaryColor = theme.primaryColor ?? '#9819ff'
   const secondaryColor = theme.secondaryColor ?? '#1e293b'
   const fontFamily = theme.fontFamily ?? 'Inter'
   const headingFont = theme.headingFont ?? fontFamily

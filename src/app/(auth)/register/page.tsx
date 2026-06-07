@@ -27,11 +27,11 @@ export default function RegisterPage() {
       <div className="text-center mb-10 relative z-10 animate-fade-up delay-100">
         <Link href="/" className="inline-flex items-center mb-6 group">
           <Image 
-            src="/logo1.svg" 
+            src="/logo.png" 
             alt="Katalogi Logo" 
             width={160} 
             height={48} 
-            className="h-10 sm:h-12 w-auto" 
+            className="h-12 sm:h-14 w-auto rounded-2xl shadow-sm" 
             priority
           />
         </Link>
@@ -110,7 +110,7 @@ export default function RegisterPage() {
         <button
           type="submit"
           disabled={pending}
-          className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-2xl transition-all duration-200 hover:shadow-lg hover:shadow-indigo-500/25 disabled:opacity-60 disabled:cursor-not-allowed text-base mt-2 flex items-center justify-center gap-2 active:scale-95 animate-fade-up delay-500"
+          className="w-full bg-gradient-to-br from-indigo-500 to-indigo-900 hover:from-indigo-600 hover:to-indigo-950 text-white font-bold py-4 rounded-2xl transition-all duration-200 hover:shadow-lg hover:shadow-indigo-500/25 disabled:opacity-60 disabled:cursor-not-allowed text-base mt-2 flex items-center justify-center gap-2 active:scale-95 animate-fade-up delay-500"
         >
           {pending ? (
             <Loader2 className="w-5 h-5 animate-spin" />

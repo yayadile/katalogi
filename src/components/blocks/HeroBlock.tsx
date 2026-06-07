@@ -21,7 +21,7 @@ type HeroBlockProps = {
 }
 
 export default function HeroBlock({ content, isEditing, theme }: HeroBlockProps) {
-  const primaryColor = theme?.primaryColor || '#8b5cf6'
+  const primaryColor = theme?.primaryColor || '#9819ff'
   const buttonStyle = theme?.buttonStyle || 'rounded'
   const buttonRadius = buttonStyle === 'sharp' ? 'rounded-none' : buttonStyle === 'pill' ? 'rounded-full' : 'rounded-2xl'
   const { headline, subtext, ctaText, bgImage } = content

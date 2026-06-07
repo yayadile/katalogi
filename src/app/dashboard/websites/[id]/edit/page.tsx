@@ -47,7 +47,7 @@ export default async function EditPage({ params }: Props) {
   }
 
   const theme = (website.themeConfig as ThemeConfig) ?? {
-    primaryColor: '#8b5cf6',
+    primaryColor: '#9819ff',
     secondaryColor: '#1e293b',
     backgroundColor: '#ffffff',
     buttonStyle: 'rounded',

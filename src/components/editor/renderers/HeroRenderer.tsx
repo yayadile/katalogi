@@ -6,13 +6,13 @@ import { useEditorStore } from '../store'
 import { EditableText } from '../EditableText'
 
 export function HeroRenderer({ block, isPreview = false, animationStyle, hoverClass = '' }: { block: EditorBlock; isPreview?: boolean; animationStyle?: React.CSSProperties; hoverClass?: string }) {
-  const { headline = 'Headline', subtext = 'Subheadline', ctaText = 'Click Here', ctaLink = '#', style = {}, subStyles = {}, variant = 'centered', bgImage } = block.content
+  const { headline = 'Headline', subtext = 'Subheadline', ctaText = 'Click Here', style = {}, subStyles = {}, variant = 'centered', bgImage } = block.content
   const selectBlock = useEditorStore(state => state.selectBlock)
   const updateBlockContent = useEditorStore(state => state.updateBlockContent)
   const previewMode = useEditorStore(state => state.previewMode)
   const theme = useEditorStore(state => state.theme)
   
-  const primaryColor = theme.primaryColor || '#8b5cf6'
+  const primaryColor = theme.primaryColor || '#9819ff'
   const buttonStyle = theme.buttonStyle || 'rounded'
   const buttonRadius = buttonStyle === 'sharp' ? 'rounded-none' : buttonStyle === 'pill' ? 'rounded-full' : 'rounded-2xl'
 
@@ -33,9 +33,9 @@ export function HeroRenderer({ block, isPreview = false, animationStyle, hoverCl
     if ((bgImage as string)?.startsWith('/')) validBgImage = true
   }
   
-  const headlineStyle = (subStyles as any)?.headline || {}
-  const subtextStyle = (subStyles as any)?.subtext || {}
-  const ctaStyle = (subStyles as any)?.cta || {}
+  const headlineStyle = (subStyles as Record<string, React.CSSProperties>)?.headline || {}
+  const subtextStyle = (subStyles as Record<string, React.CSSProperties>)?.subtext || {}
+  const ctaStyle = (subStyles as Record<string, React.CSSProperties>)?.cta || {}
   
   const breakpointStyle = (block.content.breakpointStyles || {})[previewMode] || {};
 

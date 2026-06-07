@@ -147,7 +147,7 @@ function NestedSortableBlock({
         onClick={(e) => e.stopPropagation()}
       >
         <div
-          className="flex items-center gap-1.5 px-2 py-1 rounded text-[10px] font-bold text-white bg-indigo-600 cursor-grab active:cursor-grabbing hover:bg-indigo-700 select-none"
+          className="flex items-center gap-1.5 px-2 py-1 rounded text-[10px] font-bold text-white bg-gradient-to-br from-indigo-500 to-indigo-900 cursor-grab active:cursor-grabbing hover:bg-indigo-700 select-none"
           {...attributes}
           {...listeners}
         >

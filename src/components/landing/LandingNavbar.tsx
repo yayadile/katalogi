@@ -8,13 +8,50 @@ import { Menu, X } from 'lucide-react'
 export default function LandingNavbar() {
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [sections, setSections] = useState<Record<string, boolean>>({
+    tentang: true,
+    'cara-kerja': true,
+    features: true,
+    showcase: true,
+    testimoni: true,
+    harga: true,
+    faq: true,
+  })
+
+  const navLinks = [
+    { id: 'tentang', label: 'Tentang' },
+    { id: 'cara-kerja', label: 'Cara Kerja' },
+    { id: 'features', label: 'Fitur' },
+    { id: 'showcase', label: 'Template' },
+    { id: 'testimoni', label: 'Testimoni' },
+    { id: 'harga', label: 'Harga' },
+    { id: 'faq', label: 'FAQ' },
+  ]
 
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20)
     }
     window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
+
+    const checkSections = () => {
+      setSections({
+        tentang: !!document.getElementById('tentang'),
+        'cara-kerja': !!document.getElementById('cara-kerja'),
+        features: !!document.getElementById('features'),
+        showcase: !!document.getElementById('showcase'),
+        testimoni: !!document.getElementById('testimoni'),
+        harga: !!document.getElementById('harga'),
+        faq: !!document.getElementById('faq'),
+      })
+    }
+    checkSections()
+    const interval = setInterval(checkSections, 1000)
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+      clearInterval(interval)
+    }
   }, [])
 
   return (
@@ -26,40 +63,27 @@ export default function LandingNavbar() {
       <div className="mx-auto flex h-16 md:h-18 max-w-7xl items-center justify-between px-6">
         <Link href="/" className="flex items-center group">
           <Image 
-            src="/logo1.svg" 
+            src="/logo.png" 
             alt="Katalogi Logo" 
             width={120} 
             height={32} 
-            className="h-8 w-auto" 
+            className="h-10 w-auto rounded-xl" 
             priority
           />
         </Link>
 
         <nav className="hidden md:flex items-center gap-1">
-          <Link
-            href="#tentang"
-            className="text-sm font-semibold px-4 py-2 rounded-full text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-all duration-200"
-          >
-            Tentang
-          </Link>
-          <Link
-            href="#cara-kerja"
-            className="text-sm font-semibold px-4 py-2 rounded-full text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-all duration-200"
-          >
-            Cara Kerja
-          </Link>
-          <Link
-            href="#features"
-            className="text-sm font-semibold px-4 py-2 rounded-full text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-all duration-200"
-          >
-            Fitur
-          </Link>
-          <Link
-            href="#faq"
-            className="text-sm font-semibold px-4 py-2 rounded-full text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-all duration-200"
-          >
-            FAQ
-          </Link>
+          {navLinks.map((link) => 
+            sections[link.id] && (
+              <Link
+                key={link.id}
+                href={`#${link.id}`}
+                className="text-sm font-semibold px-4 py-2 rounded-full text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-all duration-200"
+              >
+                {link.label}
+              </Link>
+            )
+          )}
         </nav>
 
         <div className="flex items-center gap-3">
@@ -71,7 +95,7 @@ export default function LandingNavbar() {
           </Link>
           <Link
             href="/login?signup=true"
-            className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition-colors duration-200"
+            className="bg-linear-to-br from-indigo-500 to-indigo-900 hover:from-indigo-600 hover:to-indigo-950 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition-colors duration-200"
           >
             Daftar Gratis
           </Link>
@@ -87,18 +111,18 @@ export default function LandingNavbar() {
 
       {mobileOpen && (
         <div className="md:hidden bg-white border-b border-gray-200 px-6 py-4 flex flex-col gap-1 animate-fade-in">
-          <Link href="#tentang" className="text-sm font-semibold px-4 py-3 rounded-full text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors" onClick={() => setMobileOpen(false)}>
-            Tentang
-          </Link>
-          <Link href="#cara-kerja" className="text-sm font-semibold px-4 py-3 rounded-full text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors" onClick={() => setMobileOpen(false)}>
-            Cara Kerja
-          </Link>
-          <Link href="#features" className="text-sm font-semibold px-4 py-3 rounded-full text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors" onClick={() => setMobileOpen(false)}>
-            Fitur
-          </Link>
-          <Link href="#faq" className="text-sm font-semibold px-4 py-3 rounded-full text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors" onClick={() => setMobileOpen(false)}>
-            FAQ
-          </Link>
+          {navLinks.map((link) => 
+            sections[link.id] && (
+              <Link 
+                key={link.id}
+                href={`#${link.id}`} 
+                className="text-sm font-semibold px-4 py-3 rounded-full text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors" 
+                onClick={() => setMobileOpen(false)}
+              >
+                {link.label}
+              </Link>
+            )
+          )}
           <Link href="/login" className="text-sm font-semibold px-4 py-3 text-gray-500 hover:text-gray-900 transition-colors pt-3 mt-1 border-t border-gray-100" onClick={() => setMobileOpen(false)}>
             Masuk
           </Link>

@@ -2,6 +2,7 @@ import 'server-only'
 import { SignJWT, jwtVerify } from 'jose'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
+import { prisma } from '@/lib/prisma'
 
 export type SessionPayload = {
   userId: string
@@ -66,5 +67,16 @@ export async function requireAuth(): Promise<SessionPayload> {
   if (!session || !session.userId) {
     redirect('/login')
   }
+
+  const userExists = await prisma.user.findUnique({
+    where: { id: session.userId },
+    select: { id: true }
+  })
+
+  if (!userExists) {
+    await deleteSession()
+    redirect('/login')
+  }
+
   return session
 }

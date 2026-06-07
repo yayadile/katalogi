@@ -15,7 +15,7 @@ type TextBlockProps = {
 }
 
 export default function TextBlock({ content, theme }: TextBlockProps) {
-  const primaryColor = theme?.primaryColor || '#8b5cf6'
+  const primaryColor = theme?.primaryColor || '#9819ff'
   const { html, text } = content
 
   return (

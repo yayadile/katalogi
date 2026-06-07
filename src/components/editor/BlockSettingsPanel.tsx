@@ -53,10 +53,10 @@ export default function BlockSettingsPanel() {
     setSaveStatus('idle') // Would trigger auto-save logic in a higher component or effect
   }
   
-  const breakpointStyles = (selectedBlock.content?.breakpointStyles as Record<string, any>) || {}
+  const breakpointStyles = (selectedBlock.content?.breakpointStyles as Record<string, unknown>) || {}
   
   const currentStyles = selectedSubId 
-    ? ((selectedBlock.content?.subStyles as any)?.[selectedSubId] || {}) 
+    ? ((selectedBlock.content?.subStyles as Record<string, unknown>)?.[selectedSubId] || {}) 
     : (editingBreakpoint === 'base' 
       ? (selectedBlock.content?.style || {}) 
       : (breakpointStyles[editingBreakpoint] || {}))

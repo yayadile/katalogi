@@ -7,7 +7,7 @@ import { generateOTP, sendOTPEmail } from '@/lib/mail'
 
 // ─── Profile ──────────────────────────────────────────────────────────────────
 
-export async function updateProfile(state: any, formData: FormData) {
+export async function updateProfile(state: unknown, formData: FormData) {
   const session = await requireAuth()
   const name = formData.get('name') as string
 
@@ -24,14 +24,14 @@ export async function updateProfile(state: any, formData: FormData) {
     // Update session cookie with new name
     await createSession(session.userId, session.email, name)
     return { success: 'Profil berhasil diperbarui.' }
-  } catch (error) {
+  } catch {
     return { error: 'Gagal memperbarui profil.' }
   }
 }
 
 // ─── Password ─────────────────────────────────────────────────────────────────
 
-export async function updatePassword(state: any, formData: FormData) {
+export async function updatePassword(state: unknown, formData: FormData) {
   const session = await requireAuth()
   const currentPassword = formData.get('currentPassword') as string
   const newPassword = formData.get('newPassword') as string
@@ -65,14 +65,14 @@ export async function updatePassword(state: any, formData: FormData) {
     })
 
     return { success: 'Kata sandi berhasil diperbarui.' }
-  } catch (error) {
+  } catch {
     return { error: 'Gagal memperbarui kata sandi.' }
   }
 }
 
 // ─── Email Change ─────────────────────────────────────────────────────────────
 
-export async function initiateEmailChange(state: any, formData: FormData) {
+export async function initiateEmailChange(state: unknown, formData: FormData) {
   const session = await requireAuth()
   const newEmail = formData.get('newEmail') as string
 
@@ -117,7 +117,7 @@ export async function initiateEmailChange(state: any, formData: FormData) {
   }
 }
 
-export async function confirmEmailChange(state: any, formData: FormData) {
+export async function confirmEmailChange(state: unknown, formData: FormData) {
   const session = await requireAuth()
   const email = formData.get('email') as string
   const otp = formData.get('otp') as string
@@ -155,14 +155,14 @@ export async function confirmEmailChange(state: any, formData: FormData) {
     await createSession(user.id, user.email, user.name)
 
     return { success: 'Alamat email berhasil diperbarui.' }
-  } catch (error) {
+  } catch {
     return { error: 'Terjadi kesalahan sistem.' }
   }
 }
 
 // ─── Delete Account ───────────────────────────────────────────────────────────
 
-export async function deleteAccount(state: any, formData: FormData) {
+export async function deleteAccount(state: unknown, formData: FormData) {
   const session = await requireAuth()
   const password = formData.get('password') as string
 

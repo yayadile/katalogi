@@ -118,7 +118,7 @@ export function ListBlock({ content, theme }: { content: ListContent; theme?: Th
           {content.items?.map((item, i) => (
             <li key={i} className="flex items-start gap-3">
               <span className="mt-1.5 w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: primaryColor }} />
-              <span className="text-gray-700">{item}</span>
+              <span className="text-gray-700" dangerouslySetInnerHTML={{ __html: item || '' }} />
             </li>
           ))}
         </ul>

@@ -1,13 +1,10 @@
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import type { Metadata } from 'next'
-import type { BlockType } from '@prisma/client'
 import Link from 'next/link'
 
-import HeroBlock from '@/components/blocks/HeroBlock'
-import CatalogBlock from '@/components/blocks/CatalogBlock'
-import ContactBlock from '@/components/blocks/ContactBlock'
-import TextBlock from '@/components/blocks/TextBlock'
+import { renderBlocks, type PublishedBlock, type PublishedTheme } from '@/components/published/renderBlocks'
+import StoreShell from '@/components/published/StoreShell'
 
 export const dynamic = 'force-dynamic'
 export const dynamicParams = true
@@ -51,7 +48,14 @@ export default async function PublishedPage({ params }: Props) {
   const primaryColor = theme.primaryColor ?? '#9819ff'
   const secondaryColor = theme.secondaryColor ?? '#1e293b'
   const fontFamily = theme.fontFamily ?? 'Inter'
-  const headingFont = theme.headingFont ?? fontFamily
+
+  const allBlocks = (page.blocks || []) as PublishedBlock[]
+  const contactBlock = allBlocks.find((b) => b.type === 'CONTACT')
+  const contactWhatsapp = contactBlock
+    ? (contactBlock.content as { whatsapp?: string }).whatsapp
+    : undefined
+
+  const publishedTheme: PublishedTheme = { ...theme, primaryColor, secondaryColor, fontFamily }
 
   return (
     <main
@@ -77,21 +81,12 @@ export default async function PublishedPage({ params }: Props) {
         </nav>
       )}
 
-      {page.blocks.map((block) => {
-        const content = block.content as Record<string, unknown>
-        switch (block.type as BlockType) {
-          case 'HERO':
-            return <HeroBlock key={block.id} content={content as Parameters<typeof HeroBlock>[0]['content']} theme={{ ...theme, primaryColor, secondaryColor }} />
-          case 'CATALOG':
-            return <CatalogBlock key={block.id} content={content as Parameters<typeof CatalogBlock>[0]['content']} theme={{ ...theme, primaryColor, secondaryColor }} />
-          case 'CONTACT':
-            return <ContactBlock key={block.id} content={content as Parameters<typeof ContactBlock>[0]['content']} theme={{ ...theme, primaryColor, secondaryColor }} />
-          case 'TEXT':
-            return <TextBlock key={block.id} content={content as Parameters<typeof TextBlock>[0]['content']} theme={{ ...theme, primaryColor, secondaryColor }} />
-          default:
-            return null
-        }
-      })}
+      <StoreShell whatsapp={contactWhatsapp} storeName={website.title} primaryColor={primaryColor}>
+        {renderBlocks(allBlocks, publishedTheme, {
+          whatsapp: contactWhatsapp,
+          storeName: website.title,
+        })}
+      </StoreShell>
 
       <footer className="py-6 text-center border-t border-slate-200/50">
         <Link href="/" className="inline-flex items-center gap-1.5 text-slate-400 text-xs hover:text-slate-600">

@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useContext } from 'react'
 import Image from 'next/image'
+import { CartContext } from '@/components/cart/CartContext'
 
 export type CatalogItem = {
   id: string
@@ -9,12 +10,16 @@ export type CatalogItem = {
   price: number
   image?: string
   desc?: string
+  /** Optional per-item override link (e.g. a full https://wa.me/... URL) */
+  actionLink?: string
 }
 
 export type CatalogContent = {
   title?: string
   layout?: 'grid' | 'list'
   imageRatio?: '1:1' | '4:3' | '16:9'
+  /** Owner WhatsApp number for this catalog (format: 628xxxxxxxxxx) */
+  whatsapp?: string
   items: CatalogItem[]
 }
 
@@ -27,18 +32,36 @@ type CatalogBlockProps = {
     buttonStyle?: 'sharp' | 'rounded' | 'pill'
     fontFamily?: string
   }
+  /** Owner WhatsApp number (format: 628xxxxxxxxxx). Falls back from page/contact. */
+  whatsapp?: string
+  /** Store / website name, included in the WhatsApp order template. */
+  storeName?: string
+}
+
+/** Normalize a WhatsApp number to the digits-only international format wa.me expects. */
+function normalizeWaNumber(raw?: string): string {
+  if (!raw) return ''
+  let digits = raw.replace(/\D/g, '')
+  // Convert leading 0 (local Indonesian format) to 62.
+  if (digits.startsWith('0')) digits = `62${digits.slice(1)}`
+  return digits
 }
 
 function formatPrice(price: number) {
   return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(price)
 }
 
-export default function CatalogBlock({ content, theme }: CatalogBlockProps) {
+export default function CatalogBlock({ content, theme, whatsapp, storeName }: CatalogBlockProps) {
   const [searchQuery, setSearchQuery] = useState('')
+  // Cart is optional: present on published pages (wrapped by CartProvider), absent elsewhere.
+  const cart = useContext(CartContext)
   const primaryColor = theme?.primaryColor || '#9819ff'
   const buttonStyle = theme?.buttonStyle || 'rounded'
   const buttonRadius = buttonStyle === 'sharp' ? 'rounded-none' : buttonStyle === 'pill' ? 'rounded-full' : 'rounded-xl'
   const { title, items, layout = 'grid', imageRatio = '4:3' } = content
+
+  // Owner WhatsApp number: per-catalog setting wins, else the value passed from the page (Contact block).
+  const ownerWa = normalizeWaNumber(content.whatsapp || whatsapp)
 
   const aspectClass = 
     imageRatio === '1:1' ? 'aspect-square' :
@@ -51,19 +74,47 @@ export default function CatalogBlock({ content, theme }: CatalogBlockProps) {
   )
 
   const handleCheckout = (item: CatalogItem) => {
-    // We will assume phone number is in a global state or block config, 
-    // but for now, we just redirect to a mock WA link if we don't have a specific number.
-    // However, WhatsApp dynamic format requires a phone number. 
-    // Let's implement a Toast/Alert for Editor mode. We can check if window.location.pathname includes '/dashboard'.
-    const isEditor = typeof window !== 'undefined' && window.location.pathname.includes('/dashboard');
-    const text = encodeURIComponent(`Halo, saya mau order:\n\n*${item.name}*\nHarga: ${formatPrice(item.price)}\n\nApakah masih tersedia?`);
-    
+    const isEditor = typeof window !== 'undefined' && window.location.pathname.includes('/dashboard')
+
+    // Build the order template message sent to the owner's WhatsApp.
+    const lines = [
+      'Halo' + (storeName ? ` *${storeName}*` : '') + ', saya mau order:',
+      '',
+      `*${item.name}*`,
+      `Harga: ${formatPrice(item.price)}`,
+      '',
+      'Apakah masih tersedia? Terima kasih 🙏',
+    ]
+    const text = encodeURIComponent(lines.join('\n'))
+
+    // A per-item actionLink overrides everything (can be any URL).
+    if (item.actionLink) {
+      const sep = item.actionLink.includes('?') ? '&' : '?'
+      const href = item.actionLink.includes('wa.me') || item.actionLink.includes('whatsapp')
+        ? `${item.actionLink}${item.actionLink.includes('text=') ? '' : `${sep}text=${text}`}`
+        : item.actionLink
+      if (isEditor) {
+        alert(`[PRATINJAU] Tombol beli "${item.name}" akan membuka: ${href}`)
+      } else {
+        window.open(href, '_blank', 'noopener,noreferrer')
+      }
+      return
+    }
+
     if (isEditor) {
-      alert(`[MOCK WHATSAPP] Anda mengklik tombol beli untuk: ${item.name}. Di website asli, ini akan membuka WhatsApp.`);
+      alert(
+        ownerWa
+          ? `[PRATINJAU] Tombol beli "${item.name}" akan membuka WhatsApp ke ${ownerWa} dengan template pesanan.`
+          : `[PRATINJAU] Nomor WhatsApp belum diatur. Tambahkan blok Kontak (isi WhatsApp) atau atur nomor di pengaturan Katalog.`
+      )
+      return
+    }
+
+    if (ownerWa) {
+      window.open(`https://wa.me/${ownerWa}?text=${text}`, '_blank', 'noopener,noreferrer')
     } else {
-      // In a real app, you'd get the whatsapp number from the ContactBlock or ThemeConfig.
-      // For now, redirect to a generic wa.me link with text.
-      window.open(`https://wa.me/?text=${text}`, '_blank');
+      // No number configured anywhere — open WhatsApp with the prefilled text so the user can pick a chat.
+      window.open(`https://wa.me/?text=${text}`, '_blank', 'noopener,noreferrer')
     }
   }
 
@@ -145,17 +196,54 @@ export default function CatalogBlock({ content, theme }: CatalogBlockProps) {
                 <div className={`p-5 ${layout === 'list' ? 'flex-1 flex flex-col justify-center' : ''}`}>
                   <h3 className="font-semibold text-slate-900 text-lg mb-1 line-clamp-1">{item.name}</h3>
                   {item.desc && <p className="text-slate-500 text-sm mb-3 line-clamp-2">{item.desc}</p>}
-                  <div className={`flex items-center justify-between ${layout === 'list' && !item.desc ? 'mt-2' : ''}`}>
+                  <div className={`flex items-center justify-between gap-2 ${layout === 'list' && !item.desc ? 'mt-2' : ''}`}>
                     <span className="font-bold text-xl" style={{ color: primaryColor }}>
                       {formatPrice(item.price)}
                     </span>
-                    <button
-                      onClick={() => handleCheckout(item)}
-                      className={`text-sm font-medium px-4 py-2 ${buttonRadius} text-white transition-all hover:opacity-90`}
-                      style={{ background: primaryColor }}
-                    >
-                      Beli
-                    </button>
+                    {cart ? (
+                      (() => {
+                        const inCart = cart.getCartItem(item.id)
+                        if (inCart) {
+                          return (
+                            <div className={`flex items-center gap-1 ${buttonRadius} border border-slate-200 p-0.5`}>
+                              <button
+                                aria-label="Kurangi"
+                                onClick={() => cart.updateQuantity(item.id, inCart.quantity - 1)}
+                                className="w-7 h-7 flex items-center justify-center rounded-md text-slate-600 hover:bg-slate-100 transition-colors text-lg leading-none"
+                              >
+                                −
+                              </button>
+                              <span className="min-w-[1.5rem] text-center text-sm font-bold text-slate-800">{inCart.quantity}</span>
+                              <button
+                                aria-label="Tambah"
+                                onClick={() => cart.updateQuantity(item.id, inCart.quantity + 1)}
+                                className="w-7 h-7 flex items-center justify-center rounded-md text-white transition-colors text-lg leading-none"
+                                style={{ background: primaryColor }}
+                              >
+                                +
+                              </button>
+                            </div>
+                          )
+                        }
+                        return (
+                          <button
+                            onClick={() => cart.addToCart({ id: item.id, name: item.name, price: item.price, image: item.image }, 1)}
+                            className={`text-sm font-medium px-4 py-2 ${buttonRadius} text-white transition-all hover:opacity-90 whitespace-nowrap`}
+                            style={{ background: primaryColor }}
+                          >
+                            + Keranjang
+                          </button>
+                        )
+                      })()
+                    ) : (
+                      <button
+                        onClick={() => handleCheckout(item)}
+                        className={`text-sm font-medium px-4 py-2 ${buttonRadius} text-white transition-all hover:opacity-90`}
+                        style={{ background: primaryColor }}
+                      >
+                        Beli
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>

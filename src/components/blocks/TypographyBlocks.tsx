@@ -26,9 +26,10 @@ export function HeadingBlock({ content }: { content: HeadingContent; theme?: The
   return (
     <div className="py-4 px-4 bg-white">
       <div className="max-w-4xl mx-auto">
-        <Tag className={`${styles[(`h${level}` as keyof typeof styles)] || styles.h1} text-gray-900`}>
-          {content.text}
-        </Tag>
+        <Tag
+          className={`${styles[(`h${level}` as keyof typeof styles)] || styles.h1} text-gray-900`}
+          dangerouslySetInnerHTML={{ __html: content.text || '' }}
+        />
       </div>
     </div>
   )
@@ -42,9 +43,10 @@ export function ParagraphBlock({ content }: { content: ParagraphContent; theme?:
   return (
     <div className="py-4 px-4 bg-white">
       <div className="max-w-4xl mx-auto">
-        <p className="text-lg text-gray-700 leading-relaxed">
-          {content.text}
-        </p>
+        <p
+          className="text-lg text-gray-700 leading-relaxed"
+          dangerouslySetInnerHTML={{ __html: content.text || '' }}
+        />
       </div>
     </div>
   )
@@ -61,9 +63,10 @@ export function QuoteBlock({ content, theme }: { content: QuoteContent; theme?: 
   return (
     <div className="py-8 px-4 bg-white">
       <div className="max-w-4xl mx-auto border-l-4 pl-6" style={{ borderColor: primaryColor }}>
-        <blockquote className="text-2xl italic font-medium text-gray-900 mb-2">
-          &ldquo;{content.text}&rdquo;
-        </blockquote>
+        <blockquote
+          className="text-2xl italic font-medium text-gray-900 mb-2"
+          dangerouslySetInnerHTML={{ __html: content.text || '' }}
+        />
         {content.author && (
           <cite className="text-gray-500 font-medium">&mdash; {content.author}</cite>
         )}

@@ -22,7 +22,7 @@ export function CatalogSettings({
     (content.items as CatalogItem[]) ?? []
   )
 
-  const saveAll = useCallback(async (newItems: CatalogItem[], title?: string, layout?: string, imageRatio?: string) => {
+  const saveAll = useCallback(async (newItems: CatalogItem[], title?: string, layout?: string, imageRatio?: string, whatsapp?: string) => {
     onSaveStatus('saving')
     try {
       const updated = { 
@@ -30,7 +30,8 @@ export function CatalogSettings({
         items: newItems, 
         title: title ?? content.title,
         layout: layout ?? content.layout,
-        imageRatio: imageRatio ?? content.imageRatio 
+        imageRatio: imageRatio ?? content.imageRatio,
+        whatsapp: whatsapp ?? content.whatsapp,
       }
       onChange(updated)
       await updatePageBlock(blockId, updated)
@@ -97,6 +98,19 @@ export function CatalogSettings({
           <option value="4:3">4:3 (Portrait/Landscape)</option>
           <option value="16:9">16:9 (Widescreen)</option>
         </select>
+      </Field>
+
+      <Field label="WhatsApp Tujuan Order (format: 628xxx)">
+        <input
+          className="settings-input"
+          defaultValue={String(content.whatsapp ?? '')}
+          placeholder="6281234567890"
+          onBlur={(e) => saveAll(items, undefined, undefined, undefined, e.target.value)}
+        />
+        <p className="text-[9px] text-gray-400 mt-1">
+          Tombol &quot;Beli&quot; akan membuka WhatsApp ke nomor ini dengan template pesanan otomatis.
+          Kosongkan untuk memakai nomor dari blok Kontak.
+        </p>
       </Field>
 
       <div className="space-y-3">

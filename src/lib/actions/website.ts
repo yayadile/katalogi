@@ -134,7 +134,14 @@ export async function updateWebsite(
 export async function updateThemeConfig(
   websiteId: string,
   userId: string,
-  themeData: { primaryColor?: string; secondaryColor?: string; fontFamily?: string }
+  themeData: {
+    primaryColor?: string
+    secondaryColor?: string
+    backgroundColor?: string
+    buttonStyle?: 'sharp' | 'rounded' | 'pill'
+    fontFamily?: string
+    headingFont?: string
+  }
 ): Promise<ActionResult<Website>> {
   const website = await prisma.website.findUnique({ where: { id: websiteId } })
   if (!website || website.userId !== userId) {

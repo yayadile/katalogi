@@ -1,15 +1,11 @@
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import type { Metadata } from 'next'
-import type { BlockType } from '@prisma/client'
 import Link from 'next/link'
 
-
-import HeroBlock from '@/components/blocks/HeroBlock'
-import CatalogBlock from '@/components/blocks/CatalogBlock'
-import ContactBlock from '@/components/blocks/ContactBlock'
-import TextBlock from '@/components/blocks/TextBlock'
 import PageViewTracker from '@/components/published/PageViewTracker'
+import StoreShell from '@/components/published/StoreShell'
+import { renderBlocks, type PublishedBlock, type PublishedTheme } from '@/components/published/renderBlocks'
 
 // ISR: revalidate every 60 seconds
 export const revalidate = 30
@@ -111,14 +107,16 @@ export default async function PublishedPage({
   const headingFont = theme.headingFont ?? fontFamily
 
   const currentPage = website.pages[0]
-  const allBlocks = currentPage?.blocks || []
+  const allBlocks = (currentPage?.blocks || []) as PublishedBlock[]
 
-  // Find a CONTACT block for JSON-LD
+  // Find a CONTACT block for JSON-LD + WhatsApp ordering number
   const contactBlock = allBlocks.find((b) => b.type === 'CONTACT')
-  const jsonLd = buildJsonLd(
-    website,
-    contactBlock ? (contactBlock.content as { email?: string; address?: string; whatsapp?: string }) : undefined
-  )
+  const contactContent = contactBlock
+    ? (contactBlock.content as { email?: string; address?: string; whatsapp?: string })
+    : undefined
+  const jsonLd = buildJsonLd(website, contactContent)
+
+  const publishedTheme: PublishedTheme = { ...theme, primaryColor, secondaryColor, fontFamily }
 
   return (
     <>
@@ -171,46 +169,16 @@ export default async function PublishedPage({
           </nav>
         )}
 
-        {allBlocks.map((block) => {
-          const content = block.content as Record<string, unknown>
-
-          switch (block.type as BlockType) {
-            case 'HERO':
-              return (
-                <HeroBlock
-                  key={block.id}
-                  content={content as Parameters<typeof HeroBlock>[0]['content']}
-                  theme={{ ...theme, primaryColor, secondaryColor }}
-                />
-              )
-            case 'CATALOG':
-              return (
-                <CatalogBlock
-                  key={block.id}
-                  content={content as Parameters<typeof CatalogBlock>[0]['content']}
-                  theme={{ ...theme, primaryColor, secondaryColor }}
-                />
-              )
-            case 'CONTACT':
-              return (
-                <ContactBlock
-                  key={block.id}
-                  content={content as Parameters<typeof ContactBlock>[0]['content']}
-                  theme={{ ...theme, primaryColor, secondaryColor }}
-                />
-              )
-            case 'TEXT':
-              return (
-                <TextBlock
-                  key={block.id}
-                  content={content as Parameters<typeof TextBlock>[0]['content']}
-                  theme={{ ...theme, primaryColor, secondaryColor }}
-                />
-              )
-            default:
-              return null
-          }
-        })}
+        <StoreShell
+          whatsapp={contactContent?.whatsapp}
+          storeName={website.title}
+          primaryColor={primaryColor}
+        >
+          {renderBlocks(allBlocks, publishedTheme, {
+            whatsapp: contactContent?.whatsapp,
+            storeName: website.title,
+          })}
+        </StoreShell>
 
         {/* Footer badge */}
         <footer 

@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react'
 import { Upload, ImageIcon, Link as LinkIcon, Loader2 } from 'lucide-react'
-import { uploadImage } from '@/lib/upload'
+import { uploadImageAction } from '@/lib/actions/upload'
 
 // ─── Field Helper ──────────────────────────────────────────────────────────────
 
@@ -46,8 +46,14 @@ export function ImageField({
 
     setIsUploading(true)
     try {
-      const url = await uploadImage(file)
-      onChange(url)
+      const formData = new FormData()
+      formData.append('file', file)
+      const res = await uploadImageAction(formData)
+      if (res.success) {
+        onChange(res.url)
+      } else {
+        setError(res.error)
+      }
     } catch (err) {
       console.error('Detailed upload error:', err)
       const message = err instanceof Error ? err.message : 'Gagal upload'

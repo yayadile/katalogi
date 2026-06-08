@@ -39,7 +39,26 @@ export async function addPageBlock(
   id?: string
 ): Promise<ActionResult<PageBlock>> {
   try {
-    const targetPageId = pageId || websiteId
+    // Resolve a VALID page id. The old code fell back to `websiteId`, which is not a
+    // real Page.id and caused every insert to fail a foreign-key constraint (so blocks
+    // silently never saved). Resolve the website's first page, creating one if needed.
+    let targetPageId = pageId
+    if (!targetPageId) {
+      const firstPage = await prisma.page.findFirst({
+        where: { websiteId },
+        orderBy: { sortOrder: 'asc' },
+        select: { id: true },
+      })
+      if (firstPage) {
+        targetPageId = firstPage.id
+      } else {
+        const createdPage = await prisma.page.create({
+          data: { websiteId, slug: 'home', title: 'Beranda', sortOrder: 0 },
+        })
+        targetPageId = createdPage.id
+      }
+    }
+
     const data: Prisma.PageBlockUncheckedCreateInput = {
       websiteId,
       pageId: targetPageId,
@@ -55,9 +74,14 @@ export async function addPageBlock(
       data,
     })
     revalidatePath(`/dashboard/websites/${websiteId}/edit`)
+
+    // Keep the published page in sync immediately.
+    const website = await prisma.website.findUnique({ where: { id: websiteId }, select: { slug: true } })
+    if (website) revalidatePath(`/${website.slug}`)
+
     return { success: true, data: block }
   } catch (e) {
-    console.error(e)
+    console.error('addPageBlock failed:', e)
     return { success: false, error: 'Gagal menambahkan block.' }
   }
 }

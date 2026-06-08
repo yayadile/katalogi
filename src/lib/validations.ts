@@ -41,7 +41,10 @@ export const websiteSchema = z.object({
 export const themeConfigSchema = z.object({
   primaryColor: z.string().regex(/^#[0-9a-fA-F]{6}$/, { error: 'Warna tidak valid.' }).optional(),
   secondaryColor: z.string().regex(/^#[0-9a-fA-F]{6}$/, { error: 'Warna tidak valid.' }).optional(),
-  fontFamily: z.enum(['Inter', 'Poppins', 'DM Sans', 'Playfair Display']).optional(),
+  backgroundColor: z.string().regex(/^#[0-9a-fA-F]{6}$/, { error: 'Warna tidak valid.' }).optional(),
+  buttonStyle: z.enum(['sharp', 'rounded', 'pill']).optional(),
+  fontFamily: z.string().min(1).max(50).optional(),
+  headingFont: z.string().min(1).max(50).optional(),
 })
 
 // ─── Block Schemas by Type ────────────────────────────────────────────────────

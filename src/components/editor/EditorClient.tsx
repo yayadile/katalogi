@@ -90,6 +90,7 @@ export default function EditorClient({
 
   // Initialize store on mount exactly once
   const isInitializedRef = useRef(false)
+  const prevBlocksRef = useRef<string>('')
   useEffect(() => {
     if (isInitializedRef.current) return
     isInitializedRef.current = true
@@ -100,6 +101,10 @@ export default function EditorClient({
     }))
     setBlocks(formattedBlocks)
     setTheme(initialTheme as ThemeConfig)
+
+    // Baseline the auto-saver with what's actually in the DB, so the FIRST block
+    // added to an empty site is correctly detected as "new" and gets saved.
+    prevBlocksRef.current = JSON.stringify(formattedBlocks)
     
     if (initialPages && initialPageId) {
       setPages(initialPages, initialPageId)
@@ -154,8 +159,6 @@ export default function EditorClient({
   }, [selectedId, undo, redo, duplicateBlock, deleteBlock])
 
   // Seamless Debounced Background Auto-Saver
-  const prevBlocksRef = useRef<string>('')
-  
   useEffect(() => {
     if (blocks.length === 0) return
 
@@ -176,17 +179,23 @@ export default function EditorClient({
         const addedBlocks = blocks.filter(b => !prevBlocks.some(pb => pb.id === b.id))
         const deletedBlocks = prevBlocks.filter(pb => !blocks.some(b => b.id === pb.id))
         const existingBlocks = blocks.filter(b => prevBlocks.some(pb => pb.id === b.id))
+
+        // Target page for newly created blocks (falls back to the website's first page).
+        const currentPageId = useEditorStore.getState().currentPageId || initialPageId || undefined
         
         // 2. Add new blocks to DB first (so reorder doesn't fail due to missing IDs)
         for (const block of addedBlocks) {
-          await addPageBlock(
+          const res = await addPageBlock(
             websiteId,
             block.type,
             block.sortOrder,
             block.content,
-            undefined, // pageId (default to websiteId inside function)
-            block.id   // Keep the ID from local store so it matches
+            currentPageId, // real Page id, not the website id
+            block.id       // Keep the ID from local store so it matches
           )
+          if (!res.success) {
+            throw new Error(res.error || 'Gagal menyimpan block baru.')
+          }
         }
         
         // 3. Delete removed blocks from DB
@@ -217,7 +226,7 @@ export default function EditorClient({
     }, 1200) // 1.2s debounce for highly fluid auto-saves
 
     return () => clearTimeout(timeout)
-  }, [blocks, websiteId, setSaveStatus])
+  }, [blocks, websiteId, setSaveStatus, initialPageId])
 
   // Publish site handler
   const handlePublish = async () => {

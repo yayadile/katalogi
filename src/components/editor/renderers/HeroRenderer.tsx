@@ -2,7 +2,7 @@
 
 import React from 'react'
 import type { EditorBlock } from '../store'
-import { useEditorStore } from '../store'
+import { useEditorStore, getBreakpointStyle } from '../store'
 import { EditableText } from '../EditableText'
 
 export function HeroRenderer({ block, isPreview = false, animationStyle, hoverClass = '' }: { block: EditorBlock; isPreview?: boolean; animationStyle?: React.CSSProperties; hoverClass?: string }) {
@@ -37,7 +37,7 @@ export function HeroRenderer({ block, isPreview = false, animationStyle, hoverCl
   const subtextStyle = (subStyles as Record<string, React.CSSProperties>)?.subtext || {}
   const ctaStyle = (subStyles as Record<string, React.CSSProperties>)?.cta || {}
   
-  const breakpointStyle = (block.content.breakpointStyles || {})[previewMode] || {};
+  const breakpointStyle = getBreakpointStyle(block.content, previewMode);
 
   const TextContent = () => (
     <div className={`relative z-10 ${variant === 'centered' ? 'text-center px-6 max-w-3xl mx-auto' : 'px-8 md:px-16 text-left max-w-xl'}`}>
@@ -55,7 +55,7 @@ export function HeroRenderer({ block, isPreview = false, animationStyle, hoverCl
         />
       </div>
 
-      {subtext && (
+      {!!subtext && (
         <div
           className={`text-lg md:text-xl mb-8 leading-relaxed ${
             validBgImage && variant === 'centered' ? 'text-white/80' : 'text-slate-600'
@@ -71,7 +71,7 @@ export function HeroRenderer({ block, isPreview = false, animationStyle, hoverCl
         </div>
       )}
 
-      {ctaText && (
+      {!!ctaText && (
         <div
           className={`inline-flex items-center gap-2 px-8 py-4 ${buttonRadius} font-semibold text-white shadow-xl transition-all duration-200 hover:scale-105 hover:shadow-2xl cursor-pointer`}
           style={{ background: primaryColor, ...ctaStyle }}
@@ -95,13 +95,13 @@ export function HeroRenderer({ block, isPreview = false, animationStyle, hoverCl
     return (
       <section
         className={`relative flex items-center justify-center overflow-hidden ${hoverClass}`}
-        style={{ minHeight: '340px', ...style, ...animationStyle, ...breakpointStyle }}
+        style={{ minHeight: '340px', ...style as React.CSSProperties, ...animationStyle, ...breakpointStyle as React.CSSProperties }}
         onClick={() => !isPreview && selectBlock(block.id, null)}
       >
-        {validBgImage && bgImage ? (
+        {validBgImage && !!bgImage ? (
           <div
             className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url(${bgImage})` }}
+            style={{ backgroundImage: `url(${bgImage as string})` }}
           />
         ) : (
           <div
@@ -121,7 +121,7 @@ export function HeroRenderer({ block, isPreview = false, animationStyle, hoverCl
           </div>
         )}
 
-        {validBgImage && bgImage && <div className="absolute inset-0 bg-black/50" />}
+        {validBgImage && !!bgImage && <div className="absolute inset-0 bg-black/50" />}
         {TextContent()}
       </section>
     )
@@ -130,17 +130,17 @@ export function HeroRenderer({ block, isPreview = false, animationStyle, hoverCl
   return (
     <section 
       className={`relative flex flex-col md:flex-row overflow-hidden bg-white ${hoverClass}`}
-      style={{ minHeight: '340px', ...style, ...animationStyle, ...breakpointStyle }}
+      style={{ minHeight: '340px', ...style as React.CSSProperties, ...animationStyle, ...breakpointStyle as React.CSSProperties }}
       onClick={() => !isPreview && selectBlock(block.id, null)}
     >
       <div className={`flex-1 flex flex-col justify-center py-16 ${variant === 'split-right' ? 'md:order-2' : 'md:order-1'}`}>
         {TextContent()}
       </div>
       <div className={`flex-1 relative min-h-[300px] ${variant === 'split-right' ? 'md:order-1' : 'md:order-2'}`}>
-        {validBgImage && bgImage ? (
+        {validBgImage && !!bgImage ? (
           <div
             className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url(${bgImage})` }}
+            style={{ backgroundImage: `url(${bgImage as string})` }}
           />
         ) : (
           <div

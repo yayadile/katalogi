@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import type { CSSProperties } from 'react'
 import type { BlockType } from '@prisma/client'
 
 export type ThemeConfig = {
@@ -8,6 +9,12 @@ export type ThemeConfig = {
   buttonStyle?: 'sharp' | 'rounded' | 'pill'
   fontFamily: string
   headingFont?: string
+}
+
+export type BreakpointStyles = Record<'desktop' | 'tablet' | 'mobile', Record<string, string>>
+
+export function getBreakpointStyle(content: Record<string, unknown>, mode: 'desktop' | 'tablet' | 'mobile'): CSSProperties {
+  return ((content.breakpointStyles as BreakpointStyles | undefined) || {})[mode] || {}
 }
 
 export type EditorBlock = {

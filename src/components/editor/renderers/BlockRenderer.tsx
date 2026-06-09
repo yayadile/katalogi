@@ -1,6 +1,6 @@
 import React from 'react'
 import type { EditorBlock } from '../store'
-import { useEditorStore } from '../store'
+import { useEditorStore, getBreakpointStyle } from '../store'
 import { HeroRenderer } from './HeroRenderer'
 import { CatalogRenderer } from './CatalogRenderer'
 import { ContactRenderer } from './ContactRenderer'
@@ -15,7 +15,7 @@ export function TextRenderer({ block, isPreview = false, animationStyle, breakpo
    return (
       <div 
         className={hoverClass}
-        style={{ padding: '20px', cursor: isPreview ? 'default' : 'pointer', ...style, ...animationStyle, ...breakpointStyle }}
+        style={{ padding: '20px', cursor: isPreview ? 'default' : 'pointer', ...(style as React.CSSProperties), ...animationStyle, ...breakpointStyle }}
         onClick={(e) => {
          if (!isPreview) {
            e.stopPropagation()
@@ -65,7 +65,7 @@ export function BlockRenderer({ block, isPreview = false }: { block: EditorBlock
   
   // Breakpoint styles
   const previewMode = useEditorStore(state => state.previewMode)
-  const breakpointStyle = (block.content.breakpointStyles || {})[previewMode] || {}
+  const breakpointStyle = getBreakpointStyle(block.content, previewMode)
   
   const handleBlockClick = (e: React.MouseEvent) => {
     if (!isPreview) {
@@ -161,7 +161,7 @@ export function BlockRenderer({ block, isPreview = false }: { block: EditorBlock
               style={{ margin: 0, fontSize: '1.1rem' }}
               placeholder="Kutipan inspiratif di sini..."
             />
-            {(!isPreview || content.author) && (
+            {(!isPreview || !!content.author) && (
               <cite style={{ 
                 display: 'block', 
                 textAlign: 'right', 

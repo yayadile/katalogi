@@ -1,11 +1,11 @@
 import React from 'react'
 import type { EditorBlock } from '../store'
-import { useEditorStore } from '../store'
+import { useEditorStore, getBreakpointStyle } from '../store'
 
 export function GalleryRenderer({ block, isPreview = false, animationStyle, hoverClass = '' }: { block: EditorBlock; isPreview?: boolean; animationStyle?: React.CSSProperties; hoverClass?: string }) {
   const { title = 'Galeri', images = [], style = {} } = block.content
   const previewMode = useEditorStore(state => state.previewMode)
-  const breakpointStyle = (block.content.breakpointStyles || {})[previewMode] || {}
+  const breakpointStyle = getBreakpointStyle(block.content, previewMode)
 
   const safeImages = Array.isArray(images) && images.length > 0 ? images : ['/placeholder.jpg', '/placeholder.jpg', '/placeholder.jpg']
   const subStyles = (block.content.subStyles as Record<string, Record<string, string>>) || {}
@@ -16,8 +16,8 @@ export function GalleryRenderer({ block, isPreview = false, animationStyle, hove
   const aspectRatio = layout === 'video' ? '16/9' : '1/1'
 
   return (
-    <div className={hoverClass} style={{ padding: '60px 20px', backgroundColor: '#ffffff', ...style, ...animationStyle, ...breakpointStyle }} onClick={() => selectBlock(block.id, null)}>
-      {title && (
+    <div className={hoverClass} style={{ padding: '60px 20px', backgroundColor: '#ffffff', ...style as React.CSSProperties, ...animationStyle, ...breakpointStyle as React.CSSProperties }} onClick={() => selectBlock(block.id, null)}>
+      {!!title && (
         <h2 
           style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '2rem', textAlign: 'center', color: '#0f172a', cursor: 'pointer', ...(subStyles['title'] || {}) }}
           onClick={(e) => { e.stopPropagation(); selectBlock(block.id, 'title') }}

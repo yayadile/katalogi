@@ -1,16 +1,16 @@
 import React from 'react'
 import type { EditorBlock } from '../store'
-import { useEditorStore } from '../store'
+import { useEditorStore, getBreakpointStyle } from '../store'
 
 export function ContactRenderer({ block, isPreview = false, animationStyle, hoverClass = '' }: { block: EditorBlock; isPreview?: boolean; animationStyle?: React.CSSProperties; hoverClass?: string }) {
   const { title = 'Hubungi Kami', email = 'email@contoh.com', phone = '+62 812 3456 7890', style = {} } = block.content
   const subStyles = (block.content.subStyles as Record<string, Record<string, string>>) || {}
   const selectBlock = useEditorStore(state => state.selectBlock)
   const previewMode = useEditorStore(state => state.previewMode)
-  const breakpointStyle = (block.content.breakpointStyles || {})[previewMode] || {}
+  const breakpointStyle = getBreakpointStyle(block.content, previewMode)
 
   return (
-    <div className={hoverClass} style={{ padding: '60px 20px', backgroundColor: '#f8fafc', textAlign: 'center', ...style, ...animationStyle, ...breakpointStyle }} onClick={() => selectBlock(block.id, null)}>
+    <div className={hoverClass} style={{ padding: '60px 20px', backgroundColor: '#f8fafc', textAlign: 'center', ...style as React.CSSProperties, ...animationStyle, ...breakpointStyle as React.CSSProperties }} onClick={() => selectBlock(block.id, null)}>
       <h2 
         style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '1.5rem', color: '#0f172a', cursor: 'pointer', ...(subStyles['title'] || {}) }}
         onClick={(e) => { e.stopPropagation(); selectBlock(block.id, 'title') }}

@@ -1,6 +1,12 @@
 'use client'
 
-import { type BlockPosition } from './BlockNavigator'
+export type BlockPosition = {
+  x: number
+  y: number
+  width: number | string
+  height: number | string
+  zIndex: number
+}
 
 type DraggableWrapperProps = {
   id: string

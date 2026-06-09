@@ -1,11 +1,11 @@
 import React from 'react'
 import type { EditorBlock } from '../store'
-import { useEditorStore } from '../store'
+import { useEditorStore, getBreakpointStyle } from '../store'
 
 export function CatalogRenderer({ block, isPreview = false, animationStyle, hoverClass = '' }: { block: EditorBlock; isPreview?: boolean; animationStyle?: React.CSSProperties; hoverClass?: string }) {
   const { title = 'Our Products', items = [], style = {} } = block.content
   const previewMode = useEditorStore(state => state.previewMode)
-  const breakpointStyle = (block.content.breakpointStyles || {})[previewMode] || {};
+  const breakpointStyle = getBreakpointStyle(block.content, previewMode);
 
   const safeItems = Array.isArray(items) && items.length > 0 
     ? items 
@@ -18,8 +18,8 @@ export function CatalogRenderer({ block, isPreview = false, animationStyle, hove
     const subStyles = (block.content.subStyles as Record<string, Record<string, string>>) || {}
 
     return (
-      <div className={hoverClass} style={{ padding: '60px 20px', backgroundColor: '#ffffff', ...style, ...animationStyle, ...breakpointStyle }} onClick={() => !isPreview && selectBlock(block.id, null)}>
-        {title && (
+      <div className={hoverClass} style={{ padding: '60px 20px', backgroundColor: '#ffffff', ...style as React.CSSProperties, ...animationStyle, ...breakpointStyle as React.CSSProperties }} onClick={() => !isPreview && selectBlock(block.id, null)}>
+        {!!title && (
           <h2 
             style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '2rem', textAlign: 'center', color: '#0f172a', cursor: isPreview ? 'default' : 'pointer', ...(subStyles['title'] || {}) }}
             onClick={(e) => { if(!isPreview) { e.stopPropagation(); selectBlock(block.id, 'title') } }}

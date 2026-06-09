@@ -118,6 +118,12 @@ export async function login(state: AuthFormState, formData: FormData): Promise<A
 
     await createSession(user.id, user.email, user.name, role)
 
+    if (role === 'ADMIN') {
+      redirect('/admin')
+    } else {
+      redirect('/dashboard')
+    }
+
   } catch (error) {
     if (error && typeof error === 'object' && 'digest' in error) {
         throw error;
@@ -125,8 +131,6 @@ export async function login(state: AuthFormState, formData: FormData): Promise<A
     console.error("Login Error:", error)
     return { message: 'Terjadi kesalahan sistem.' }
   }
-
-  redirect('/dashboard')
 }
 
 // ─── Logout ───────────────────────────────────────────────────────────────────

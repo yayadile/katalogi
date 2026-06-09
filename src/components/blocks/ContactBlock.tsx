@@ -3,6 +3,7 @@ export type ContactContent = {
   email?: string
   whatsapp?: string
   address?: string
+  layout?: 'split' | 'stacked' | string
 }
 
 type ContactBlockProps = {
@@ -133,23 +134,5 @@ function ContactInfoCards({
         </div>
       )}
     </div>
-  )
-
-  // Split Layout
-  return (
-    <section className="py-16 px-4 bg-white">
-      <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center gap-12">
-        {title && (
-          <div className="flex-1 text-left w-full">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-6">{title}</h2>
-            <div className="w-16 h-1 rounded-full mb-6" style={{ background: primaryColor }} />
-            <p className="text-slate-500 text-lg">Silakan hubungi kami melalui salah satu kontak di samping ini untuk informasi lebih lanjut.</p>
-          </div>
-        )}
-        <div className="flex-1 w-full">
-          <ContactInfoCards email={email} waLink={waLink} whatsapp={whatsapp} address={address} primaryColor={primaryColor} />
-        </div>
-      </div>
-    </section>
   )
 }

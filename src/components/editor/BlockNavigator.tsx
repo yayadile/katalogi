@@ -23,22 +23,9 @@ import { CSS } from '@dnd-kit/utilities'
 import { LayoutGrid } from 'lucide-react'
 import type { BlockType } from '@prisma/client'
 import { reorderBlocks, addPageBlock, deletePageBlock } from '@/lib/actions/blocks'
+import type { EditorBlock } from './store'
 
-export type BlockPosition = {
-  x: number
-  y: number
-  width: number | string
-  height: number | string
-  zIndex: number
-}
 
-export type EditorBlock = {
-  id: string
-  type: BlockType
-  content: Record<string, unknown>
-  sortOrder: number
-  position?: BlockPosition
-}
 
 const BLOCK_ICONS: Record<string, React.ReactNode> = {
   HERO: (

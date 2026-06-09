@@ -556,7 +556,7 @@ export default function EditorClient({
                         <button
                           onClick={handleSaveIdentity}
                           disabled={isSavingIdentity}
-                          className="w-full mt-4 flex items-center justify-center gap-1.5 bg-gradient-to-br from-indigo-500 to-indigo-900 text-white font-bold py-2.5 rounded-lg text-xs hover:bg-indigo-700 transition-colors shadow-sm disabled:opacity-50"
+                          className="w-full mt-4 flex items-center justify-center gap-1.5 bg-linear-to-br from-indigo-500 to-indigo-900 text-white font-bold py-2.5 rounded-lg text-xs hover:bg-indigo-700 transition-colors shadow-sm disabled:opacity-50"
                         >
                           {isSavingIdentity ? (
                             <>
@@ -586,7 +586,7 @@ export default function EditorClient({
           {isPreviewMode && (
             <button
               onClick={() => setIsPreviewMode(false)}
-              className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] flex items-center gap-2 px-6 py-3 bg-white/80 backdrop-blur-xl text-slate-800 rounded-full font-extrabold text-xs border border-white hover:bg-white transition-all shadow-[0_8px_30px_rgb(0,0,0,0.08)] active:scale-95 animate-in slide-in-from-top-4 duration-300 select-none"
+              className="fixed top-6 left-1/2 -translate-x-1/2 z-100 flex items-center gap-2 px-6 py-3 bg-white/80 backdrop-blur-xl text-slate-800 rounded-full font-extrabold text-xs border border-white hover:bg-white transition-all shadow-[0_8px_30px_rgb(0,0,0,0.08)] active:scale-95 animate-in slide-in-from-top-4 duration-300 select-none"
             >
               <span>Keluar Pratinjau (Kembali ke Editor)</span>
             </button>
@@ -671,7 +671,7 @@ export default function EditorClient({
                 href={`/${siteSlug}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 flex items-center justify-center py-2.5 px-4 bg-gradient-to-br from-indigo-500 to-indigo-900 hover:from-indigo-600 hover:to-indigo-950 text-white rounded-xl text-xs font-semibold transition-all shadow-sm"
+                className="flex-1 flex items-center justify-center py-2.5 px-4 bg-linear-to-br from-indigo-500 to-indigo-900 hover:from-indigo-600 hover:to-indigo-950 text-white rounded-xl text-xs font-semibold transition-all shadow-sm"
               >
                 Buka Situs Live
               </a>

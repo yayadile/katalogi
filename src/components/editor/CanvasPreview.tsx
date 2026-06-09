@@ -57,7 +57,8 @@ function NestedSortableBlock({
 
   const [blockToDelete, setBlockToDelete] = useState<{ id: string; type: string } | null>(null)
 
-  const handleDragEnd = (event: { active: { id: string }; over: { id: string } | null }) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleDragEnd = (event: any) => {
     const { active, over } = event
     if (over && active.id !== over.id) {
       const currentBlocks = useEditorStore.getState().blocks
@@ -147,7 +148,7 @@ function NestedSortableBlock({
         onClick={(e) => e.stopPropagation()}
       >
         <div
-          className="flex items-center gap-1.5 px-2 py-1 rounded text-[10px] font-bold text-white bg-gradient-to-br from-indigo-500 to-indigo-900 cursor-grab active:cursor-grabbing hover:bg-indigo-700 select-none"
+          className="flex items-center gap-1.5 px-2 py-1 rounded text-[10px] font-bold text-white bg-linear-to-br from-indigo-500 to-indigo-900 cursor-grab active:cursor-grabbing hover:bg-indigo-700 select-none"
           {...attributes}
           {...listeners}
         >
@@ -207,7 +208,6 @@ export default function CanvasPreview() {
   const blocks = useEditorStore((state) => state.blocks)
   const pages = useEditorStore((state) => state.pages)
   const currentPageId = useEditorStore((state) => state.currentPageId)
-  const selectedId = useEditorStore((state) => state.selectedId)
   const selectBlock = useEditorStore((state) => state.selectBlock)
   const deleteBlock = useEditorStore((state) => state.deleteBlock)
   const duplicateBlock = useEditorStore((state) => state.duplicateBlock)
@@ -235,6 +235,7 @@ export default function CanvasPreview() {
     return () => window.removeEventListener('click', handleClose)
   }, [])
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleContextMenu = (e: React.MouseEvent, id: string, type: string) => {
     e.preventDefault()
     e.stopPropagation()

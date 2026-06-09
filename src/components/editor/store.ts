@@ -13,9 +13,9 @@ export type ThemeConfig = {
 export type EditorBlock = {
   id: string
   type: BlockType
-  content: Record<string, any>
+  content: Record<string, unknown>
   sortOrder: number
-  position?: any
+  position?: Record<string, unknown>
   parentId?: string | null
 }
 
@@ -47,9 +47,9 @@ type EditorState = {
   setBlocks: (blocks: EditorBlock[]) => void
   addBlock: (block: EditorBlock) => void
   addChildBlock: (block: EditorBlock, parentId: string) => void
-  updateBlockContent: (id: string, content: Record<string, any>) => void
-  updateBlockStyle: (id: string, style: Record<string, any>) => void
-  updateSubElementStyle: (blockId: string, subId: string, style: Record<string, any>) => void
+  updateBlockContent: (id: string, content: Record<string, unknown>) => void
+  updateBlockStyle: (id: string, style: Record<string, unknown>) => void
+  updateSubElementStyle: (blockId: string, subId: string, style: Record<string, unknown>) => void
   deleteBlock: (id: string) => void
   duplicateBlock: (id: string) => void
   selectBlock: (id: string | null, subId?: string | null) => void
@@ -142,7 +142,7 @@ export const useEditorStore = create<EditorState>((set) => ({
         b.id === id
           ? {
               ...b,
-              content: { ...b.content, style: { ...(b.content.style as any || {}), ...style } },
+              content: { ...b.content, style: { ...(b.content.style as Record<string, unknown> || {}), ...style } },
             }
           : b
       ),
@@ -159,9 +159,9 @@ export const useEditorStore = create<EditorState>((set) => ({
               content: {
                 ...b.content,
                 subStyles: {
-                  ...(b.content.subStyles as Record<string, any> || {}),
+                  ...(b.content.subStyles as Record<string, Record<string, unknown>> || {}),
                   [subId]: {
-                    ...((b.content.subStyles as Record<string, any> || {})[subId] || {}),
+                    ...((b.content.subStyles as Record<string, Record<string, unknown>> || {})[subId] || {}),
                     ...style
                   }
                 }

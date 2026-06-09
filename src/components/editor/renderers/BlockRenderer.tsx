@@ -110,7 +110,7 @@ export function BlockRenderer({ block, isPreview = false }: { block: EditorBlock
               fontWeight: 'bold', 
               margin: 0, 
               color: '#0f172a',
-              ...baseStyle as any 
+              ...baseStyle as React.CSSProperties 
             }}
             placeholder="Judul Heading"
           />
@@ -131,7 +131,7 @@ export function BlockRenderer({ block, isPreview = false }: { block: EditorBlock
               margin: 0, 
               color: '#334155',
               lineHeight: '1.6',
-              ...baseStyle as any 
+              ...baseStyle as React.CSSProperties 
             }}
             placeholder="Ketik paragraf teks Anda di sini..."
           />
@@ -151,7 +151,7 @@ export function BlockRenderer({ block, isPreview = false }: { block: EditorBlock
             padding: '10px 20px',
             backgroundColor: '#f8fafc',
             borderRadius: '0 8px 8px 0',
-            ...baseStyle as any 
+            ...baseStyle as React.CSSProperties 
           }}>
             <EditableText
               value={content.text as string || ''}
@@ -195,7 +195,7 @@ export function BlockRenderer({ block, isPreview = false }: { block: EditorBlock
             listStyleType: 'disc', 
             margin: 0,
             color: '#334155',
-            ...baseStyle as any 
+            ...baseStyle as React.CSSProperties 
           }}>
             {items.map((item, idx) => (
               <li key={idx} style={{ marginBottom: '4px' }}>
@@ -230,7 +230,7 @@ export function BlockRenderer({ block, isPreview = false }: { block: EditorBlock
               color: '#4f46e5', 
               textDecoration: 'underline', 
               fontWeight: '500',
-              ...baseStyle as any 
+              ...baseStyle as React.CSSProperties 
             }}
           >
             <EditableText
@@ -282,7 +282,7 @@ export function BlockRenderer({ block, isPreview = false }: { block: EditorBlock
 
       return (
         <div className={hoverClass} style={{ padding: '10px 20px', ...animationStyle, ...breakpointStyle }} onClick={handleBlockClick}>
-          <button style={{ ...buttonStyle, ...baseStyle as any }}>
+          <button style={{ ...buttonStyle, ...baseStyle as React.CSSProperties }}>
             <EditableText
               value={content.text as string || ''}
               disabled={isPreview}
@@ -301,7 +301,7 @@ export function BlockRenderer({ block, isPreview = false }: { block: EditorBlock
         border: isPreview ? 'none' : '2px dashed #6366f1',
         minHeight: '80px',
         backgroundColor: '#faf5ff',
-        ...baseStyle as any,
+        ...baseStyle as React.CSSProperties,
         ...animationStyle,
         ...breakpointStyle
       }
@@ -331,7 +331,7 @@ export function BlockRenderer({ block, isPreview = false }: { block: EditorBlock
         padding: '20px',
         border: isPreview ? 'none' : '1px dashed #cbd5e1',
         minHeight: '60px',
-        ...baseStyle as any,
+        ...baseStyle as React.CSSProperties,
         ...animationStyle,
         ...breakpointStyle
       }
@@ -362,7 +362,7 @@ export function BlockRenderer({ block, isPreview = false }: { block: EditorBlock
         padding: '20px',
         border: isPreview ? 'none' : '1px dashed #cbd5e1',
         minHeight: '60px',
-        ...baseStyle as any,
+        ...baseStyle as React.CSSProperties,
         ...animationStyle,
         ...breakpointStyle
       }
@@ -401,7 +401,7 @@ export function BlockRenderer({ block, isPreview = false }: { block: EditorBlock
         padding: '20px',
         border: isPreview ? 'none' : '1px dashed #cbd5e1',
         minHeight: '60px',
-        ...baseStyle as any,
+        ...baseStyle as React.CSSProperties,
         ...animationStyle,
         ...breakpointStyle
       }
@@ -448,7 +448,7 @@ export function BlockRenderer({ block, isPreview = false }: { block: EditorBlock
       }
 
       return (
-        <div className={hoverClass} style={{ padding: '20px', ...baseStyle as any, ...animationStyle, ...breakpointStyle }} onClick={handleBlockClick}>
+        <div className={hoverClass} style={{ padding: '20px', ...baseStyle as React.CSSProperties, ...animationStyle, ...breakpointStyle }} onClick={handleBlockClick}>
           {embedUrl ? (
             <div style={{ 
               position: 'relative', 
@@ -499,7 +499,7 @@ export function BlockRenderer({ block, isPreview = false }: { block: EditorBlock
         <div 
           className={hoverClass}
           onClick={handleBlockClick}
-          style={{ padding: '20px', border: '1px dashed #cbd5e1', backgroundColor: '#f1f5f9', color: '#64748b', ...baseStyle as any, ...animationStyle, ...breakpointStyle }}
+          style={{ padding: '20px', border: '1px dashed #cbd5e1', backgroundColor: '#f1f5f9', color: '#64748b', ...baseStyle as React.CSSProperties, ...animationStyle, ...breakpointStyle }}
         >
           Elemen Tidak Didukung: {type}
         </div>

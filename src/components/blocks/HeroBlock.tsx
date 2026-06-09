@@ -40,38 +40,6 @@ export default function HeroBlock({ content, isEditing, theme }: HeroBlockProps)
 
   const safeHtml = (str?: string) => str ? str.replace(/<\/?p[^>]*>/g, '') : '';
 
-  const TextContent = () => (
-    <div className={`relative z-10 ${variant === 'centered' ? 'text-center px-6 max-w-3xl mx-auto' : 'px-8 md:px-16 text-left max-w-xl'}`}>
-      <h1
-        className={`font-bold leading-tight mb-4 ${
-          bgImage && variant === 'centered' ? 'text-white' : 'text-slate-900'
-        } ${isEditing ? 'text-3xl md:text-4xl' : 'text-4xl md:text-5xl lg:text-6xl'}`}
-        dangerouslySetInnerHTML={{ __html: safeHtml(headline) || 'Judul Utama' }}
-      />
-
-      {subtext && (
-        <div
-          className={`text-lg md:text-xl mb-8 leading-relaxed ${
-            bgImage && variant === 'centered' ? 'text-white/80' : 'text-slate-600'
-          }`}
-          dangerouslySetInnerHTML={{ __html: subtext }}
-        />
-      )}
-
-      {ctaText && (
-        <button
-          className={`inline-flex items-center gap-2 px-8 py-4 ${buttonRadius} font-semibold text-white shadow-xl transition-all duration-200 hover:scale-105 hover:shadow-2xl`}
-          style={{ background: primaryColor }}
-        >
-          <span dangerouslySetInnerHTML={{ __html: safeHtml(ctaText) }} />
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-          </svg>
-        </button>
-      )}
-    </div>
-  )
-
   if (variant === 'centered') {
     return (
       <section
@@ -109,8 +77,17 @@ export default function HeroBlock({ content, isEditing, theme }: HeroBlockProps)
         {/* Overlay for image bg */}
         {bgImage && <div className="absolute inset-0 bg-black/50" />}
 
-        {/* Content */}
-        <TextContent />
+        <HeroTextContent
+          variant={variant}
+          bgImage={bgImage}
+          isEditing={isEditing}
+          headline={headline}
+          subtext={subtext}
+          ctaText={ctaText}
+          primaryColor={primaryColor}
+          buttonRadius={buttonRadius}
+          safeHtml={safeHtml}
+        />
       </section>
     )
   }
@@ -122,7 +99,17 @@ export default function HeroBlock({ content, isEditing, theme }: HeroBlockProps)
       style={isEditing ? { minHeight: '340px' } : {}}
     >
       <div className={`flex-1 flex flex-col justify-center py-16 ${variant === 'split-right' ? 'md:order-2' : 'md:order-1'}`}>
-        <TextContent />
+        <HeroTextContent
+          variant={variant}
+          bgImage={bgImage}
+          isEditing={isEditing}
+          headline={headline}
+          subtext={subtext}
+          ctaText={ctaText}
+          primaryColor={primaryColor}
+          buttonRadius={buttonRadius}
+          safeHtml={safeHtml}
+        />
       </div>
       <div className={`flex-1 relative min-h-[300px] ${variant === 'split-right' ? 'md:order-1' : 'md:order-2'}`}>
         {validBgImage && bgImage ? (
@@ -149,5 +136,51 @@ export default function HeroBlock({ content, isEditing, theme }: HeroBlockProps)
         )}
       </div>
     </section>
+  )
+}
+
+function HeroTextContent({
+  variant, bgImage, isEditing, headline, subtext, ctaText, primaryColor, buttonRadius, safeHtml
+}: {
+  variant: string
+  bgImage?: string
+  isEditing?: boolean
+  headline: string
+  subtext?: string
+  ctaText?: string
+  primaryColor: string
+  buttonRadius: string
+  safeHtml: (str?: string) => string
+}) {
+  return (
+    <div className={`relative z-10 ${variant === 'centered' ? 'text-center px-6 max-w-3xl mx-auto' : 'px-8 md:px-16 text-left max-w-xl'}`}>
+      <h1
+        className={`font-bold leading-tight mb-4 ${
+          bgImage && variant === 'centered' ? 'text-white' : 'text-slate-900'
+        } ${isEditing ? 'text-3xl md:text-4xl' : 'text-4xl md:text-5xl lg:text-6xl'}`}
+        dangerouslySetInnerHTML={{ __html: safeHtml(headline) || 'Judul Utama' }}
+      />
+
+      {subtext && (
+        <div
+          className={`text-lg md:text-xl mb-8 leading-relaxed ${
+            bgImage && variant === 'centered' ? 'text-white/80' : 'text-slate-600'
+          }`}
+          dangerouslySetInnerHTML={{ __html: subtext }}
+        />
+      )}
+
+      {ctaText && (
+        <button
+          className={`inline-flex items-center gap-2 px-8 py-4 ${buttonRadius} font-semibold text-white shadow-xl transition-all duration-200 hover:scale-105 hover:shadow-2xl`}
+          style={{ background: primaryColor }}
+        >
+          <span dangerouslySetInnerHTML={{ __html: safeHtml(ctaText) }} />
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+          </svg>
+        </button>
+      )}
+    </div>
   )
 }

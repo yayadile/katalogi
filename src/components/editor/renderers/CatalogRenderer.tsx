@@ -15,7 +15,7 @@ export function CatalogRenderer({ block, isPreview = false, animationStyle, hove
         { id: '3', name: 'Sample Product 3', price: '$199' }
       ];
     const selectBlock = useEditorStore(state => state.selectBlock)
-    const subStyles = (block.content.subStyles as Record<string, any>) || {}
+    const subStyles = (block.content.subStyles as Record<string, Record<string, string>>) || {}
 
     return (
       <div className={hoverClass} style={{ padding: '60px 20px', backgroundColor: '#ffffff', ...style, ...animationStyle, ...breakpointStyle }} onClick={() => !isPreview && selectBlock(block.id, null)}>
@@ -28,9 +28,9 @@ export function CatalogRenderer({ block, isPreview = false, animationStyle, hove
           </h2>
         )}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
-          {safeItems.map((item: any, index: number) => {
+          {(safeItems as { id: string; name: string; price: string; image?: string; desc?: string; actionLink?: string }[]).map((item, index: number) => {
             const Wrapper = isPreview && item.actionLink ? 'a' : 'div'
-            const wrapperProps = isPreview && item.actionLink ? { href: item.actionLink as string, target: '_blank', rel: 'noopener noreferrer' } : {}
+            const wrapperProps = isPreview && item.actionLink ? { href: item.actionLink, target: '_blank', rel: 'noopener noreferrer' } : {}
             const itemStyle = subStyles[`item-${index}`] || {}
             
             return (

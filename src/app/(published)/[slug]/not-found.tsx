@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -14,12 +15,12 @@ export default function NotFound() {
         <p className="text-slate-500 mb-8">
           Website yang Anda cari tidak tersedia atau belum dipublikasikan.
         </p>
-        <a
+        <Link
           href="/"
           className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-br from-indigo-500 to-indigo-900 text-white rounded-xl font-medium hover:bg-indigo-700 transition-colors"
         >
           Kembali ke Beranda
-        </a>
+        </Link>
       </div>
     </div>
   )

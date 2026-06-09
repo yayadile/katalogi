@@ -31,18 +31,19 @@ function hexToHsv(hex: string): { h: number; s: number; v: number } {
   if (hex.length === 3) {
     hex = hex.split('').map(c => c + c).join('');
   }
-  let r = parseInt(hex.substring(0, 2), 16) / 255;
-  let g = parseInt(hex.substring(2, 4), 16) / 255;
-  let b = parseInt(hex.substring(4, 6), 16) / 255;
+  const r = parseInt(hex.substring(0, 2), 16) / 255;
+  const g = parseInt(hex.substring(2, 4), 16) / 255;
+  const b = parseInt(hex.substring(4, 6), 16) / 255;
   
   if (isNaN(r) || isNaN(g) || isNaN(b)) {
     return { h: 0, s: 0, v: 100 };
   }
 
-  let max = Math.max(r, g, b), min = Math.min(r, g, b);
-  let h = 0, s = 0, v = max;
+  const max = Math.max(r, g, b), min = Math.min(r, g, b);
+  let h = 0, s = 0;
+  const v = max;
 
-  let d = max - min;
+  const d = max - min;
   s = max === 0 ? 0 : d / max;
 
   if (max !== min) {
@@ -177,10 +178,12 @@ function ColorPickerPopover({
 
   // Keep internal HSB in sync if Hex changes from presets or externally
   useEffect(() => {
+    /* eslint-disable react-hooks/set-state-in-effect */
     const { h, s, v } = hexToHsv(value || '#ffffff')
     setHue(h)
     setSaturation(s)
     setBrightness(v)
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, [value])
 
   const presets = [

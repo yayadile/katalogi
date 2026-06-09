@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { requireAdmin } from '@/lib/session'
 import { prisma } from '@/lib/prisma'
 import { UserActions } from '@/components/admin/UserActions'
@@ -83,12 +84,12 @@ export default async function AdminUsersPage(props: {
           Cari
         </button>
         {(q || filter) && (
-          <a
+          <Link
             href="/admin/users"
             className="px-4 py-2.5 text-sm font-bold text-gray-500 hover:text-gray-900 transition-colors"
           >
             Reset
-          </a>
+          </Link>
         )}
       </form>
 

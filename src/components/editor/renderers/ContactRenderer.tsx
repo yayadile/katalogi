@@ -4,7 +4,7 @@ import { useEditorStore } from '../store'
 
 export function ContactRenderer({ block, isPreview = false, animationStyle, hoverClass = '' }: { block: EditorBlock; isPreview?: boolean; animationStyle?: React.CSSProperties; hoverClass?: string }) {
   const { title = 'Hubungi Kami', email = 'email@contoh.com', phone = '+62 812 3456 7890', style = {} } = block.content
-  const subStyles = (block.content.subStyles as Record<string, any>) || {}
+  const subStyles = (block.content.subStyles as Record<string, Record<string, string>>) || {}
   const selectBlock = useEditorStore(state => state.selectBlock)
   const previewMode = useEditorStore(state => state.previewMode)
   const breakpointStyle = (block.content.breakpointStyles || {})[previewMode] || {}

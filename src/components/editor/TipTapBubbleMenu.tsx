@@ -23,12 +23,12 @@ export function TipTapBubbleToolbar({ editor, minimal = false }: TipTapBubbleMen
   const [linkUrl, setLinkUrl] = useState('')
 
   const setLink = useCallback(() => {
-    const chain = editor.chain().focus().extendMarkRange('link') as any
+    const ch = editor.chain().focus().extendMarkRange('link')
     if (linkUrl === '') {
-      chain.unsetLink().run()
+      ch.unsetLink().run()
     } else {
       const url = linkUrl.startsWith('http') ? linkUrl : `https://${linkUrl}`
-      chain.setLink({ href: url }).run()
+      ch.setLink({ href: url }).run()
     }
     setShowLinkInput(false)
     setLinkUrl('')
@@ -67,8 +67,7 @@ export function TipTapBubbleToolbar({ editor, minimal = false }: TipTapBubbleMen
         : 'text-white/80 hover:bg-white/10 hover:text-white'
     }`
 
-  // Cast chain to any to work with v3 dynamic command types
-  const chain = () => editor.chain().focus() as any
+  const chain = () => editor.chain().focus()
 
   return (
     <div

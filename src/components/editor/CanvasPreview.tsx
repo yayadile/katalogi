@@ -57,7 +57,7 @@ function NestedSortableBlock({
 
   const [blockToDelete, setBlockToDelete] = useState<{ id: string; type: string } | null>(null)
 
-  const handleDragEnd = (event: any) => {
+  const handleDragEnd = (event: { active: { id: string }; over: { id: string } | null }) => {
     const { active, over } = event
     if (over && active.id !== over.id) {
       const currentBlocks = useEditorStore.getState().blocks

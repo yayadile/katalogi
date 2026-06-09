@@ -74,7 +74,7 @@ const BLOCK_ICONS: Record<string, React.ReactNode> = {
   LIST: <div className="w-4 h-4 flex flex-col justify-center gap-[2px]"><div className="w-full h-[2px] bg-gray-400"/><div className="w-3/4 h-[2px] bg-gray-400"/></div>,
   HEADING: <div className="w-4 h-4 flex items-center justify-center font-bold text-xs">H</div>,
   PARAGRAPH: <div className="w-4 h-4 flex items-center justify-center font-serif text-xs">P</div>,
-  QUOTE: <div className="w-4 h-4 flex items-center justify-center font-bold text-xs">"</div>,
+  QUOTE: <div className="w-4 h-4 flex items-center justify-center font-bold text-xs">{'"'}</div>,
   BUTTON: <div className="w-4 h-4 flex items-center justify-center bg-purple-200 text-purple-700 rounded-sm text-[8px]">B</div>,
   VIDEO: <div className="w-4 h-4 flex items-center justify-center bg-red-100 text-red-500 rounded-sm text-[8px]">▶</div>,
 }

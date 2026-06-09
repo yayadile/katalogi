@@ -8,7 +8,7 @@ export function GalleryRenderer({ block, isPreview = false, animationStyle, hove
   const breakpointStyle = (block.content.breakpointStyles || {})[previewMode] || {}
 
   const safeImages = Array.isArray(images) && images.length > 0 ? images : ['/placeholder.jpg', '/placeholder.jpg', '/placeholder.jpg']
-  const subStyles = (block.content.subStyles as Record<string, any>) || {}
+  const subStyles = (block.content.subStyles as Record<string, Record<string, string>>) || {}
   const selectBlock = useEditorStore(state => state.selectBlock)
 
   const cols = Number(block.content.columns ?? 3)
@@ -32,7 +32,7 @@ export function GalleryRenderer({ block, isPreview = false, animationStyle, hove
         maxWidth: '1200px', 
         margin: '0 auto' 
       }}>
-        {safeImages.map((img: any, idx) => {
+        {safeImages.map((img: string, idx) => {
           const itemStyle = subStyles[`image-${idx}`] || {}
           return (
             <div 

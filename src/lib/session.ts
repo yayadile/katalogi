@@ -8,6 +8,7 @@ export type SessionPayload = {
   userId: string
   email: string
   name?: string | null
+  role: 'USER' | 'ADMIN'
   expiresAt: Date
 }
 
@@ -36,9 +37,9 @@ export async function decrypt(session: string | undefined = ''): Promise<Session
   }
 }
 
-export async function createSession(userId: string, email: string, name?: string | null) {
+export async function createSession(userId: string, email: string, name?: string | null, role: 'USER' | 'ADMIN' = 'USER') {
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-  const session = await encrypt({ userId, email, name, expiresAt })
+  const session = await encrypt({ userId, email, name, role, expiresAt })
   const cookieStore = await cookies()
 
   cookieStore.set('session', session, {
@@ -68,15 +69,47 @@ export async function requireAuth(): Promise<SessionPayload> {
     redirect('/login')
   }
 
-  const userExists = await prisma.user.findUnique({
+  const user = await prisma.user.findUnique({
     where: { id: session.userId },
-    select: { id: true }
+    select: { id: true, isSuspended: true }
   })
 
-  if (!userExists) {
+  if (!user) {
     await deleteSession()
     redirect('/login')
   }
 
+  if (user.isSuspended) {
+    await deleteSession()
+    redirect('/login?error=suspended')
+  }
+
   return session
+}
+
+export async function isAdmin(): Promise<boolean> {
+  const session = await getSession()
+  if (!session) return false
+
+  const user = await prisma.user.findUnique({
+    where: { id: session.userId },
+    select: { role: true },
+  })
+
+  return user?.role === 'ADMIN'
+}
+
+export async function requireAdmin(): Promise<SessionPayload> {
+  const session = await requireAuth()
+
+  const user = await prisma.user.findUnique({
+    where: { id: session.userId },
+    select: { role: true },
+  })
+
+  if (user?.role !== 'ADMIN') {
+    redirect('/dashboard')
+  }
+
+  return { ...session, role: 'ADMIN' }
 }

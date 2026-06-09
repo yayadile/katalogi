@@ -1,16 +1,13 @@
 import React from 'react'
 import Link from 'next/link'
-import { prisma } from '@/lib/prisma'
+import Image from 'next/image'
+import { FULL_TEMPLATES } from '@/lib/templates'
 import ScrollRevealWrapper from './ScrollRevealWrapper'
 
-export default async function LandingShowcase() {
-  const showcases = await prisma.website.findMany({
-    where: { isPublished: true },
-    take: 6,
-    orderBy: { createdAt: 'desc' }
-  })
+export default function LandingShowcase() {
+  const templates = FULL_TEMPLATES.filter(t => t.id !== 'blank')
 
-  if (showcases.length === 0) return null
+  if (templates.length === 0) return null
 
   return (
     <ScrollRevealWrapper id="showcase" className="py-24 bg-gray-50 border-y border-gray-100 overflow-hidden relative">
@@ -25,47 +22,56 @@ export default async function LandingShowcase() {
             Desain Profesional Siap Pakai
           </h3>
           <p className="reveal-item text-gray-500 text-lg" style={{ transitionDelay: '200ms' }}>
-            Apapun jenis usaha Anda, Katalogi memiliki struktur dan desain yang disesuaikan untuk memaksimalkan penjualan.
+            Pilih template favorit Anda, lalu kustomisasi semudah drag-and-drop.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8">
-          {showcases.map((item, i) => {
-            const theme = item.themeConfig as { primaryColor?: string } | null
-            const primaryColor = theme?.primaryColor || '#9819ff'
-            
-            return (
-              <Link 
-                href={`/${item.slug}`}
-                key={item.id} 
-                className="reveal-item group bg-white rounded-4xl p-4 shadow-sm hover:shadow-2xl hover:shadow-indigo-500/10 transition-all duration-500 hover:-translate-y-2"
-                style={{ transitionDelay: `${((i % 3) + 1) * 100 + 200}ms` }}
+        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          {templates.map((template, i) => (
+            <Link
+              href="/dashboard/create"
+              key={template.id}
+              className="reveal-item group bg-white rounded-4xl p-4 shadow-sm hover:shadow-2xl hover:shadow-indigo-500/10 transition-all duration-500 hover:-translate-y-2"
+              style={{ transitionDelay: `${((i % 3) + 1) * 100 + 200}ms` }}
+            >
+              <div
+                className="relative aspect-4/3 rounded-2xl overflow-hidden mb-6 transition-transform duration-700 group-hover:scale-[1.02]"
+                style={{ backgroundColor: `${template.themeConfig.primaryColor}15` }}
               >
-                <div 
-                  className="relative aspect-4/3 rounded-2xl overflow-hidden mb-6 flex items-center justify-center transition-transform duration-700 group-hover:scale-[1.02]"
-                  style={{ backgroundColor: `${primaryColor}15` }}
-                >
-                  <div className="text-indigo-200 opacity-50" style={{ color: primaryColor }}>
-                    <svg className="w-24 h-24 opacity-20" fill="currentColor" viewBox="0 0 24 24"><path d="M4 4h16v16H4z" opacity=".2"/><path d="M4 2h16c1.1 0 2 .9 2 2v16c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2zm0 2v16h16V4H4zm10 4h4v4h-4zM6 8h4v4H6zm0 6h4v4H6zm10 0h4v4h-4z"/></svg>
-                  </div>
-                  <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <div className="absolute bottom-4 left-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">
-                    <span className="px-3 py-1 bg-white/20 backdrop-blur-md border border-white/30 text-white text-xs font-bold uppercase tracking-wider rounded-full">
-                      Lihat Web
-                    </span>
-                  </div>
+                {template.image && (
+                  <Image
+                    src={template.image}
+                    alt={template.name}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                  />
+                )}
+                <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute bottom-4 left-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">
+                  <span className="px-3 py-1 bg-white/20 backdrop-blur-md border border-white/30 text-white text-xs font-bold uppercase tracking-wider rounded-full">
+                    Pakai Template
+                  </span>
                 </div>
-                <div className="px-2 pb-2">
-                  <h4 className="text-xl font-bold text-gray-900 group-hover:text-indigo-600 transition-colors line-clamp-1">
-                    {item.title}
+              </div>
+              <div className="px-2 pb-2">
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: template.themeConfig.primaryColor }} />
+                  <h4 className="text-xl font-bold text-gray-900 group-hover:text-indigo-600 transition-colors">
+                    {template.name}
                   </h4>
-                  <p className="text-sm text-gray-500 mt-1 line-clamp-1">
-                    {item.description || 'Katalog Digital'}
-                  </p>
                 </div>
-              </Link>
-            )
-          })}
+                <p className="text-sm text-gray-500 mt-1">
+                  {template.description}
+                </p>
+                <div className="flex items-center gap-2 mt-3">
+                  <span className="text-xs font-bold text-gray-400 bg-gray-100 px-2 py-1 rounded-lg">
+                    {template.blocks.length} blok
+                  </span>
+                </div>
+              </div>
+            </Link>
+          ))}
         </div>
       </div>
     </ScrollRevealWrapper>

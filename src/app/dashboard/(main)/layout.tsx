@@ -6,7 +6,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   return (
     <div className="min-h-screen bg-white grid-overlay flex flex-col relative">
-      <DashboardNavbar user={{ name: session.name ?? 'Pengguna', email: session.email }} />
+      <DashboardNavbar user={{ name: session.name ?? 'Pengguna', email: session.email, role: session.role }} />
 
       {/* Content */}
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 py-10 relative z-10">

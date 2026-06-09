@@ -395,10 +395,13 @@ export function UniversalSettings({ styles, htmlId, onChange }: BaseSettingsProp
         </div>
       </section>
 
-       {/* ANIMATION */}
-       <section className="bg-white border border-gray-200 rounded p-3">
-         <h3 className="text-[10px] font-bold text-gray-900 uppercase tracking-wider mb-3">Animasi</h3>
-         <div className="flex flex-col gap-1.5">
+       {/* ANIMATION - collapsed by default */}
+       <details className="bg-white border border-gray-200 rounded p-3 group">
+         <summary className="text-[10px] font-bold text-gray-900 uppercase tracking-wider cursor-pointer list-none flex items-center justify-between select-none">
+           <span>Animasi</span>
+           <svg className="w-3.5 h-3.5 text-gray-400 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+         </summary>
+         <div className="flex flex-col gap-1.5 mt-3">
            <div className="space-y-2">
              <label className="text-[9px] uppercase tracking-wider text-gray-400 font-semibold">Jenis Animasi</label>
              <select 
@@ -406,95 +409,30 @@ export function UniversalSettings({ styles, htmlId, onChange }: BaseSettingsProp
                value={(styles.animationType as string) || 'katalogi-fade-in'}
                onChange={(e) => updateStyle('animationType', e.target.value)}
              >
+               <option value="">Tidak Ada</option>
                <option value="katalogi-fade-in">Fade In</option>
                <option value="katalogi-fade-in-up">Fade In Up</option>
                <option value="katalogi-fade-in-down">Fade In Down</option>
-               <option value="katalogi-fade-in-left">Fade In Left</option>
-               <option value="katalogi-fade-in-right">Fade In Right</option>
                <option value="katalogi-slide-up">Slide Up</option>
                <option value="katalogi-slide-down">Slide Down</option>
-               <option value="katalogi-slide-left">Slide Left</option>
-               <option value="katalogi-slide-right">Slide Right</option>
                <option value="katalogi-zoom-in">Zoom In</option>
                <option value="katalogi-zoom-out">Zoom Out</option>
                <option value="katalogi-bounce-in">Bounce In</option>
-               <option value="katalogi-flip-x">Flip X</option>
-               <option value="katalogi-flip-y">Flip Y</option>
-               <option value="katalogi-rotate-in">Rotate In</option>
-               <option value="katalogi-blur-in">Blur In</option>
              </select>
            </div>
-           
            <div className="grid grid-cols-2 gap-3">
              <div className="flex flex-col gap-1">
                <label className="text-[9px] uppercase tracking-wider text-gray-400 font-semibold">Durasi (detik)</label>
-               <input 
-                 type="number" 
-                 step="0.1" 
-                 min="0.1" 
-                 max="5" 
-                 value={(styles.animationDuration as string) || '0.5'}
-                 onChange={(e) => updateStyle('animationDuration', `${e.target.value}s`)}
-                 className="settings-input"
-               />
+               <input type="number" step="0.1" min="0.1" max="5" value={(styles.animationDuration as string) || '0.5'} onChange={(e) => updateStyle('animationDuration', `${e.target.value}s`)} className="settings-input" />
              </div>
              <div className="flex flex-col gap-1">
                <label className="text-[9px] uppercase tracking-wider text-gray-400 font-semibold">Delay (detik)</label>
-               <input 
-                 type="number" 
-                 step="0.1" 
-                 min="0" 
-                 max="2" 
-                 value={(styles.animationDelay as string) || '0'}
-                 onChange={(e) => updateStyle('animationDelay', `${e.target.value}s`)}
-                 className="settings-input"
-               />
+               <input type="number" step="0.1" min="0" max="2" value={(styles.animationDelay as string) || '0'} onChange={(e) => updateStyle('animationDelay', `${e.target.value}s`)} className="settings-input" />
              </div>
-           </div>
-           
-           <div className="grid grid-cols-2 gap-3">
-             <div className="flex flex-col gap-1">
-               <label className="text-[9px] uppercase tracking-wider text-gray-400 font-semibold">Iterasi</label>
-               <input 
-                 type="number" 
-                 min="1" 
-                 max="10" 
-                 value={(styles.animationIterationCount as string) || '1'}
-                 onChange={(e) => updateStyle('animationIterationCount', e.target.value)}
-                 className="settings-input"
-               />
-             </div>
-             <div className="flex flex-col gap-1">
-               <label className="text-[9px] uppercase tracking-wider text-gray-400 font-semibold">Direction</label>
-               <select 
-                 className="settings-input" 
-                 value={(styles.animationDirection as string) || 'normal'}
-                 onChange={(e) => updateStyle('animationDirection', e.target.value)}
-               >
-                 <option value="normal">Normal</option>
-                 <option value="reverse">Reverse</option>
-                 <option value="alternate">Alternate</option>
-                 <option value="alternate-reverse">Alternate Reverse</option>
-               </select>
-             </div>
-           </div>
-           
-           <div className="flex flex-col gap-1">
-             <label className="text-[9px] uppercase tracking-wider text-gray-400 font-semibold">Fill Mode</label>
-             <select 
-               className="settings-input" 
-               value={(styles.animationFillMode as string) || 'both'}
-               onChange={(e) => updateStyle('animationFillMode', e.target.value)}
-             >
-               <option value="none">None</option>
-               <option value="forwards">Forwards</option>
-               <option value="backwards">Backwards</option>
-               <option value="both">Both</option>
-             </select>
            </div>
          </div>
-       </section>
+       </details>
        
-    </div>
+     </div>
   )
 }

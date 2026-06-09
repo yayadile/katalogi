@@ -4,11 +4,7 @@ import { useState } from 'react'
 import type { BlockType } from '@prisma/client'
 import { useEditorStore } from './store'
 import { UniversalSettings } from './settings/UniversalSettings'
-import { AnimationSettings } from './settings/AnimationSettings'
-import type { BlockAnimation } from '@/types/animation'
-import { DEFAULT_ANIMATION } from '@/types/animation'
 
-// Import specific block settings
 import { HeroSettings } from './settings/HeroSettings'
 import { CatalogSettings } from './settings/CatalogSettings'
 import { ContactSettings } from './settings/ContactSettings'
@@ -18,9 +14,8 @@ import { VideoSettings, GallerySettings } from './settings/MediaSettings'
 import { ColumnSettings, GridSettings, LinkBlockSettings, ListSettings, DivSettings, CMSSettings, ButtonSettings } from './settings/StructureSettings'
 
 export default function BlockSettingsPanel() {
-  const [activeBlockTab, setActiveBlockTab] = useState<'style' | 'settings' | 'animation'>('style')
-  const [editingBreakpoint, setEditingBreakpoint] = useState<'base' | 'desktop' | 'tablet' | 'mobile'>('base')
-  
+  const [activeTab, setActiveTab] = useState<'style' | 'content'>('style')
+
   const selectedId = useEditorStore(state => state.selectedId)
   const selectedSubId = useEditorStore(state => state.selectedSubId)
   const blocks = useEditorStore(state => state.blocks)
@@ -50,16 +45,12 @@ export default function BlockSettingsPanel() {
 
   const handleContentChange = (newContent: Record<string, unknown>) => {
     updateBlockContent(selectedBlock.id, newContent)
-    setSaveStatus('idle') // Would trigger auto-save logic in a higher component or effect
+    setSaveStatus('idle')
   }
-  
-  const breakpointStyles = (selectedBlock.content?.breakpointStyles as Record<string, unknown>) || {}
-  
-  const currentStyles = selectedSubId 
-    ? ((selectedBlock.content?.subStyles as Record<string, unknown>)?.[selectedSubId] || {}) 
-    : (editingBreakpoint === 'base' 
-      ? (selectedBlock.content?.style || {}) 
-      : (breakpointStyles[editingBreakpoint] || {}))
+
+  const currentStyles = selectedSubId
+    ? ((selectedBlock.content?.subStyles as Record<string, unknown>)?.[selectedSubId] || {})
+    : (selectedBlock.content?.style || {})
 
   return (
     <div className="flex flex-col h-full bg-white/50 backdrop-blur-xl border-l border-white shadow-[-4px_0_30px_rgb(0,0,0,0.02)]">
@@ -69,63 +60,23 @@ export default function BlockSettingsPanel() {
         </h2>
       </div>
 
-       {/* Panel Tabs */}
-       <div className="flex items-center p-2 border-b border-slate-100 bg-slate-50/50 gap-1">
-         <button 
-           onClick={() => setActiveBlockTab('style')}
-           className={`flex-1 py-2 px-2 text-[10px] font-extrabold tracking-widest uppercase rounded-xl transition-all ${activeBlockTab === 'style' ? 'bg-white shadow-[0_2px_10px_rgb(0,0,0,0.04)] text-indigo-600 border border-slate-100' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-100'}`}
-         >
-           Gaya
-         </button>
-         <button 
-           onClick={() => setActiveBlockTab('settings')}
-           className={`flex-1 py-2 px-2 text-[10px] font-extrabold tracking-widest uppercase rounded-xl transition-all ${activeBlockTab === 'settings' ? 'bg-white shadow-[0_2px_10px_rgb(0,0,0,0.04)] text-indigo-600 border border-slate-100' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-100'}`}
-         >
-           Properti
-         </button>
-         <button 
-           onClick={() => setActiveBlockTab('animation')}
-           className={`flex-1 py-2 px-2 text-[10px] font-extrabold tracking-widest uppercase rounded-xl transition-all ${activeBlockTab === 'animation' ? 'bg-white shadow-[0_2px_10px_rgb(0,0,0,0.04)] text-indigo-600 border border-slate-100' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-100'}`}
-         >
-           Animasi
-         </button>
-       </div>
-       
-       {/* Breakpoint Selector (inside Style tab) */}
-       {activeBlockTab === 'style' && (
-         <div className="flex flex-col gap-2 px-4 py-3 border-b border-slate-100 bg-slate-50/30">
-           <span className="text-[9px] font-extrabold tracking-widest uppercase text-slate-400">Edit Breakpoint</span>
-           <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
-             <button 
-               onClick={() => setEditingBreakpoint('base')}
-               className={`px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all ${editingBreakpoint === 'base' ? 'bg-indigo-100 text-indigo-700 shadow-sm' : 'text-slate-500 hover:bg-slate-200/50 hover:text-slate-700'}`}
-             >
-               Base
-             </button>
-             <button 
-               onClick={() => setEditingBreakpoint('desktop')}
-               className={`px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all ${editingBreakpoint === 'desktop' ? 'bg-indigo-100 text-indigo-700 shadow-sm' : 'text-slate-500 hover:bg-slate-200/50 hover:text-slate-700'}`}
-             >
-               Desktop
-             </button>
-             <button 
-               onClick={() => setEditingBreakpoint('tablet')}
-               className={`px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all ${editingBreakpoint === 'tablet' ? 'bg-indigo-100 text-indigo-700 shadow-sm' : 'text-slate-500 hover:bg-slate-200/50 hover:text-slate-700'}`}
-             >
-               Tablet
-             </button>
-             <button 
-               onClick={() => setEditingBreakpoint('mobile')}
-               className={`px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all ${editingBreakpoint === 'mobile' ? 'bg-indigo-100 text-indigo-700 shadow-sm' : 'text-slate-500 hover:bg-slate-200/50 hover:text-slate-700'}`}
-             >
-               Mobile
-             </button>
-           </div>
-         </div>
-       )}
+      <div className="flex items-center p-2 border-b border-slate-100 bg-slate-50/50 gap-1">
+        <button
+          onClick={() => setActiveTab('style')}
+          className={`flex-1 py-2 px-2 text-[10px] font-extrabold tracking-widest uppercase rounded-xl transition-all ${activeTab === 'style' ? 'bg-white shadow-[0_2px_10px_rgb(0,0,0,0.04)] text-indigo-600 border border-slate-100' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-100'}`}
+        >
+          Tampilan
+        </button>
+        <button
+          onClick={() => setActiveTab('content')}
+          className={`flex-1 py-2 px-2 text-[10px] font-extrabold tracking-widest uppercase rounded-xl transition-all ${activeTab === 'content' ? 'bg-white shadow-[0_2px_10px_rgb(0,0,0,0.04)] text-indigo-600 border border-slate-100' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-100'}`}
+        >
+          Konten
+        </button>
+      </div>
 
       <div className="flex-1 overflow-y-auto bg-transparent">
-        {activeBlockTab === 'style' && (
+        {activeTab === 'style' && (
           <div className="flex flex-col p-4 space-y-6">
             {selectedSubId && (
               <div className="bg-indigo-50/50 border border-indigo-100 text-indigo-700 text-[10px] font-bold px-4 py-3 rounded-xl mb-2 flex items-center gap-2">
@@ -133,31 +84,24 @@ export default function BlockSettingsPanel() {
                 Mengedit gaya khusus: <span className="font-extrabold uppercase tracking-widest">{selectedSubId}</span>
               </div>
             )}
-             <UniversalSettings 
-               styles={currentStyles as Record<string, string | number>} 
-               htmlId={!selectedSubId ? (selectedBlock.content?.htmlId as string) : undefined}
-               onChange={(updatedStyles, htmlId) => {
-                 if (selectedSubId) {
-                   updateSubElementStyle(selectedBlock.id, selectedSubId, updatedStyles)
-                 } else if (editingBreakpoint === 'base') {
-                   updateBlockStyle(selectedBlock.id, updatedStyles)
-                   if (htmlId !== undefined) {
-                     updateBlockContent(selectedBlock.id, { htmlId })
-                   }
-                 } else {
-                   updateBlockContent(selectedBlock.id, { 
-                     breakpointStyles: {
-                       ...breakpointStyles,
-                       [editingBreakpoint]: updatedStyles
-                     }
-                   })
-                 }
-               }} 
-             />
+            <UniversalSettings
+              styles={currentStyles as Record<string, string | number>}
+              htmlId={!selectedSubId ? (selectedBlock.content?.htmlId as string) : undefined}
+              onChange={(updatedStyles, htmlId) => {
+                if (selectedSubId) {
+                  updateSubElementStyle(selectedBlock.id, selectedSubId, updatedStyles)
+                } else {
+                  updateBlockStyle(selectedBlock.id, updatedStyles)
+                  if (htmlId !== undefined) {
+                    updateBlockContent(selectedBlock.id, { htmlId })
+                  }
+                }
+              }}
+            />
           </div>
         )}
 
-        {activeBlockTab === 'settings' && (
+        {activeTab === 'content' && (
           <div className="space-y-6 p-4">
             {(selectedBlock.type as BlockType) === 'HERO' && (
               <HeroSettings
@@ -215,7 +159,6 @@ export default function BlockSettingsPanel() {
                 onSaveStatus={setSaveStatus}
               />
             )}
-            
             {(selectedBlock.type as string) === 'QUOTE' && (
               <QuoteSettings
                 blockId={selectedBlock.id}
@@ -288,34 +231,11 @@ export default function BlockSettingsPanel() {
                 onSaveStatus={setSaveStatus}
               />
             )}
-            
-            {/* Fallback for blocks without specific settings panels */}
+
             {['HERO', 'CATALOG', 'CONTACT', 'TEXT', 'HEADING', 'PARAGRAPH', 'BUTTON', 'QUOTE', 'VIDEO', 'GALLERY', 'COLUMN', 'GRID', 'DIV', 'CMS', 'LINK_BLOCK', 'LIST', 'CONTAINER'].indexOf(selectedBlock.type) === -1 && (
               <div className="text-center py-10 px-4 text-gray-400">
-                <p className="text-[11px]">Elemen ini tidak memiliki pengaturan spesifik. Silakan gunakan tab <b>GAYA</b> untuk mengubah tampilannya.</p>
+                <p className="text-[11px]">Elemen ini tidak memiliki pengaturan konten spesifik.</p>
               </div>
-            )}
-          </div>
-        )}
-
-        {activeBlockTab === 'animation' && (
-          <div className="p-4">
-            {(selectedBlock.content?.animation as BlockAnimation) ? (
-              <AnimationSettings
-                animation={(selectedBlock.content?.animation as BlockAnimation)}
-                onChange={(newAnimation) => {
-                  updateBlockContent(selectedBlock.id, { animation: newAnimation })
-                  setSaveStatus('idle')
-                }}
-              />
-            ) : (
-              <AnimationSettings
-                animation={DEFAULT_ANIMATION}
-                onChange={(newAnimation) => {
-                  updateBlockContent(selectedBlock.id, { animation: newAnimation })
-                  setSaveStatus('idle')
-                }}
-              />
             )}
           </div>
         )}

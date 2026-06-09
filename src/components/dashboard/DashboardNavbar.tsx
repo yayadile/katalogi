@@ -5,17 +5,20 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { logout } from '@/lib/actions/auth'
-import { LayoutDashboard, BarChart3, CreditCard, Settings, LifeBuoy, LogOut } from 'lucide-react'
+import { LayoutDashboard, BarChart3, CreditCard, Settings, LifeBuoy, Shield, LogOut } from 'lucide-react'
 
-const navItems = [
-  { name: 'Proyek', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Analitik', href: '/dashboard/analytics', icon: BarChart3 },
-  { name: 'Langganan', href: '/dashboard/billing', icon: CreditCard },
-  { name: 'Pengaturan', href: '/dashboard/settings', icon: Settings },
-  { name: 'Bantuan', href: '/dashboard/help', icon: LifeBuoy },
-]
+export function DashboardNavbar({ user }: { user: { name: string, email: string, role: string } }) {
+  const navItems = [
+    { name: 'Proyek', href: '/dashboard', icon: LayoutDashboard },
+    { name: 'Analitik', href: '/dashboard/analytics', icon: BarChart3 },
+    { name: 'Langganan', href: '/dashboard/billing', icon: CreditCard },
+    { name: 'Pengaturan', href: '/dashboard/settings', icon: Settings },
+    { name: 'Bantuan', href: '/dashboard/help', icon: LifeBuoy },
+  ]
 
-export function DashboardNavbar({ user }: { user: { name: string, email: string } }) {
+  if (user.role === 'ADMIN') {
+    navItems.push({ name: 'Admin', href: '/admin', icon: Shield })
+  }
   const pathname = usePathname()
   const [isScrolled, setIsScrolled] = useState(false)
 

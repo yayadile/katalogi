@@ -34,7 +34,12 @@ export async function register(state: AuthFormState, formData: FormData): Promis
 
   const { email, password, name } = parsed.data
 
+  const adminEmail = process.env.ADMIN_EMAIL
+  const isAdmin = !!(adminEmail && email === adminEmail)
+
   const existing = await prisma.user.findUnique({ where: { email } })
+  let userId: string
+
   if (existing) {
     if (existing.emailVerified) {
       return { message: 'Email sudah terdaftar.' }
@@ -43,13 +48,20 @@ export async function register(state: AuthFormState, formData: FormData): Promis
     const passwordHash = await bcrypt.hash(password, 10)
     await prisma.user.update({
       where: { email },
-      data: { passwordHash, name, emailVerified: false },
+      data: { passwordHash, name, emailVerified: isAdmin, role: isAdmin ? 'ADMIN' : 'USER' },
     })
+    userId = existing.id
   } else {
     const passwordHash = await bcrypt.hash(password, 10)
-    await prisma.user.create({
-      data: { email, passwordHash, name, emailVerified: false },
+    const user = await prisma.user.create({
+      data: { email, passwordHash, name, emailVerified: isAdmin, role: isAdmin ? 'ADMIN' : 'USER' },
     })
+    userId = user.id
+  }
+
+  if (isAdmin) {
+    await createSession(userId, email, name, 'ADMIN')
+    redirect('/admin')
   }
 
   const otpResult = await sendOTP(email)
@@ -94,7 +106,17 @@ export async function login(state: AuthFormState, formData: FormData): Promise<A
       return { message: 'Email atau password salah.' }
     }
 
-    await createSession(user.id, user.email, user.name)
+    const adminEmail = process.env.ADMIN_EMAIL
+    if (adminEmail && user.email === adminEmail && user.role !== 'ADMIN') {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { role: 'ADMIN' },
+      })
+    }
+
+    const role = adminEmail && user.email === adminEmail ? 'ADMIN' : user.role
+
+    await createSession(user.id, user.email, user.name, role)
 
   } catch (error) {
     if (error && typeof error === 'object' && 'digest' in error) {

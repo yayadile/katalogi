@@ -4,6 +4,7 @@ import LandingHero from '@/components/landing/LandingHero'
 import LandingTentang from '@/components/landing/LandingTentang'
 import LandingCaraKerja from '@/components/landing/LandingCaraKerja'
 import LandingFeatures from '@/components/landing/LandingFeatures'
+import LandingShowcase from '@/components/landing/LandingShowcase'
 import LandingFAQ from '@/components/landing/LandingFAQ'
 import LandingCTA from '@/components/landing/LandingCTA'
 import LandingFooter from '@/components/landing/LandingFooter'
@@ -30,6 +31,7 @@ export default async function HomePage() {
         <LandingTentang />
         <LandingCaraKerja />
         <LandingFeatures />
+        <LandingShowcase />
         <LandingTestimonials />
         {/* <LandingPricing /> */}
         <LandingFAQ />

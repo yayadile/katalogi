@@ -10,7 +10,7 @@ const faqs = [
   },
   {
     q: 'Berapa biaya menggunakan Katalogi?',
-    a: 'Gratis. Semua fitur inti bisa digunakan tanpa biaya sepeserpun. Tidak ada biaya langganan, tidak ada biaya tersembunyi.',
+    a: 'Gratis untuk mulai. Paket gratis memungkinkan unlimited proyek dengan maksimal 1 website publish (ada badge Katalogi). Upgrade ke premium Rp 25rb/bulan untuk semua template tanpa badge.',
   },
   {
     q: 'Apakah website saya bisa diakses di HP?',
@@ -22,7 +22,7 @@ const faqs = [
   },
   {
     q: 'Apakah saya bisa mengubah website setelah dipublikasi?',
-    a: 'Tentu. Edit kapan saja melalui dashboard. Setiap perubahan langsung tersimpan otomatis dan website akan terupdate tanpa perlu publikasi ulang.',
+    a: 'Tentu. Edit kapan saja melalui dashboard. Setiap perubahan langsung tersimpan otomatis. Kamu juga bisa unpublish dan republish kapan saja.',
   },
   {
     q: 'Apakah saya bisa mengkustomisasi lebih lanjut?',

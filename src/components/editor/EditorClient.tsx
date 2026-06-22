@@ -718,7 +718,7 @@ export default function EditorClient({
                 href={WA_BUSINESS_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 flex items-center justify-center gap-2 py-3 px-4 bg-linear-to-br from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 text-white rounded-xl text-sm font-semibold transition-all shadow-sm"
+                className="flex-1 flex items-center justify-center gap-2 py-3 px-4 bg-linear-to-br from-emerald-500 to-emerald-700 hover:from-emerald-600 hover:to-emerald-800 text-white rounded-xl text-sm font-semibold transition-all shadow-sm"
               >
                 <ExternalLink className="w-4 h-4" />
                 Hubungi WhatsApp

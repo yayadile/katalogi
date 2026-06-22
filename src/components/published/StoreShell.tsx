@@ -120,7 +120,7 @@ function CartUI({ whatsapp, storeName, primaryColor }: CartUIProps) {
                       >
                         −
                       </button>
-                      <span className="min-w-[1.5rem] text-center text-sm font-bold">{item.quantity}</span>
+                      <span className="min-w-6 text-center text-sm font-bold">{item.quantity}</span>
                       <button
                         onClick={() => updateQuantity(item.id, item.quantity + 1)}
                         className="w-7 h-7 flex items-center justify-center rounded-md text-white text-lg leading-none"

@@ -6,7 +6,7 @@ import { Rocket, ShieldCheck, Timer, Zap, Smartphone, Sparkles, Palette, Globe }
 
 export default function LandingHero() {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-white">
+    <section className="relative min-h-dvh flex items-center justify-center overflow-hidden bg-white">
       {/* Grid overlay (4% opacity) */}
       <div className="absolute inset-0 grid-overlay pointer-events-none" />
 
@@ -42,15 +42,15 @@ export default function LandingHero() {
           </h1>
 
           {/* Subheading */}
-          <p className="mt-6 mx-auto max-w-[560px] text-[15px] sm:text-[17px] leading-[1.7] text-gray-500 animate-fade-up delay-200">
-            Ubah jualan Anda jadi online dalam 5 menit. Tanpa koding, tanpa ribet, desain premium gratis selamanya.
-          </p>
+            <p className="mt-6 mx-auto max-w-[560px] text-[15px] sm:text-[17px] leading-[1.7] text-gray-500 animate-fade-up delay-200">
+              Ubah jualan Anda jadi online dalam 5 menit. Tanpa koding, tanpa ribet—langsung publish dan share ke pelanggan.
+            </p>
 
           {/* CTAs */}
           <div className="mt-8 md:mt-10 animate-fade-up delay-300">
             <Link
               href="/login?signup=true"
-              className="inline-flex bg-gradient-to-br from-indigo-500 to-indigo-900 hover:from-indigo-600 hover:to-indigo-950 text-white font-bold px-8 py-4 rounded-xl transition-all duration-200 items-center justify-center gap-2 text-base group active:scale-[0.97]"
+              className="inline-flex bg-linear-to-br from-indigo-500 to-indigo-900 hover:from-indigo-600 hover:to-indigo-950 text-white font-bold px-8 py-4 rounded-xl transition-all duration-200 items-center justify-center gap-2 text-base group active:scale-[0.97]"
             >
               Mulai Gratis Sekarang
               <Rocket className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
@@ -62,7 +62,7 @@ export default function LandingHero() {
             <StatItem value="5 Menit" label="Waktu Setup">
               <Timer className="w-4 h-4 text-indigo-500" />
             </StatItem>
-            <StatItem value="0 Biaya" label="Mulai Dari Rp0">
+            <StatItem value="Gratis" label="Untuk Mulai">
               <Zap className="w-4 h-4 text-indigo-500" />
             </StatItem>
             <StatItem value="Mobile First" label="Sangat Responsif">

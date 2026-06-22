@@ -17,7 +17,7 @@ export default function NotFound() {
         </p>
         <Link
           href="/"
-          className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-br from-indigo-500 to-indigo-900 text-white rounded-xl font-medium hover:bg-indigo-700 transition-colors"
+          className="inline-flex items-center gap-2 px-6 py-3 bg-linear-to-br from-indigo-500 to-indigo-900 text-white rounded-xl font-medium hover:bg-indigo-700 transition-colors"
         >
           Kembali ke Beranda
         </Link>

@@ -130,7 +130,7 @@ export default function NewWebsiteForm({ userId, userTier }: { userId: string; u
             type="submit"
             form="create-website-form"
             disabled={pending}
-            className="w-full bg-gradient-to-br from-indigo-500 to-indigo-900 hover:from-indigo-600 hover:to-indigo-950 text-white font-black uppercase tracking-[0.15em] px-6 py-4 rounded-xl transition-all hover:shadow-xl hover:shadow-indigo-600/20 hover:-translate-y-0.5 disabled:opacity-60 disabled:hover:translate-y-0 text-[11px] flex items-center justify-center gap-2 active:scale-[0.98]"
+            className="w-full bg-linear-to-br from-indigo-500 to-indigo-900 hover:from-indigo-600 hover:to-indigo-950 text-white font-black uppercase tracking-[0.15em] px-6 py-4 rounded-xl transition-all hover:shadow-xl hover:shadow-indigo-600/20 hover:-translate-y-0.5 disabled:opacity-60 disabled:hover:translate-y-0 text-[11px] flex items-center justify-center gap-2 active:scale-[0.98]"
           >
             {pending ? (
               <>
@@ -160,7 +160,7 @@ export default function NewWebsiteForm({ userId, userTier }: { userId: string; u
               </Link>
               <div>
                 <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tighter uppercase flex items-center gap-2.5">
-                  <div className="bg-gradient-to-br from-indigo-500 to-indigo-900 p-1.5 rounded-lg shadow-md shadow-indigo-600/20 text-white">
+                  <div className="bg-linear-to-br from-indigo-500 to-indigo-900 p-1.5 rounded-lg shadow-md shadow-indigo-600/20 text-white">
                     <Sparkles className="w-4 h-4" />
                   </div>
                   Mulai Proyek
@@ -279,7 +279,7 @@ export default function NewWebsiteForm({ userId, userTier }: { userId: string; u
                       </div>
                       
                       {isSelected && (
-                        <div className="hidden md:flex shrink-0 w-5 h-5 bg-gradient-to-br from-indigo-500 to-indigo-900 rounded-full items-center justify-center shadow-sm">
+                        <div className="hidden md:flex shrink-0 w-5 h-5 bg-linear-to-br from-indigo-500 to-indigo-900 rounded-full items-center justify-center shadow-sm">
                           <Check className="w-3 h-3 text-white" />
                         </div>
                       )}
@@ -300,7 +300,7 @@ export default function NewWebsiteForm({ userId, userTier }: { userId: string; u
               <button
                 type="submit"
                 disabled={pending}
-                className="w-full bg-gradient-to-br from-indigo-500 to-indigo-900 hover:from-indigo-600 hover:to-indigo-950 text-white font-black uppercase tracking-[0.15em] px-6 py-3.5 rounded-xl transition-all shadow-lg shadow-indigo-600/20 disabled:opacity-60 text-[11px] flex items-center justify-center gap-2"
+                className="w-full bg-linear-to-br from-indigo-500 to-indigo-900 hover:from-indigo-600 hover:to-indigo-950 text-white font-black uppercase tracking-[0.15em] px-6 py-3.5 rounded-xl transition-all shadow-lg shadow-indigo-600/20 disabled:opacity-60 text-[11px] flex items-center justify-center gap-2"
               >
                 {pending ? 'Mempersiapkan...' : 'Buat Website Sekarang'}
               </button>
@@ -366,7 +366,7 @@ export default function NewWebsiteForm({ userId, userTier }: { userId: string; u
               form="create-website-form"
               onClick={() => setIsMobilePreviewOpen(false)} // Close sheet visually while submitting
               disabled={pending}
-              className="w-full bg-gradient-to-br from-indigo-500 to-indigo-900 text-white font-black uppercase tracking-widest px-6 py-4 rounded-xl shadow-lg shadow-indigo-600/20 active:scale-95 transition-transform text-xs"
+              className="w-full bg-linear-to-br from-indigo-500 to-indigo-900 text-white font-black uppercase tracking-widest px-6 py-4 rounded-xl shadow-lg shadow-indigo-600/20 active:scale-95 transition-transform text-xs"
             >
               Gunakan Template Ini
             </button>

@@ -24,7 +24,7 @@ export default function DismissibleUpgradeBanner() {
   if (dismissed) return null
 
   return (
-    <div className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-[2rem] p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center gap-5 relative overflow-hidden">
+    <div className="bg-linear-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-4xl p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center gap-5 relative overflow-hidden">
       <div className="absolute inset-0 pointer-events-none" style={{
         backgroundImage: `radial-gradient(circle at 20% 50%, rgba(251,191,36,0.08) 0%, transparent 50%), radial-gradient(circle at 80% 50%, rgba(249,115,22,0.05) 0%, transparent 50%)`,
       }} />
@@ -53,7 +53,7 @@ export default function DismissibleUpgradeBanner() {
         href={WA_BUSINESS_URL}
         target="_blank"
         rel="noopener noreferrer"
-        className="shrink-0 inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-br from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 text-white font-bold rounded-xl text-sm transition-all shadow-lg shadow-green-600/20 whitespace-nowrap relative"
+        className="shrink-0 inline-flex items-center gap-2 px-6 py-3 bg-linear-to-br from-emerald-500 to-emerald-700 hover:from-emerald-600 hover:to-emerald-800 text-white font-bold rounded-xl text-sm transition-all shadow-lg shadow-emerald-600/20 whitespace-nowrap relative"
       >
         <Crown className="w-4 h-4" />
         Beli Paket

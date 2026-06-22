@@ -63,7 +63,7 @@ export default function LandingCTA() {
           ref={cardRef}
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
-          className="bg-gradient-to-br from-indigo-500 to-indigo-900 rounded-[2rem] p-10 md:p-16 lg:p-20 text-center relative overflow-hidden cursor-default"
+          className="bg-linear-to-br from-indigo-500 to-indigo-900 rounded-4xl p-10 md:p-16 lg:p-20 text-center relative overflow-hidden cursor-default"
           style={{
             transform: `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(${isHovered ? 1.02 : 1})`,
             transition: isHovered
@@ -104,16 +104,16 @@ export default function LandingCTA() {
 
           <div className="relative z-10">
             <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-8 leading-tight">
-              Siap Buat Katalog <br /> Terbaik Anda?
+              Siap buat katalog <br /> terbaik kamu?
             </h2>
             <Link
               href="/login?signup=true"
               className="inline-flex bg-white text-indigo-700 font-bold px-10 py-4 rounded-xl hover:bg-gray-100 transition-all duration-200 text-lg active:scale-[0.97]"
             >
-              Mulai Sekarang dengan Gratis
+              Mulai Gratis Sekarang
             </Link>
             <p className="mt-6 text-indigo-200 font-medium text-sm md:text-base">
-              Bersenang-senanglah membangun, kami yang urus teknisnya.
+              Gratis untuk mulai. Upgrade Rp 25rb/bulan untuk semua template tanpa badge.
             </p>
           </div>
         </div>

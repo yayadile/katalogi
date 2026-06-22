@@ -17,7 +17,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 
       {/* Gradient blur orbs */}
       <div className="absolute -top-40 -left-40 w-[500px] h-[500px] bg-indigo-500/[0.04] rounded-full blur-[150px] pointer-events-none" />
-      <div className="absolute -bottom-40 -right-40 w-[500px] h-[500px] bg-violet-500/[0.03] rounded-full blur-[150px] pointer-events-none" />
+      <div className="absolute -bottom-40 -right-40 w-[500px] h-[500px] bg-indigo-500/[0.03] rounded-full blur-[150px] pointer-events-none" />
 
       {/* Floating decorative icons */}
       <div className="absolute pointer-events-none text-indigo-600/15" style={{ left: '8%', top: '15%' }}>

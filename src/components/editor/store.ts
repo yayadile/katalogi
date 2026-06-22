@@ -79,7 +79,7 @@ export const useEditorStore = create<EditorState>((set) => ({
   theme: {
     primaryColor: '#4f46e5',
     secondaryColor: '#f3f4f6',
-    fontFamily: 'Inter',
+    fontFamily: 'Outfit',
   },
   leftPanel: 'elements',
   previewMode: 'desktop',

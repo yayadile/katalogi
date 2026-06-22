@@ -22,7 +22,7 @@ export default function ScrollProgress() {
 
   return (
     <div
-      className="fixed top-0 left-0 z-[999] h-[3px] bg-gradient-to-br from-indigo-500 to-indigo-900 transition-all duration-150 ease-out"
+      className="fixed top-0 left-0 z-[999] h-[3px] bg-linear-to-br from-indigo-500 to-indigo-900 transition-all duration-150 ease-out"
       style={{ width: `${progress}%` }}
     />
   )

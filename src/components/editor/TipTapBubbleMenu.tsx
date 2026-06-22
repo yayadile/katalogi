@@ -255,7 +255,7 @@ export function TipTapBubbleToolbar({ editor, minimal = false }: TipTapBubbleMen
                 <button
                   type="button"
                   onMouseDown={(e) => { e.preventDefault(); setLink() }}
-                  className="text-xs bg-gradient-to-br from-indigo-500 to-indigo-900 text-white px-2 py-1 rounded hover:bg-gradient-to-br from-indigo-500 to-indigo-900 cursor-pointer"
+                  className="text-xs bg-linear-to-br from-indigo-500 to-indigo-900 text-white px-2 py-1 rounded cursor-pointer"
                 >
                   OK
                 </button>

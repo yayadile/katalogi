@@ -20,10 +20,10 @@ export default function EditorGuide() {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/20 backdrop-blur-sm animate-in fade-in duration-300">
-      <div className="bg-white border border-gray-200 w-full max-w-md rounded-[2rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
+      <div className="bg-white border border-gray-200 w-full max-w-md rounded-4xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
         <div className="p-8 pb-4 flex items-center justify-between">
           <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-indigo-900 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-linear-to-br from-indigo-500 to-indigo-900 rounded-lg flex items-center justify-center">
               <HelpCircle className="w-5 h-5 text-white" />
             </div>
             Panduan Katalogi
@@ -70,7 +70,7 @@ export default function EditorGuide() {
 
           <button 
             onClick={() => setIsOpen(false)}
-            className="w-full bg-gradient-to-br from-indigo-500 to-indigo-900 hover:from-indigo-600 hover:to-indigo-950 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-indigo-600/20 active:scale-95 mt-4"
+            className="w-full bg-linear-to-br from-indigo-500 to-indigo-900 hover:from-indigo-600 hover:to-indigo-950 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-indigo-600/20 active:scale-95 mt-4"
           >
             Mengerti, Lanjutkan!
           </button>

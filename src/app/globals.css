@@ -14,6 +14,19 @@
   --color-indigo-900: #5c00a3;
   --color-indigo-950: #2e0052;
 }
+
+/* Z-index scale */
+@theme {
+  --z-base: 1;
+  --z-dropdown: 10;
+  --z-sticky: 50;
+  --z-drawer: 100;
+  --z-modal-backdrop: 900;
+  --z-modal: 999;
+  --z-toast: 1000;
+  --z-tooltip: 1100;
+}
+
 :root {
   --primary-color: #9819ff;
   --secondary-color: #1e293b;

@@ -9,7 +9,7 @@ import { HeadingBlock, ParagraphBlock, QuoteBlock } from '@/components/blocks/Ty
 import { ListBlock, LinkBlock, ButtonBlock, CMSBlock, DivBlock } from '@/components/blocks/StructureBlocks'
 import { VideoBlock, GalleryBlock } from '@/components/blocks/MediaBlocks'
 
-// ─── Types ──────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export type PublishedBlock = {
   id: string
@@ -35,7 +35,7 @@ export type StoreInfo = {
   storeName?: string
 }
 
-// ─── Public API ───────────────────────────────────────────────────────────────
+// â”€â”€â”€ Public API â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /**
  * Renders every saved block (all 17 BlockTypes) for a published page,
@@ -54,7 +54,7 @@ export function renderBlocks(
   return roots.map((block) => renderBlock(block, blocks, theme, store))
 }
 
-// ─── Internals ──────────────────────────────────────────────────────────────
+// â”€â”€â”€ Internals â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function renderBlock(
   block: PublishedBlock,

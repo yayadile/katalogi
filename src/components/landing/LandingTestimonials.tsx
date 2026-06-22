@@ -58,7 +58,7 @@ export default async function LandingTestimonials() {
               </p>
             </div>
             <div className="flex items-center gap-4 pt-4 border-t border-gray-100">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-100 to-indigo-200 flex items-center justify-center text-indigo-700 font-bold text-lg">
+              <div className="w-12 h-12 rounded-xl bg-linear-to-br from-indigo-100 to-indigo-200 flex items-center justify-center text-indigo-700 font-bold text-lg">
                 {first.name.charAt(0).toUpperCase()}
               </div>
               <div>
@@ -85,7 +85,7 @@ export default async function LandingTestimonials() {
                   &ldquo;{testi.content}&rdquo;
                 </p>
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-indigo-100 to-indigo-200 flex items-center justify-center text-indigo-700 font-bold text-sm">
+                  <div className="w-9 h-9 rounded-lg bg-linear-to-br from-indigo-100 to-indigo-200 flex items-center justify-center text-indigo-700 font-bold text-sm">
                     {testi.name.charAt(0).toUpperCase()}
                   </div>
                   <div>

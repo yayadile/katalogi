@@ -213,7 +213,7 @@ export default function CatalogBlock({ content, theme, whatsapp, storeName }: Ca
                               >
                                 −
                               </button>
-                              <span className="min-w-[1.5rem] text-center text-sm font-bold text-slate-800">{inCart.quantity}</span>
+                              <span className="min-w-6 text-center text-sm font-bold text-slate-800">{inCart.quantity}</span>
                               <button
                                 aria-label="Tambah"
                                 onClick={() => cart.updateQuantity(item.id, inCart.quantity + 1)}

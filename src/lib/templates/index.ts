@@ -36,7 +36,7 @@ export const FULL_TEMPLATES: WebsiteTemplate[] = [
     themeConfig: {
       primaryColor: '#4f46e5',
       secondaryColor: '#1e293b',
-      fontFamily: 'Inter'
+      fontFamily: 'Outfit'
     },
     blocks: []
   },
@@ -50,7 +50,7 @@ export const FULL_TEMPLATES: WebsiteTemplate[] = [
     themeConfig: {
       primaryColor: '#4f46e5',
       secondaryColor: '#1e293b',
-      fontFamily: 'Inter'
+      fontFamily: 'Outfit'
     },
     blocks: [
       {
@@ -100,7 +100,7 @@ export const FULL_TEMPLATES: WebsiteTemplate[] = [
     themeConfig: {
       primaryColor: '#059669',
       secondaryColor: '#0f172a',
-      fontFamily: 'Inter'
+      fontFamily: 'Outfit'
     },
     blocks: [
       {
@@ -137,7 +137,7 @@ export const FULL_TEMPLATES: WebsiteTemplate[] = [
     themeConfig: {
       primaryColor: '#d97706',
       secondaryColor: '#1c1917',
-      fontFamily: 'Inter'
+      fontFamily: 'Outfit'
     },
     blocks: [
       {
@@ -191,7 +191,7 @@ export const FULL_TEMPLATES: WebsiteTemplate[] = [
     themeConfig: {
       primaryColor: '#db2777',
       secondaryColor: '#0f172a',
-      fontFamily: 'Inter'
+      fontFamily: 'Outfit'
     },
     blocks: [
       {
@@ -261,7 +261,7 @@ export const FULL_TEMPLATES: WebsiteTemplate[] = [
     themeConfig: {
       primaryColor: '#2563eb',
       secondaryColor: '#0f172a',
-      fontFamily: 'Inter'
+      fontFamily: 'Outfit'
     },
     blocks: [
       {
@@ -302,7 +302,7 @@ export const FULL_TEMPLATES: WebsiteTemplate[] = [
     themeConfig: {
       primaryColor: '#1e293b',
       secondaryColor: '#0f172a',
-      fontFamily: 'Inter'
+      fontFamily: 'Outfit'
     },
     blocks: [
       {

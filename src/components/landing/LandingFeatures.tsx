@@ -31,8 +31,8 @@ const features = [
   },
   {
     icon: <CheckCircle2 className="w-5 h-5 text-indigo-500" />,
-    title: 'Selamanya Gratis',
-    description: 'Gunakan fitur inti kami tanpa biaya sepeserpun. Mulai bisnis Anda hari ini.',
+    title: 'Gratis Untuk Mulai',
+    description: 'Buat unlimited proyek, publish 1 website gratis dengan badge Katalogi.',
   },
 ]
 
@@ -61,7 +61,7 @@ export default function LandingFeatures() {
     <section id="features" ref={sectionRef} className="py-24 md:py-32 bg-gray-50 relative overflow-hidden">
       <div className="absolute inset-0 grid-overlay opacity-50 pointer-events-none" />
       <div className="absolute top-20 left-1/4 w-[500px] h-[500px] bg-indigo-500/[0.04] rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-10 right-1/4 w-[350px] h-[350px] bg-violet-500/[0.03] rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute bottom-10 right-1/4 w-[350px] h-[350px] bg-indigo-500/[0.03] rounded-full blur-[100px] pointer-events-none" />
 
       {/* Floating decorative icons */}
       <div className="absolute pointer-events-none text-indigo-500/10" style={{ left: '4%', top: '18%' }}>

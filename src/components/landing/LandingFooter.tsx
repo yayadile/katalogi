@@ -1,3 +1,5 @@
+'use client'
+
 import React from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -72,8 +74,8 @@ export default function LandingFooter() {
             <div className="space-y-3">
               <h4 className="text-sm font-semibold text-gray-900 tracking-wide">Hukum</h4>
               <div className="flex flex-col gap-2">
-                <span className="text-sm text-gray-400 cursor-not-allowed">Kebijakan Privasi</span>
-                <span className="text-sm text-gray-400 cursor-not-allowed">Syarat & Ketentuan</span>
+                <Link href="/kebijakan-privasi" className="text-sm text-gray-500 hover:text-indigo-600 transition-colors w-fit">Kebijakan Privasi</Link>
+                <Link href="/syarat-ketentuan" className="text-sm text-gray-500 hover:text-indigo-600 transition-colors w-fit">Syarat & Ketentuan</Link>
               </div>
             </div>
           </div>

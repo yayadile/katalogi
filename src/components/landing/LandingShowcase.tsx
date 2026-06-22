@@ -53,7 +53,7 @@ function TiltCard({
       onMouseLeave={handleMouseLeave}
       role="button"
       tabIndex={0}
-      className="relative text-left w-full group focus:outline-none rounded-2xl cursor-pointer aspect-[3/4] sm:aspect-[4/5]"
+      className="relative text-left w-full group focus:outline-none rounded-2xl cursor-pointer aspect-3/4 sm:aspect-4/5"
       style={{ transformStyle: 'preserve-3d', transition: 'transform 0.15s ease-out, box-shadow 0.15s ease-out' }}
     >
       <div className="bg-white rounded-2xl overflow-hidden shadow-sm ring-1 ring-black/5 relative h-full flex flex-col">
@@ -98,14 +98,14 @@ export default function LandingShowcase() {
               Galeri template
             </h2>
             <h3 className="reveal-item text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-              Pilih Template Favoritmu
+              Pilih template favoritmu
             </h3>
             <p className="reveal-item text-gray-500 text-lg">
               Klik untuk melihat detail dan mencoba template.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6 md:gap-8 max-w-4xl mx-auto perspective-[1200px]">
+          <div className="grid md:grid-cols-2 gap-6 md:gap-8 max-w-4xl mx-auto perspective-distant">
             {templates.map((template, i) => (
               <div
                 key={template.id}

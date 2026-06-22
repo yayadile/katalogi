@@ -9,7 +9,7 @@ import LandingFAQ from '@/components/landing/LandingFAQ'
 import LandingCTA from '@/components/landing/LandingCTA'
 import LandingFooter from '@/components/landing/LandingFooter'
 import LandingTestimonials from '@/components/landing/LandingTestimonials'
-// import LandingPricing from '@/components/landing/LandingPricing'
+import LandingPricing from '@/components/landing/LandingPricing'
 import { getSession } from '@/lib/session'
 import { redirect } from 'next/navigation'
 
@@ -32,8 +32,8 @@ export default async function HomePage() {
         <LandingCaraKerja />
         <LandingFeatures />
         <LandingShowcase />
+        <LandingPricing />
         <LandingTestimonials />
-        {/* <LandingPricing /> */}
         <LandingFAQ />
         <LandingCTA />
       </main>

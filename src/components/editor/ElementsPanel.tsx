@@ -84,7 +84,7 @@ export default function ElementsPanel() {
                   onClick={() => handleAddElement(block.type)}
                   className="flex flex-col items-center justify-center gap-2.5 p-4 bg-white border border-slate-100 rounded-2xl hover:border-indigo-200 hover:shadow-[0_8px_20px_rgb(99,102,241,0.08)] transition-all duration-300 group relative overflow-hidden active:scale-95"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="absolute inset-0 bg-linear-to-br from-indigo-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="text-slate-400 group-hover:text-indigo-600 transition-all duration-300 group-hover:scale-110 relative z-10">
                     {block.icon}
                   </div>
@@ -105,7 +105,7 @@ export default function ElementsPanel() {
                   onClick={() => handleAddElement(block.type)}
                   className="flex flex-col items-center justify-center gap-2.5 p-4 bg-white border border-slate-100 rounded-2xl hover:border-indigo-200 hover:shadow-[0_8px_20px_rgb(99,102,241,0.08)] transition-all duration-300 group relative overflow-hidden active:scale-95"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="absolute inset-0 bg-linear-to-br from-indigo-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="text-slate-400 group-hover:text-indigo-600 transition-all duration-300 group-hover:scale-110 relative z-10">
                     {block.icon}
                   </div>

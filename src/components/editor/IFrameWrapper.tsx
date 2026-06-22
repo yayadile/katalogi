@@ -138,7 +138,7 @@ export function IFrameWrapper({ children, title, className, style, theme }: IFra
       // Add a base style for the body
       const bgColor = theme?.backgroundColor ? `background-color: ${theme.backgroundColor};` : ''
       // Using setAttribute to bypass lint rules about direct style mutation on state-derived objects
-      doc.body.setAttribute('style', `margin: 0; padding: 0; min-height: 100vh; ${bgColor}`)
+      doc.body.setAttribute('style', `margin: 0; padding: 0; min-height: 100dvh; ${bgColor}`)
       setIframeReady(true)
 
       // --- Auto-resize: use ResizeObserver to match iframe height to content ---

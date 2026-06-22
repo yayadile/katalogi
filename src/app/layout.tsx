@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Outfit } from 'next/font/google'
 import './globals.css'
+import CookieConsent from '@/components/CookieConsent'
 
 const outfit = Outfit({
   variable: '--font-outfit',
@@ -26,6 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           Langsung ke konten utama
         </a>
         {children}
+        <CookieConsent />
       </body>
     </html>
   )

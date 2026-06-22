@@ -68,7 +68,7 @@ function VerifyOTPForm() {
           <XCircle className="w-16 h-16 text-red-400 mx-auto mb-6" />
           <h1 className="text-2xl font-bold text-gray-900 mb-3">Tautan Tidak Valid</h1>
           <p className="text-gray-500 mb-8">Email tidak ditemukan. Silakan daftar ulang.</p>
-          <Link href="/register" className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-br from-indigo-500 to-indigo-900 text-white rounded-xl font-medium hover:bg-indigo-700 transition-colors">
+          <Link href="/register" className="inline-flex items-center gap-2 px-6 py-3 bg-linear-to-br from-indigo-500 to-indigo-900 text-white rounded-xl font-medium hover:bg-indigo-700 transition-colors">
             Kembali ke Daftar
           </Link>
         </div>
@@ -147,7 +147,7 @@ function VerifyOTPForm() {
         </div>
 
         <button type="submit" disabled={pending}
-          className="w-full bg-gradient-to-br from-indigo-500 to-indigo-900 hover:from-indigo-600 hover:to-indigo-950 text-white font-bold py-4 rounded-2xl transition-all duration-200 hover:shadow-lg hover:shadow-indigo-500/25 disabled:opacity-60 disabled:cursor-not-allowed text-base flex items-center justify-center gap-2 active:scale-95 animate-fade-up delay-300">
+          className="w-full bg-linear-to-br from-indigo-500 to-indigo-900 hover:from-indigo-600 hover:to-indigo-950 text-white font-bold py-4 rounded-2xl transition-all duration-200 hover:shadow-lg hover:shadow-indigo-500/25 disabled:opacity-60 disabled:cursor-not-allowed text-base flex items-center justify-center gap-2 active:scale-95 animate-fade-up delay-300">
           {pending ? <Loader2 className="w-5 h-5 animate-spin" /> : <>Verifikasi <ArrowRight className="w-5 h-5" /></>}
         </button>
       </form>

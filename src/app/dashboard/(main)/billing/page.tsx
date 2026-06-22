@@ -7,12 +7,12 @@ const WA_BUSINESS_URL = 'https://wa.me/6281931920409'
 const FEATURES = [
   { label: 'Jumlah proyek', free: 'Tak terbatas', paid: 'Tak terbatas' },
   { label: 'Website dipublikasikan', free: 'Maksimal 1', paid: 'Tak terbatas' },
-  { label: 'Template Basic', free: <Check className="w-4 h-4 text-green-600" />, paid: <Check className="w-4 h-4 text-green-600" /> },
-  { label: 'Template Premium', free: <X className="w-4 h-4 text-red-400" />, paid: <Check className="w-4 h-4 text-green-600" /> },
-  { label: 'Branding "Dibuat dengan Katalogi"', free: <X className="w-4 h-4 text-red-400" />, paid: <Check className="w-4 h-4 text-green-600" /> },
-  { label: 'Upload gambar sendiri', free: <Check className="w-4 h-4 text-green-600" />, paid: <Check className="w-4 h-4 text-green-600" /> },
+  { label: 'Template Basic', free: <Check className="w-4 h-4 text-indigo-600" />, paid: <Check className="w-4 h-4 text-indigo-600" /> },
+  { label: 'Template Premium', free: <X className="w-4 h-4 text-red-400" />, paid: <Check className="w-4 h-4 text-indigo-600" /> },
+  { label: 'Branding "Dibuat dengan Katalogi"', free: <X className="w-4 h-4 text-red-400" />, paid: <Check className="w-4 h-4 text-indigo-600" /> },
+  { label: 'Upload gambar sendiri', free: <Check className="w-4 h-4 text-indigo-600" />, paid: <Check className="w-4 h-4 text-indigo-600" /> },
   { label: 'Mode publikasi', free: 'Manual', paid: 'Manual' },
-  { label: 'Dukungan prioritas', free: <X className="w-4 h-4 text-red-400" />, paid: <Check className="w-4 h-4 text-green-600" /> },
+  { label: 'Dukungan prioritas', free: <X className="w-4 h-4 text-red-400" />, paid: <Check className="w-4 h-4 text-indigo-600" /> },
 ]
 
 export default async function BillingPage() {
@@ -39,9 +39,9 @@ export default async function BillingPage() {
       </div>
 
       {/* Current Plan Card */}
-      <div className={`rounded-[2rem] p-8 mb-10 border ${
+      <div className={`rounded-4xl p-8 mb-10 border ${
         isPaid
-          ? 'bg-gradient-to-br from-indigo-500 to-indigo-900 border-indigo-400 text-white'
+          ? 'bg-linear-to-br from-indigo-500 to-indigo-900 border-indigo-400 text-white'
           : 'bg-white border-gray-200'
       }`}>
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -71,7 +71,7 @@ export default async function BillingPage() {
               href={WA_BUSINESS_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="shrink-0 inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-br from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 text-white font-bold rounded-xl text-sm transition-all shadow-lg shadow-green-600/20"
+              className="shrink-0 inline-flex items-center gap-2 px-6 py-3 bg-linear-to-br from-emerald-500 to-emerald-700 hover:from-emerald-600 hover:to-emerald-800 text-white font-bold rounded-xl text-sm transition-all shadow-lg shadow-emerald-600/20"
             >
               <Crown className="w-4 h-4" />
               Beli Paket
@@ -81,7 +81,7 @@ export default async function BillingPage() {
       </div>
 
       {/* Feature Comparison Table */}
-      <div className="bg-white border border-gray-200 rounded-[2rem] overflow-hidden mb-10">
+      <div className="bg-white border border-gray-200 rounded-4xl overflow-hidden mb-10">
         <div className="px-8 py-6 border-b border-gray-100">
           <h3 className="font-black text-gray-900 text-lg">Bandingkan Fitur</h3>
         </div>
@@ -109,7 +109,7 @@ export default async function BillingPage() {
       </div>
 
       {/* How to Buy */}
-      <div className="bg-white border border-gray-200 rounded-[2rem] p-8">
+      <div className="bg-white border border-gray-200 rounded-4xl p-8">
         <h3 className="font-black text-gray-900 text-lg mb-6">Cara pembelian</h3>
 
         <div className="space-y-5">
@@ -135,7 +135,7 @@ export default async function BillingPage() {
             href={WA_BUSINESS_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-br from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 text-white font-bold rounded-xl text-sm transition-all shadow-lg shadow-green-600/20"
+            className="flex items-center justify-center gap-2 px-6 py-3 bg-linear-to-br from-emerald-500 to-emerald-700 hover:from-emerald-600 hover:to-emerald-800 text-white font-bold rounded-xl text-sm transition-all shadow-lg shadow-emerald-600/20"
           >
             <ExternalLink className="w-4 h-4" />
             Hubungi WhatsApp

@@ -59,6 +59,32 @@ export async function deleteTestimonial(testimonialId: string) {
   revalidatePath('/admin/testimonials')
 }
 
+export async function upgradeUserTier(userId: string) {
+  await requireAdmin()
+  const user = await prisma.user.findUnique({ where: { id: userId }, select: { tier: true } })
+  if (!user) throw new Error('User tidak ditemukan.')
+  if (user.tier === 'PAID') throw new Error('User sudah PAID.')
+  await prisma.user.update({
+    where: { id: userId },
+    data: { tier: 'PAID', paidAt: new Date() },
+  })
+  revalidatePath('/admin/subscriptions')
+  revalidatePath('/dashboard')
+}
+
+export async function downgradeUserTier(userId: string) {
+  await requireAdmin()
+  const user = await prisma.user.findUnique({ where: { id: userId }, select: { tier: true } })
+  if (!user) throw new Error('User tidak ditemukan.')
+  await prisma.user.update({
+    where: { id: userId },
+    data: { tier: 'FREE', paidAt: null },
+  })
+  revalidatePath('/admin/subscriptions')
+  revalidatePath('/dashboard')
+  revalidatePath('/admin/subscriptions')
+}
+
 export async function createTestimonial(formData: FormData) {
   await requireAdmin()
   const name = formData.get('name') as string

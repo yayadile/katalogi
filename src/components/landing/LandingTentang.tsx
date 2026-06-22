@@ -38,7 +38,7 @@ export default function LandingTentang() {
 
       <div className="max-w-7xl mx-auto px-6 relative">
         <div className="max-w-[860px] mx-auto text-center">
-          <h2 className="reveal-item text-3xl md:text-5xl font-bold text-gray-900 mb-8">
+          <h2 className="reveal-item text-3xl md:text-5xl font-bold text-gray-900 mb-8 text-balance">
             Tentang Katalogi
           </h2>
           <p className="reveal-item delay-100 text-[15px] sm:text-[17px] text-gray-500 leading-[1.8] text-left sm:text-center">

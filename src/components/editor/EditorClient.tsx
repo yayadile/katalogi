@@ -23,8 +23,12 @@ import {
   Check, 
   Loader2,
   Undo,
-  Redo
+  Redo,
+  ExternalLink,
+  Crown
 } from 'lucide-react'
+
+const WA_BUSINESS_URL = 'https://wa.me/6281931920409'
 
 type EditorClientProps = {
   websiteId: string
@@ -74,6 +78,9 @@ export default function EditorClient({
   const [isPublishModalOpen, setIsPublishModalOpen] = useState(false)
   const [isPublishing, setIsPublishing] = useState(false)
   const [isPublished, setIsPublished] = useState(initialPublished)
+  const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false)
+  const [publishError, setPublishError] = useState<string | null>(null)
+  const [isUnpublishModalOpen, setIsUnpublishModalOpen] = useState(false)
   
   // Site settings local inputs
   const [siteTitle, setSiteTitle] = useState(websiteTitle)
@@ -87,6 +94,9 @@ export default function EditorClient({
   useEffect(() => {
     setIsMounted(true)
   }, [])
+
+  // Prevent flash of empty canvas (blocks haven't loaded yet)
+  const [isReady, setIsReady] = useState(false)
 
   // Initialize store on mount exactly once
   const isInitializedRef = useRef(false)
@@ -109,6 +119,8 @@ export default function EditorClient({
     if (initialPages && initialPageId) {
       setPages(initialPages, initialPageId)
     }
+
+    setIsReady(true)
   }, [initialBlocks, initialTheme, setBlocks, setTheme, initialPages, initialPageId, setPages])
 
   // Keyboard Shortcuts Listener for high-speed professional editing
@@ -239,8 +251,36 @@ export default function EditorClient({
         setSaveStatus('saved')
         setIsPublishModalOpen(true)
       } else {
+        if (res.error === 'FREE_TIER_BLOCK' || res.error === 'FREE_TIER_MAX_PUBLISHED') {
+          setPublishError(res.error)
+          setSaveStatus('idle')
+          setIsUpgradeModalOpen(true)
+        } else {
+          setSaveStatus('error')
+          alert(res.error || "Gagal mempublikasikan katalog")
+        }
+      }
+    } catch (err) {
+      setSaveStatus('error')
+      console.error(err)
+    } finally {
+      setIsPublishing(false)
+    }
+  };
+
+  // Unpublish site handler
+  const confirmUnpublish = async () => {
+    setIsUnpublishModalOpen(false)
+    setIsPublishing(true)
+    setSaveStatus('saving')
+    try {
+      const res = await publishWebsite(websiteId, userId, false)
+      if (res.success) {
+        setIsPublished(false)
+        setSaveStatus('saved')
+      } else {
         setSaveStatus('error')
-        alert(res.error || "Gagal mempublikasikan katalog")
+        alert(res.error || 'Gagal meng-unpublish website')
       }
     } catch (err) {
       setSaveStatus('error')
@@ -398,17 +438,23 @@ export default function EditorClient({
               Pratinjau
             </button>
 
-            {/* Solid Publish Button */}
+            {/* Solid Publish / Unpublish Button */}
             <button
-              onClick={handlePublish}
+              onClick={isPublished ? () => setIsUnpublishModalOpen(true) : handlePublish}
               disabled={isPublishing}
-              className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs transition-all disabled:opacity-50 shadow-[0_4px_15px_rgb(99,102,241,0.3)] hover:shadow-[0_6px_20px_rgb(99,102,241,0.4)] active:scale-95"
+              className={`px-5 py-2 rounded-xl font-bold text-xs transition-all disabled:opacity-50 active:scale-95 ${
+                isPublished
+                  ? 'bg-amber-100 text-amber-700 hover:bg-amber-200 shadow-none'
+                  : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-[0_4px_15px_rgb(99,102,241,0.3)] hover:shadow-[0_6px_20px_rgb(99,102,241,0.4)]'
+              }`}
             >
               {isPublishing ? (
                 <div className="flex items-center gap-1.5">
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  Menerbitkan...
+                  {isPublished ? 'Memproses...' : 'Menerbitkan...'}
                 </div>
+              ) : isPublished ? (
+                'Unpublish'
               ) : (
                 'Publikasikan'
               )}
@@ -418,192 +464,269 @@ export default function EditorClient({
       )}
 
       {/* ──────────────── Central Workspace ──────────────── */}
-      <div className="flex flex-1 overflow-hidden relative bg-slate-100">
-        
-        {!isPreviewMode && (
-          /* Left Side toolbox bar (Vertical Light Panel) */
-          <nav className="w-[72px] shrink-0 bg-white/60 backdrop-blur-xl border-r border-white flex flex-col items-center py-5 gap-5 z-20 shadow-[4px_0_20px_rgb(0,0,0,0.02)]">
-            <button 
-              onClick={() => setLeftPanel('elements')}
-              className={`relative p-3.5 rounded-2xl transition-all duration-300 flex flex-col items-center gap-1.5 group ${
-                leftPanel === 'elements' 
-                  ? 'text-indigo-600 bg-white shadow-[0_4px_15px_rgb(99,102,241,0.1)] border border-white' 
-                  : 'text-slate-400 hover:text-indigo-500 hover:bg-white/50'
-              }`}
-              title="Tambah Elemen & Blok"
-            >
-              <Plus className="w-5 h-5 transition-transform group-hover:scale-110" />
-              <span className="text-[9px] font-extrabold tracking-widest uppercase">Tambah</span>
-            </button>
-            
-            <button 
-              onClick={() => setLeftPanel('layers')}
-              className={`relative p-3.5 rounded-2xl transition-all duration-300 flex flex-col items-center gap-1.5 group ${
-                leftPanel === 'layers' 
-                  ? 'text-indigo-600 bg-white shadow-[0_4px_15px_rgb(99,102,241,0.1)] border border-white' 
-                  : 'text-slate-400 hover:text-indigo-500 hover:bg-white/50'
-              }`}
-              title="Struktur Urutan Blok"
-            >
-              <LayoutTemplate className="w-5 h-5 transition-transform group-hover:scale-110" />
-              <span className="text-[9px] font-extrabold tracking-widest uppercase">Navigasi</span>
-            </button>
-            
-            <button 
-              onClick={() => setLeftPanel('settings')}
-              className={`relative p-3.5 rounded-2xl transition-all duration-300 flex flex-col items-center gap-1.5 group ${
-                leftPanel === 'settings' 
-                  ? 'text-indigo-600 bg-white shadow-[0_4px_15px_rgb(99,102,241,0.1)] border border-white' 
-                  : 'text-slate-400 hover:text-indigo-500 hover:bg-white/50'
-              }`}
-              title="Desain & Tema Global"
-            >
-              <Palette className="w-5 h-5 transition-transform group-hover:scale-110" />
-              <span className="text-[9px] font-extrabold tracking-widest uppercase">Desain</span>
-            </button>
-          </nav>
-        )}
-
-        {/* Secondary Sliding Drawer Sidebar */}
-        {!isPreviewMode && (
-          <aside className="w-[300px] shrink-0 bg-white/70 backdrop-blur-xl border-r border-white flex flex-col overflow-hidden relative z-10 shadow-[4px_0_30px_rgb(0,0,0,0.02)]">
-            <div className="flex-1 overflow-y-auto">
+      {isReady ? (
+        <div className="flex flex-1 overflow-hidden relative bg-slate-100">
+          
+          {!isPreviewMode && (
+            /* Left Side toolbox bar (Vertical Light Panel) */
+            <nav className="w-[72px] shrink-0 bg-white/60 backdrop-blur-xl border-r border-white flex flex-col items-center py-5 gap-5 z-20 shadow-[4px_0_20px_rgb(0,0,0,0.02)]">
+              <button 
+                onClick={() => setLeftPanel('elements')}
+                className={`relative p-3.5 rounded-2xl transition-all duration-300 flex flex-col items-center gap-1.5 group ${
+                  leftPanel === 'elements' 
+                    ? 'text-indigo-600 bg-white shadow-[0_4px_15px_rgb(99,102,241,0.1)] border border-white' 
+                    : 'text-slate-400 hover:text-indigo-500 hover:bg-white/50'
+                }`}
+                title="Tambah Elemen & Blok"
+              >
+                <Plus className="w-5 h-5 transition-transform group-hover:scale-110" />
+                <span className="text-[9px] font-extrabold tracking-widest uppercase">Tambah</span>
+              </button>
               
-              {leftPanel === 'elements' && <ElementsPanel />}
+              <button 
+                onClick={() => setLeftPanel('layers')}
+                className={`relative p-3.5 rounded-2xl transition-all duration-300 flex flex-col items-center gap-1.5 group ${
+                  leftPanel === 'layers' 
+                    ? 'text-indigo-600 bg-white shadow-[0_4px_15px_rgb(99,102,241,0.1)] border border-white' 
+                    : 'text-slate-400 hover:text-indigo-500 hover:bg-white/50'
+                }`}
+                title="Struktur Urutan Blok"
+              >
+                <LayoutTemplate className="w-5 h-5 transition-transform group-hover:scale-110" />
+                <span className="text-[9px] font-extrabold tracking-widest uppercase">Navigasi</span>
+              </button>
               
-              {leftPanel === 'layers' && (
-                <div className="p-4 h-full">
-                  <div className="flex items-center justify-between border-b border-gray-100 pb-3 mb-3">
-                    <h3 className="font-bold text-xs uppercase tracking-wider text-slate-800">Navigasi Blok</h3>
-                  </div>
-                  <BlockNavigator
-                    websiteId={websiteId}
-                    initialBlocks={blocks}
-                    selectedId={useEditorStore.getState().selectedId}
-                    onSelect={useEditorStore.getState().selectBlock}
-                    onBlocksChange={setBlocks}
-                  />
-                </div>
-              )}
-              
-              {leftPanel === 'settings' && (
-                <div className="flex flex-col h-full bg-white">
-                  {/* Header title */}
-                  <div className="flex items-center justify-between border-b border-gray-100 p-4 shrink-0">
-                    <h3 className="font-bold text-xs uppercase tracking-wider text-slate-800">Desain & Identitas</h3>
-                  </div>
-                  
-                  {/* Sub-tab switcher */}
-                  <div className="flex border-b border-gray-100 p-2 gap-1 bg-gray-50/50 shrink-0">
-                    <button 
-                      onClick={() => setActiveSettingsTab('theme')}
-                      className={`flex-1 py-1.5 px-2 rounded-md text-[10px] font-extrabold uppercase tracking-wide transition-all ${
-                        activeSettingsTab === 'theme' 
-                          ? 'bg-white shadow-sm border border-gray-200 text-indigo-600' 
-                          : 'text-gray-500 hover:text-gray-700'
-                      }`}
-                    >
-                      Tema Global
-                    </button>
-                    <button 
-                      onClick={() => setActiveSettingsTab('identity')}
-                      className={`flex-1 py-1.5 px-2 rounded-md text-[10px] font-extrabold uppercase tracking-wide transition-all ${
-                        activeSettingsTab === 'identity' 
-                          ? 'bg-white shadow-sm border border-gray-200 text-indigo-600' 
-                          : 'text-gray-500 hover:text-gray-700'
-                      }`}
-                    >
-                      Identitas Situs
-                    </button>
-                  </div>
-                  
-                  {/* Tab Body container */}
-                  <div className="flex-1 overflow-y-auto p-4.5">
-                    {activeSettingsTab === 'theme' ? (
-                      <ThemeSettings
-                        pageId={websiteId}
-                        userId={userId}
-                        theme={theme}
-                        onChange={setTheme}
-                        onSaveStatus={setSaveStatus}
-                      />
-                    ) : (
-                      <div className="space-y-4">
-                        {/* Site identity configs */}
-                        <div className="space-y-2">
-                          <label className="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider">Judul Katalog</label>
-                          <input
-                            type="text"
-                            className="w-full px-3 py-2 text-xs border border-gray-300 rounded focus:border-indigo-600 focus:outline-none font-medium text-slate-800 shadow-sm"
-                            value={siteTitle}
-                            onChange={(e) => setSiteTitle(e.target.value)}
-                            placeholder="Katalog Saya"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <label className="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider">URL Slug</label>
-                          <div className="flex items-center bg-gray-50 border border-gray-300 rounded px-3 shadow-sm focus-within:border-indigo-600 focus-within:ring-1 focus-within:ring-indigo-600">
-                            <span className="text-[11px] text-gray-400 select-none font-black mr-1">/</span>
-                            <input
-                              type="text"
-                              className="bg-transparent border-none text-[11px] text-slate-800 font-bold p-2 w-full focus:outline-none"
-                              value={siteSlug}
-                              onChange={(e) => setSiteSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
-                              placeholder="toko-saya"
-                            />
-                          </div>
-                        </div>
-                        <button
-                          onClick={handleSaveIdentity}
-                          disabled={isSavingIdentity}
-                          className="w-full mt-4 flex items-center justify-center gap-1.5 bg-linear-to-br from-indigo-500 to-indigo-900 text-white font-bold py-2.5 rounded-lg text-xs hover:bg-indigo-700 transition-colors shadow-sm disabled:opacity-50"
-                        >
-                          {isSavingIdentity ? (
-                            <>
-                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                              Memperbarui...
-                            </>
-                          ) : (
-                            <>
-                              <Check className="w-3.5 h-3.5" />
-                              Simpan Perubahan
-                            </>
-                          )}
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-
-            </div>
-          </aside>
-        )}
-
-        {/* Central Canvas Frame preview wrapper */}
-        <main className="flex-1 overflow-hidden relative bg-slate-100 flex flex-col">
-          {/* Dynamic Floating Back button in Fullscreen Preview mode */}
-          {isPreviewMode && (
-            <button
-              onClick={() => setIsPreviewMode(false)}
-              className="fixed top-6 left-1/2 -translate-x-1/2 z-100 flex items-center gap-2 px-6 py-3 bg-white/80 backdrop-blur-xl text-slate-800 rounded-full font-extrabold text-xs border border-white hover:bg-white transition-all shadow-[0_8px_30px_rgb(0,0,0,0.08)] active:scale-95 animate-in slide-in-from-top-4 duration-300 select-none"
-            >
-              <span>Keluar Pratinjau (Kembali ke Editor)</span>
-            </button>
+              <button 
+                onClick={() => setLeftPanel('settings')}
+                className={`relative p-3.5 rounded-2xl transition-all duration-300 flex flex-col items-center gap-1.5 group ${
+                  leftPanel === 'settings' 
+                    ? 'text-indigo-600 bg-white shadow-[0_4px_15px_rgb(99,102,241,0.1)] border border-white' 
+                    : 'text-slate-400 hover:text-indigo-500 hover:bg-white/50'
+                }`}
+                title="Desain & Tema Global"
+              >
+                <Palette className="w-5 h-5 transition-transform group-hover:scale-110" />
+                <span className="text-[9px] font-extrabold tracking-widest uppercase">Desain</span>
+              </button>
+            </nav>
           )}
 
-          <div className="flex-1 overflow-y-auto">
-            <CanvasPreview />
-          </div>
-        </main>
+          {/* Secondary Sliding Drawer Sidebar */}
+          {!isPreviewMode && (
+            <aside className="w-[300px] shrink-0 bg-white/70 backdrop-blur-xl border-r border-white flex flex-col overflow-hidden relative z-10 shadow-[4px_0_30px_rgb(0,0,0,0.02)]">
+              <div className="flex-1 overflow-y-auto">
+                
+                {leftPanel === 'elements' && <ElementsPanel />}
+                
+                {leftPanel === 'layers' && (
+                  <div className="p-4 h-full">
+                    <div className="flex items-center justify-between border-b border-gray-100 pb-3 mb-3">
+                      <h3 className="font-bold text-xs uppercase tracking-wider text-slate-800">Navigasi Blok</h3>
+                    </div>
+                    <BlockNavigator
+                      websiteId={websiteId}
+                      initialBlocks={blocks}
+                      selectedId={useEditorStore.getState().selectedId}
+                      onSelect={useEditorStore.getState().selectBlock}
+                      onBlocksChange={setBlocks}
+                    />
+                  </div>
+                )}
+                
+                {leftPanel === 'settings' && (
+                  <div className="flex flex-col h-full bg-white">
+                    <div className="flex items-center justify-between border-b border-gray-100 p-4 shrink-0">
+                      <h3 className="font-bold text-xs uppercase tracking-wider text-slate-800">Desain & Identitas</h3>
+                    </div>
+                    
+                    <div className="flex border-b border-gray-100 p-2 gap-1 bg-gray-50/50 shrink-0">
+                      <button 
+                        onClick={() => setActiveSettingsTab('theme')}
+                        className={`flex-1 py-1.5 px-2 rounded-md text-[10px] font-extrabold uppercase tracking-wide transition-all ${
+                          activeSettingsTab === 'theme' 
+                            ? 'bg-white shadow-sm border border-gray-200 text-indigo-600' 
+                            : 'text-gray-500 hover:text-gray-700'
+                        }`}
+                      >
+                        Tema Global
+                      </button>
+                      <button 
+                        onClick={() => setActiveSettingsTab('identity')}
+                        className={`flex-1 py-1.5 px-2 rounded-md text-[10px] font-extrabold uppercase tracking-wide transition-all ${
+                          activeSettingsTab === 'identity' 
+                            ? 'bg-white shadow-sm border border-gray-200 text-indigo-600' 
+                            : 'text-gray-500 hover:text-gray-700'
+                        }`}
+                      >
+                        Identitas Situs
+                      </button>
+                    </div>
+                    
+                    <div className="flex-1 overflow-y-auto p-4.5">
+                      {activeSettingsTab === 'theme' ? (
+                        <ThemeSettings
+                          pageId={websiteId}
+                          userId={userId}
+                          theme={theme}
+                          onChange={setTheme}
+                          onSaveStatus={setSaveStatus}
+                        />
+                      ) : (
+                        <div className="space-y-4">
+                          <div className="space-y-2">
+                            <label className="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider">Judul Katalog</label>
+                            <input
+                              type="text"
+                              className="w-full px-3 py-2 text-xs border border-gray-300 rounded focus:border-indigo-600 focus:outline-none font-medium text-slate-800 shadow-sm"
+                              value={siteTitle}
+                              onChange={(e) => setSiteTitle(e.target.value)}
+                              placeholder="Katalog Saya"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider">URL Slug</label>
+                            <div className="flex items-center bg-gray-50 border border-gray-300 rounded px-3 shadow-sm focus-within:border-indigo-600 focus-within:ring-1 focus-within:ring-indigo-600">
+                              <span className="text-[11px] text-gray-400 select-none font-black mr-1">/</span>
+                              <input
+                                type="text"
+                                className="bg-transparent border-none text-[11px] text-slate-800 font-bold p-2 w-full focus:outline-none"
+                                value={siteSlug}
+                                onChange={(e) => setSiteSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
+                                placeholder="toko-saya"
+                              />
+                            </div>
+                          </div>
+                          <button
+                            onClick={handleSaveIdentity}
+                            disabled={isSavingIdentity}
+                            className="w-full mt-4 flex items-center justify-center gap-1.5 bg-linear-to-br from-indigo-500 to-indigo-900 text-white font-bold py-2.5 rounded-lg text-xs hover:bg-indigo-700 transition-colors shadow-sm disabled:opacity-50"
+                          >
+                            {isSavingIdentity ? (
+                              <>
+                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                Memperbarui...
+                              </>
+                            ) : (
+                              <>
+                                <Check className="w-3.5 h-3.5" />
+                                Simpan Perubahan
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
 
-        {/* Right Element-Style Property Panel Inspector */}
-        {!isPreviewMode && (
-          <aside className="w-80 shrink-0 bg-white/70 backdrop-blur-xl flex flex-col overflow-hidden relative z-10 shadow-[-4px_0_30px_rgb(0,0,0,0.02)] border-l border-white">
-            <BlockSettingsPanel />
-          </aside>
-        )}
-      </div>
+              </div>
+            </aside>
+          )}
+
+          {/* Central Canvas Frame preview wrapper */}
+          <main className="flex-1 overflow-hidden relative bg-slate-100 flex flex-col">
+            {isPreviewMode && (
+              <button
+                onClick={() => setIsPreviewMode(false)}
+                className="fixed top-6 left-1/2 -translate-x-1/2 z-100 flex items-center gap-2 px-6 py-3 bg-white/80 backdrop-blur-xl text-slate-800 rounded-full font-extrabold text-xs border border-white hover:bg-white transition-all shadow-[0_8px_30px_rgb(0,0,0,0.08)] active:scale-95 animate-in slide-in-from-top-4 duration-300 select-none"
+              >
+                <span>Keluar Pratinjau (Kembali ke Editor)</span>
+              </button>
+            )}
+
+            <div className="flex-1 overflow-y-auto">
+              <CanvasPreview />
+            </div>
+          </main>
+
+          {/* Right Element-Style Property Panel Inspector */}
+          {!isPreviewMode && (
+            <aside className="w-80 shrink-0 bg-white/70 backdrop-blur-xl flex flex-col overflow-hidden relative z-10 shadow-[-4px_0_30px_rgb(0,0,0,0.02)] border-l border-white">
+              <BlockSettingsPanel />
+            </aside>
+          )}
+        </div>
+      ) : (
+        <div className="flex-1 bg-slate-100 flex items-center justify-center">
+          <div className="w-full max-w-[960px] px-6 space-y-4 animate-pulse">
+            <div className="flex gap-4">
+              <div className="w-[72px] h-[400px] bg-white/40 rounded-2xl" />
+              <div className="w-[300px] h-[400px] bg-white/40 rounded-2xl" />
+              <div className="flex-1 h-[600px] bg-white/40 rounded-2xl" />
+              <div className="w-80 h-[400px] bg-white/40 rounded-2xl" />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ──────────────── Upgrade Modal (Free Tier Block) ──────────────── */}
+      {isUpgradeModalOpen && (
+        <div className="fixed inset-0 z-999 flex items-center justify-center p-6 bg-slate-950/60 backdrop-blur-md animate-in fade-in duration-300">
+          <div className="bg-white border border-gray-100 w-full max-w-lg rounded-4xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 p-8 text-center relative">
+            <button 
+              onClick={() => setIsUpgradeModalOpen(false)}
+              className="absolute top-6 right-6 p-2 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="w-14 h-14 mx-auto mb-5 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center border border-amber-100">
+              <Crown className="w-7 h-7" />
+            </div>
+
+            <h2 className="text-xl font-bold text-slate-900 leading-tight">
+              {publishError === 'FREE_TIER_MAX_PUBLISHED'
+                ? 'Batas publish sudah tercapai'
+                : 'Beli paket langganan'}
+            </h2>
+            <p className="text-sm text-slate-500 font-medium leading-relaxed mt-3">
+              {publishError === 'FREE_TIER_MAX_PUBLISHED' ? (
+                <>Kamu sudah punya <strong className="text-slate-800">1 website</strong> yang dipublikasikan. Akun gratis cuma bisa publish 1 website. Beli paket langganan untuk publish tanpa batas.</>
+              ) : (
+                <>Akun gratis hanya bisa membuat dan mengedit website. Untuk mempublikasikan dan mulai menerima pelanggan, kamu perlu <strong className="text-slate-800">beli paket langganan</strong>.</>
+              )}
+            </p>
+
+            <div className="mt-6 bg-slate-50 border border-slate-200 rounded-xl p-5 space-y-3 text-left">
+              <h3 className="text-xs font-black text-slate-800 uppercase tracking-wider">
+                Cara pembelian:
+              </h3>
+              <ol className="space-y-2 text-sm text-slate-600">
+                <li className="flex items-start gap-2.5">
+                  <span className="w-5 h-5 rounded-full bg-indigo-100 text-indigo-600 text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">1</span>
+                  Hubungi kami via WhatsApp Business
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <span className="w-5 h-5 rounded-full bg-indigo-100 text-indigo-600 text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">2</span>
+                  Lakukan pembayaran sesuai panduan
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <span className="w-5 h-5 rounded-full bg-indigo-100 text-indigo-600 text-[10px] font-black flex items-center justify-center shrink-0 mt-0.5">3</span>
+                  Admin akan aktivasi akun kamu — langsung bisa publish!
+                </li>
+              </ol>
+            </div>
+
+            <div className="mt-6 flex flex-col sm:flex-row gap-2.5">
+              <button
+                onClick={() => setIsUpgradeModalOpen(false)}
+                className="flex-1 py-3 px-4 border border-slate-200 text-slate-600 hover:text-slate-800 rounded-xl text-sm font-semibold transition-all hover:bg-slate-50"
+              >
+                Nanti Saja
+              </button>
+              <a
+                href={WA_BUSINESS_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 flex items-center justify-center gap-2 py-3 px-4 bg-linear-to-br from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 text-white rounded-xl text-sm font-semibold transition-all shadow-sm"
+              >
+                <ExternalLink className="w-4 h-4" />
+                Hubungi WhatsApp
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ──────────────── Wix Confetti Success Publication Modal ──────────────── */}
       {isPublishModalOpen && (
@@ -677,6 +800,48 @@ export default function EditorClient({
               </a>
             </div>
 
+          </div>
+        </div>
+      )}
+
+      {/* ──────────────── Confirm Unpublish Modal ──────────────── */}
+      {isUnpublishModalOpen && (
+        <div className="fixed inset-0 z-999 flex items-center justify-center p-6 bg-slate-950/60 backdrop-blur-md animate-in fade-in duration-300">
+          <div className="bg-white border border-gray-100 w-full max-w-md rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 p-6 text-center relative">
+            <button 
+              onClick={() => setIsUnpublishModalOpen(false)}
+              className="absolute top-4 right-4 p-1.5 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+
+            <div className="w-12 h-12 mx-auto mb-4 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center border border-amber-100">
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+              </svg>
+            </div>
+
+            <h2 className="text-lg font-bold text-slate-900 leading-tight">
+              Unpublish website?
+            </h2>
+            <p className="text-sm text-slate-500 mt-2 leading-relaxed">
+              Website ini tidak akan bisa diakses lewat link publik. Kamu bisa publish ulang kapan saja.
+            </p>
+
+            <div className="mt-6 flex flex-col sm:flex-row gap-2.5">
+              <button
+                onClick={() => setIsUnpublishModalOpen(false)}
+                className="flex-1 py-2.5 px-4 border border-slate-200 text-slate-600 hover:text-slate-800 rounded-xl text-sm font-semibold transition-all hover:bg-slate-50"
+              >
+                Batal
+              </button>
+              <button
+                onClick={confirmUnpublish}
+                className="flex-1 py-2.5 px-4 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-sm font-semibold transition-all shadow-sm"
+              >
+                Ya, Unpublish
+              </button>
+            </div>
           </div>
         </div>
       )}

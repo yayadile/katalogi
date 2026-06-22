@@ -105,6 +105,7 @@ export function IFrameWrapper({ children, title, className, style, theme }: IFra
   const [contentRef, setContentRef] = useState<HTMLIFrameElement | null>(null)
   const mountNode = contentRef?.contentWindow?.document?.body
   const resizeObserverRef = useRef<ResizeObserver | null>(null)
+  const [iframeReady, setIframeReady] = useState(false)
 
   useEffect(() => {
     if (contentRef?.contentWindow) {
@@ -138,6 +139,7 @@ export function IFrameWrapper({ children, title, className, style, theme }: IFra
       const bgColor = theme?.backgroundColor ? `background-color: ${theme.backgroundColor};` : ''
       // Using setAttribute to bypass lint rules about direct style mutation on state-derived objects
       doc.body.setAttribute('style', `margin: 0; padding: 0; min-height: 100vh; ${bgColor}`)
+      setIframeReady(true)
 
       // --- Auto-resize: use ResizeObserver to match iframe height to content ---
       if (resizeObserverRef.current) {
@@ -209,13 +211,20 @@ export function IFrameWrapper({ children, title, className, style, theme }: IFra
   }, [])
 
   return (
-    <iframe
-      ref={setContentRef}
-      title={title || 'Canvas Iframe'}
-      className={className}
-      style={{ ...style, border: 'none', width: '100%', minHeight: '100%' }}
-    >
-      {mountNode && createPortal(children, mountNode)}
-    </iframe>
+    <div style={{ position: 'relative', width: '100%', minHeight: '100%' }}>
+      {/* Placeholder: same bg color as theme, only visible while iframe loads */}
+      <div
+        className={className}
+        style={{ ...style, position: 'absolute', inset: 0, backgroundColor: theme?.backgroundColor || '#ffffff', display: iframeReady ? 'none' : 'block' }}
+      />
+      <iframe
+        ref={setContentRef}
+        title={title || 'Canvas Iframe'}
+        className={className}
+        style={{ ...style, border: 'none', width: '100%', minHeight: '100%', display: iframeReady ? 'block' : 'none' }}
+      >
+        {mountNode && createPortal(children, mountNode)}
+      </iframe>
+    </div>
   )
 }

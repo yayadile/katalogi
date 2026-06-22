@@ -100,6 +100,12 @@ export default async function PublishedPage({
     notFound()
   }
 
+  const owner = await prisma.user.findUnique({
+    where: { id: website.userId },
+    select: { tier: true },
+  })
+  const isFreeTier = owner?.tier === 'FREE'
+
   const theme = (website.themeConfig as ThemeConfig) ?? {}
   const primaryColor = theme.primaryColor ?? '#9819ff'
   const secondaryColor = theme.secondaryColor ?? '#1e293b'
@@ -180,19 +186,21 @@ export default async function PublishedPage({
           })}
         </StoreShell>
 
-        {/* Footer badge */}
-        <footer 
-          className="py-6 text-center border-t border-slate-200/50"
-          style={{ backgroundColor: theme.backgroundColor || '#F8FAFC' }}
-        >
-          <Link
-            href="/"
-            className="inline-flex items-center gap-1.5 text-slate-400 text-xs hover:text-slate-600 transition-colors"
+        {/* Footer badge — only for FREE tier */}
+        {isFreeTier && (
+          <footer 
+            className="py-6 text-center border-t border-slate-200/50"
+            style={{ backgroundColor: theme.backgroundColor || '#F8FAFC' }}
           >
-            <span className="w-4 h-4 rounded flex items-center justify-center text-[9px] text-white font-bold" style={{ backgroundColor: primaryColor }}>K</span>
-            Dibuat dengan <strong className="text-slate-600">Katalogi</strong>
-          </Link>
-        </footer>
+            <Link
+              href="/"
+              className="inline-flex items-center gap-1.5 text-slate-400 text-xs hover:text-slate-600 transition-colors"
+            >
+              <span className="w-4 h-4 rounded flex items-center justify-center text-[9px] text-white font-bold" style={{ backgroundColor: primaryColor }}>K</span>
+              Dibuat dengan <strong className="text-slate-600">Katalogi</strong>
+            </Link>
+          </footer>
+        )}
       </main>
     </>
   )

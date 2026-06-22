@@ -26,7 +26,7 @@ export default async function HomePage() {
     <div className="bg-white min-h-screen text-gray-900 selection:bg-linear-to-br from-indigo-500 to-indigo-900 selection:text-white">
       <ScrollProgress />
       <LandingNavbar />
-      <main>
+      <main id="main-content">
         <LandingHero />
         <LandingTentang />
         <LandingCaraKerja />

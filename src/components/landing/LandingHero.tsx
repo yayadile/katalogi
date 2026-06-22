@@ -34,7 +34,7 @@ export default function LandingHero() {
       <div className="relative z-10 mx-auto max-w-7xl px-6 w-full">
         <div className="max-w-[880px] mx-auto text-center">
           {/* Heading */}
-          <h1 className="text-[clamp(36px,10vw,80px)] font-extrabold text-gray-950 leading-[1.0] tracking-[-0.02em] animate-fade-up delay-100">
+          <h1 className="text-[clamp(36px,10vw,80px)] font-extrabold text-gray-950 leading-[1.0] tracking-[-0.03em] animate-fade-up delay-100 text-balance">
             Bikin Katalog{' '}
             <span className="text-indigo-600">
               Jualannya Jadi Gampang.
@@ -50,7 +50,7 @@ export default function LandingHero() {
           <div className="mt-8 md:mt-10 animate-fade-up delay-300">
             <Link
               href="/login?signup=true"
-              className="inline-flex bg-gradient-to-br from-indigo-500 to-indigo-900 hover:from-indigo-600 hover:to-indigo-950 text-white font-bold px-8 py-4 rounded-xl transition-colors duration-200 items-center justify-center gap-2 text-base group"
+              className="inline-flex bg-gradient-to-br from-indigo-500 to-indigo-900 hover:from-indigo-600 hover:to-indigo-950 text-white font-bold px-8 py-4 rounded-xl transition-all duration-200 items-center justify-center gap-2 text-base group active:scale-[0.97]"
             >
               Mulai Gratis Sekarang
               <Rocket className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
@@ -63,13 +63,13 @@ export default function LandingHero() {
               <Timer className="w-4 h-4 text-indigo-500" />
             </StatItem>
             <StatItem value="0 Biaya" label="Mulai Dari Rp0">
-              <Zap className="w-4 h-4 text-amber-500" />
+              <Zap className="w-4 h-4 text-indigo-500" />
             </StatItem>
             <StatItem value="Mobile First" label="Sangat Responsif">
-              <Smartphone className="w-4 h-4 text-cyan-600" />
+              <Smartphone className="w-4 h-4 text-indigo-500" />
             </StatItem>
             <StatItem value="Premium" label="Keamanan Terjamin">
-              <ShieldCheck className="w-4 h-4 text-green-600" />
+              <ShieldCheck className="w-4 h-4 text-indigo-500" />
             </StatItem>
           </div>
         </div>

@@ -94,8 +94,8 @@ export default function LandingShowcase() {
 
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <div className="text-center max-w-2xl mx-auto mb-16 md:mb-20">
-            <h2 className="reveal-item text-sm font-black text-indigo-600 uppercase tracking-widest mb-3">
-              Galeri Template
+            <h2 className="reveal-item text-sm font-bold text-indigo-600 mb-3">
+              Galeri template
             </h2>
             <h3 className="reveal-item text-3xl md:text-4xl font-bold text-gray-900 mb-6">
               Pilih Template Favoritmu

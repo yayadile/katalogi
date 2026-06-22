@@ -1,17 +1,10 @@
 import type { Metadata } from 'next'
-import { Inter, Poppins } from 'next/font/google'
+import { Outfit } from 'next/font/google'
 import './globals.css'
 
-const inter = Inter({
-  variable: '--font-inter',
+const outfit = Outfit({
+  variable: '--font-outfit',
   subsets: ['latin'],
-  display: 'swap',
-})
-
-const poppins = Poppins({
-  variable: '--font-poppins',
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '800'],
   display: 'swap',
 })
 
@@ -27,8 +20,13 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="id" className={`${inter.variable} ${poppins.variable} h-full antialiased`} suppressHydrationWarning={true}>
-      <body className="min-h-full flex flex-col font-sans" suppressHydrationWarning={true}>{children}</body>
+    <html lang="id" className={`${outfit.variable} h-full antialiased`} suppressHydrationWarning={true}>
+      <body className="min-h-full flex flex-col font-sans" style={{ fontFamily: 'var(--font-outfit), system-ui, sans-serif' }} suppressHydrationWarning={true}>
+        <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:px-4 focus:py-2 focus:bg-white focus:text-indigo-600 focus:rounded-xl focus:shadow-lg focus:outline-none focus:font-bold focus:text-sm">
+          Langsung ke konten utama
+        </a>
+        {children}
+      </body>
     </html>
   )
 }

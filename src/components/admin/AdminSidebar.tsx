@@ -7,7 +7,7 @@ import { usePathname } from 'next/navigation'
 import { useSidebar } from '@/context/SidebarContext'
 import {
   LayoutDashboard, Users, Globe, MessageSquareText, BarChart3,
-  ChevronLeft, ChevronRight, Menu, X
+  ChevronLeft, ChevronRight, Menu, X, Crown
 } from 'lucide-react'
 
 const navItems = [
@@ -15,6 +15,7 @@ const navItems = [
   { name: 'Analitik', href: '/admin/analytics', icon: BarChart3 },
   { name: 'Pengguna', href: '/admin/users', icon: Users },
   { name: 'Website', href: '/admin/websites', icon: Globe },
+  { name: 'Langganan', href: '/admin/subscriptions', icon: Crown },
   { name: 'Testimoni', href: '/admin/testimonials', icon: MessageSquareText },
 ]
 

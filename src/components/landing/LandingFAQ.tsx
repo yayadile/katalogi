@@ -1,7 +1,7 @@
 'use client'
 
-import React, { useState, useEffect, useRef } from 'react'
-import { ChevronDown } from 'lucide-react'
+import React, { useEffect, useRef } from 'react'
+import { HelpCircle } from 'lucide-react'
 
 const faqs = [
   {
@@ -31,7 +31,6 @@ const faqs = [
 ]
 
 export default function LandingFAQ() {
-  const [openIndex, setOpenIndex] = useState<number | null>(null)
   const sectionRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
@@ -53,42 +52,36 @@ export default function LandingFAQ() {
   }, [])
 
   return (
-    <section id="faq" ref={sectionRef} className="py-24 md:py-32 bg-white relative overflow-hidden">
-      <div className="absolute top-1/3 left-1/4 w-[400px] h-[400px] bg-violet-500/[0.03] rounded-full blur-[100px] pointer-events-none" />
+    <section id="faq" ref={sectionRef} className="py-24 md:py-32 bg-gray-50 relative overflow-hidden">
+      <div className="absolute top-1/3 left-1/4 w-[400px] h-[400px] bg-indigo-500/[0.03] rounded-full blur-[100px] pointer-events-none" />
 
-      <div className="max-w-3xl mx-auto px-6 relative">
+      <div className="max-w-5xl mx-auto px-6 relative">
         <div className="text-center mb-16">
+          <div className="reveal-item inline-flex items-center gap-2 px-3 py-1.5 bg-indigo-50 border border-indigo-100 rounded-full text-indigo-600 text-xs font-bold mb-4">
+            <HelpCircle className="w-3.5 h-3.5" />
+            FAQ
+          </div>
           <h2 className="reveal-item text-3xl md:text-5xl font-bold text-gray-900 mb-4">
-            Pertanyaan Umum
+            Ada pertanyaan?
           </h2>
           <p className="reveal-item delay-100 max-w-2xl mx-auto text-gray-500 text-lg">
             Hal-hal yang sering ditanyakan tentang Katalogi.
           </p>
         </div>
 
-        <div className="space-y-3">
+        <div className="grid md:grid-cols-2 gap-6 md:gap-8">
           {faqs.map((faq, i) => (
             <div
               key={i}
-              className="reveal-item border border-gray-200 rounded-xl overflow-hidden transition-all duration-300"
-              style={{ transitionDelay: `${i * 100}ms` }}
+              className="reveal-item bg-white border border-gray-200 rounded-2xl p-6 hover:border-indigo-200 hover:bg-indigo-50/20 transition-all duration-300"
+              style={{ transitionDelay: `${i * 80}ms` }}
             >
-              <button
-                onClick={() => setOpenIndex(openIndex === i ? null : i)}
-                className="w-full flex items-center justify-between gap-4 px-6 py-4 text-left bg-white hover:bg-gray-50 transition-colors duration-200"
-              >
-                <span className="font-semibold text-gray-900 text-sm md:text-base">{faq.q}</span>
-                <ChevronDown
-                  className={`w-5 h-5 text-gray-400 shrink-0 transition-transform duration-200 ${openIndex === i ? 'rotate-180' : ''
-                    }`}
-                />
-              </button>
-              <div
-                className={`overflow-hidden transition-all duration-300 ${openIndex === i ? 'max-h-60 opacity-100' : 'max-h-0 opacity-0'
-                  }`}
-              >
-                <p className="px-6 pb-4 text-sm text-gray-500 leading-relaxed">{faq.a}</p>
-              </div>
+              <h3 className="font-bold text-gray-900 text-sm md:text-base mb-2 leading-snug">
+                {faq.q}
+              </h3>
+              <p className="text-sm text-gray-500 leading-relaxed">
+                {faq.a}
+              </p>
             </div>
           ))}
         </div>

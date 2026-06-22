@@ -5,7 +5,7 @@ import { Paintbrush, MousePointer2, Globe, Smartphone, Zap, CheckCircle2, Layers
 
 const features = [
   {
-    icon: <Paintbrush className="w-5 h-5 text-pink-500" />,
+    icon: <Paintbrush className="w-5 h-5 text-indigo-500" />,
     title: 'Desain Kustom',
     description: 'Pilih tema, warna, dan font yang sesuai dengan identitas merk Anda.',
   },
@@ -15,22 +15,22 @@ const features = [
     description: 'Drag & drop builder yang intuitif. Cukup klik, ketik, dan kustom sesuai keinginan.',
   },
   {
-    icon: <Globe className="w-5 h-5 text-cyan-600" />,
+    icon: <Globe className="w-5 h-5 text-indigo-500" />,
     title: 'Domain Anda',
     description: 'Katalog profesional dengan slug cantik yang mudah diingat pelanggan.',
   },
   {
-    icon: <Smartphone className="w-5 h-5 text-orange-500" />,
+    icon: <Smartphone className="w-5 h-5 text-indigo-500" />,
     title: 'Mobile First',
     description: 'Tampilan optimal di semua perangkat mobile pelanggan Anda. 100% responsif.',
   },
   {
-    icon: <Zap className="w-5 h-5 text-amber-500" />,
+    icon: <Zap className="w-5 h-5 text-indigo-500" />,
     title: 'Performa Tinggi',
     description: 'Cepat diakses, tanpa lag. Tak ada lagi pelanggan kabur gara-gara web lambat.',
   },
   {
-    icon: <CheckCircle2 className="w-5 h-5 text-green-500" />,
+    icon: <CheckCircle2 className="w-5 h-5 text-indigo-500" />,
     title: 'Selamanya Gratis',
     description: 'Gunakan fitur inti kami tanpa biaya sepeserpun. Mulai bisnis Anda hari ini.',
   },
@@ -79,7 +79,7 @@ export default function LandingFeatures() {
 
       <div className="max-w-7xl mx-auto px-6 relative">
         <div className="text-center mb-16 md:mb-20">
-          <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-6">
+          <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-6 text-balance">
             <span className="reveal-item inline-block">Apapun Bisnis Anda.</span>
             <br />
             <span className="reveal-item inline-block text-indigo-600 delay-100 hover:underline decoration-indigo-300 decoration-2 underline-offset-4 transition-all duration-300">

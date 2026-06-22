@@ -201,6 +201,21 @@ export async function publishWebsite(
     return { success: false, error: 'Tidak diizinkan.' }
   }
 
+  if (isPublished) {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { tier: true },
+    })
+    if (user?.tier === 'FREE') {
+      const publishedCount = await prisma.website.count({
+        where: { userId, isPublished: true, id: { not: websiteId } },
+      })
+      if (publishedCount >= 1) {
+        return { success: false, error: 'FREE_TIER_MAX_PUBLISHED' }
+      }
+    }
+  }
+
   try {
     const updated = await prisma.website.update({
       where: { id: websiteId },

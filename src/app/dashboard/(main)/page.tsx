@@ -2,13 +2,16 @@ import { requireAuth } from '@/lib/session'
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import type { Metadata } from 'next'
-import { Plus, Globe, Layout, ExternalLink } from 'lucide-react'
+import { Plus, Globe, Layout, ExternalLink, Crown } from 'lucide-react'
 import { ScrollReveal } from '@/components/dashboard/ScrollReveal'
+import DismissibleUpgradeBanner from '@/components/dashboard/DismissibleUpgradeBanner'
 
 export const metadata: Metadata = {
   title: 'Dashboard — Katalogi',
   description: 'Kelola semua website toko Anda di Katalogi.',
 }
+
+const WA_BUSINESS_URL = 'https://wa.me/6281931920409'
 
 function formatDate(d: Date) {
   return new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }).format(d)
@@ -17,11 +20,19 @@ function formatDate(d: Date) {
 export default async function DashboardPage() {
   const session = await requireAuth()
 
-  const websites = await prisma.website.findMany({
-    where: { userId: session.userId },
-    orderBy: { createdAt: 'desc' },
-    include: { _count: { select: { blocks: true } } },
-  })
+  const [user, websites] = await Promise.all([
+    prisma.user.findUnique({
+      where: { id: session.userId },
+      select: { tier: true },
+    }),
+    prisma.website.findMany({
+      where: { userId: session.userId },
+      orderBy: { createdAt: 'desc' },
+      include: { _count: { select: { blocks: true } } },
+    }),
+  ])
+
+  const isFree = user?.tier === 'FREE'
 
   // Hitung metrik quick stats
   const totalProjects = websites.length;
@@ -75,6 +86,13 @@ export default async function DashboardPage() {
         </div>
       </div>
       </ScrollReveal>
+
+      {/* Upgrade Banner for FREE tier */}
+      {isFree && (
+        <ScrollReveal delay={50}>
+          <DismissibleUpgradeBanner />
+        </ScrollReveal>
+      )}
 
       {/* Main Grid */}
       <div className="space-y-10">

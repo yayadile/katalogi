@@ -95,7 +95,7 @@ export default function LandingNavbar() {
           </Link>
           <Link
             href="/login?signup=true"
-            className="bg-linear-to-br from-indigo-500 to-indigo-900 hover:from-indigo-600 hover:to-indigo-950 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition-colors duration-200"
+            className="bg-linear-to-br from-indigo-500 to-indigo-900 hover:from-indigo-600 hover:to-indigo-950 text-white text-sm font-bold px-5 py-2.5 rounded-xl transition-all duration-200 active:scale-[0.97]"
           >
             Daftar Gratis
           </Link>

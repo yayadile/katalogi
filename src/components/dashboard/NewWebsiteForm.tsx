@@ -5,7 +5,7 @@ import { createWebsite } from '@/lib/actions/website'
 import { FULL_TEMPLATES, WebsiteTemplate } from '@/lib/templates'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Sparkles, X, Check, LayoutTemplate } from 'lucide-react'
+import { ArrowLeft, Sparkles, X, Check, LayoutTemplate, Lock } from 'lucide-react'
 
 import HeroBlock from '@/components/blocks/HeroBlock'
 import CatalogBlock from '@/components/blocks/CatalogBlock'
@@ -76,8 +76,13 @@ function DesktopGiantPreview({ template }: { template: WebsiteTemplate }) {
   )
 }
 
-export default function NewWebsiteForm({ userId }: { userId: string }) {
-  const [selectedTemplate, setSelectedTemplate] = useState(FULL_TEMPLATES[0].id)
+export default function NewWebsiteForm({ userId, userTier }: { userId: string; userTier: 'FREE' | 'PAID' }) {
+  const isFree = userTier === 'FREE'
+  const availableTemplates = isFree
+    ? FULL_TEMPLATES.filter(t => t.tier === 'basic')
+    : FULL_TEMPLATES
+
+  const [selectedTemplate, setSelectedTemplate] = useState(availableTemplates[0]?.id ?? FULL_TEMPLATES[0].id)
   const [isMobilePreviewOpen, setIsMobilePreviewOpen] = useState(false)
   const router = useRouter()
 
@@ -227,7 +232,7 @@ export default function NewWebsiteForm({ userId }: { userId: string }) {
               
               {/* Responsive Grid/List for Templates */}
               <div className="grid grid-cols-2 md:grid-cols-1 gap-3">
-                {FULL_TEMPLATES.map((tpl) => {
+                {availableTemplates.map((tpl) => {
                   const isSelected = selectedTemplate === tpl.id
                   return (
                     <div
@@ -282,6 +287,12 @@ export default function NewWebsiteForm({ userId }: { userId: string }) {
                   )
                 })}
               </div>
+              {isFree && FULL_TEMPLATES.some(t => t.tier === 'premium') && (
+                <div className="flex items-center gap-2 px-3 py-2 bg-amber-50 border border-amber-200 rounded-xl text-[11px] text-amber-700 font-medium">
+                  <Lock className="w-3.5 h-3.5 shrink-0" />
+                  <span>Template lainnya tersedia setelah <strong>membeli paket langganan</strong>.</span>
+                </div>
+              )}
             </div>
             
             {/* Mobile Submit Button */}

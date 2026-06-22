@@ -108,7 +108,7 @@ export default function LandingCTA() {
             </h2>
             <Link
               href="/login?signup=true"
-              className="inline-flex bg-white text-indigo-700 font-bold px-10 py-4 rounded-xl hover:bg-gray-100 transition-colors duration-200 text-lg"
+              className="inline-flex bg-white text-indigo-700 font-bold px-10 py-4 rounded-xl hover:bg-gray-100 transition-all duration-200 text-lg active:scale-[0.97]"
             >
               Mulai Sekarang dengan Gratis
             </Link>

@@ -9,6 +9,7 @@ export type WebsiteTemplate = {
   description: string
   category: string
   image?: string
+  tier: 'basic' | 'premium'
   themeConfig: {
     primaryColor: string
     secondaryColor: string
@@ -30,6 +31,7 @@ export const FULL_TEMPLATES: WebsiteTemplate[] = [
     name: 'Kanvas Kosong',
     description: 'Awali kreativitas Anda dari awal dengan kanvas bersih.',
     category: 'semua',
+    tier: 'basic',
     image: 'https://images.unsplash.com/photo-1586075010633-2442dc3d6307?q=80&w=600&auto=format&fit=crop',
     themeConfig: {
       primaryColor: '#4f46e5',
@@ -43,6 +45,7 @@ export const FULL_TEMPLATES: WebsiteTemplate[] = [
     name: 'Profil & Portofolio',
     description: 'Pilihan tepat untuk desainer, fotografer, dan tenaga profesional.',
     category: 'jasa',
+    tier: 'basic',
     image: 'https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?q=80&w=600&auto=format&fit=crop',
     themeConfig: {
       primaryColor: '#4f46e5',
@@ -92,6 +95,7 @@ export const FULL_TEMPLATES: WebsiteTemplate[] = [
     name: 'Katalog & Toko',
     description: 'Etalase modern untuk menampilkan produk dan layanan bisnis Anda.',
     category: 'toko',
+    tier: 'basic',
     image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=600&auto=format&fit=crop',
     themeConfig: {
       primaryColor: '#059669',
@@ -128,6 +132,7 @@ export const FULL_TEMPLATES: WebsiteTemplate[] = [
     name: 'Warung & Kuliner',
     description: 'Tampilkan menu makanan dan minuman usaha kuliner Anda.',
     category: 'kuliner',
+    tier: 'premium',
     image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=600&auto=format&fit=crop',
     themeConfig: {
       primaryColor: '#d97706',
@@ -181,6 +186,7 @@ export const FULL_TEMPLATES: WebsiteTemplate[] = [
     name: 'Fashion Store',
     description: 'Tampilan modern untuk brand fashion dan clothing line Anda.',
     category: 'toko',
+    tier: 'premium',
     image: 'https://images.unsplash.com/photo-1445205170230-053b83016050?q=80&w=600&auto=format&fit=crop',
     themeConfig: {
       primaryColor: '#db2777',
@@ -250,6 +256,7 @@ export const FULL_TEMPLATES: WebsiteTemplate[] = [
     name: 'Jasa Profesional',
     description: 'Tampilkan layanan, portofolio, dan testimoni bisnis jasa Anda.',
     category: 'jasa',
+    tier: 'premium',
     image: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=600&auto=format&fit=crop',
     themeConfig: {
       primaryColor: '#2563eb',
@@ -290,6 +297,7 @@ export const FULL_TEMPLATES: WebsiteTemplate[] = [
     name: 'Fotografi',
     description: 'Portofolio visual yang memukau untuk fotografer profesional.',
     category: 'jasa',
+    tier: 'premium',
     image: 'https://images.unsplash.com/photo-1554048612-b6a482bc67e5?q=80&w=600&auto=format&fit=crop',
     themeConfig: {
       primaryColor: '#1e293b',

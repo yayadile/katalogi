@@ -12,12 +12,19 @@ enum UserRole {
   ADMIN
 }
 
+enum UserTier {
+  FREE
+  PAID
+}
+
 model User {
   id            String    @id @default(cuid())
   email         String    @unique
   passwordHash  String
   name          String?
   role          UserRole  @default(USER)
+  tier          UserTier  @default(FREE)
+  paidAt        DateTime?
   isSuspended   Boolean   @default(false)
   emailVerified Boolean   @default(false)
   createdAt     DateTime  @default(now())
